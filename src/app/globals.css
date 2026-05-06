@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #0A0A0B;
+  --paper: #F5F2EC;
+  --red: #E63946;
+  --navy: #1D3557;
+  --green: #2A9D8F;
+  --yellow: #F4D35E;
+}
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body, "Inter", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  .display {
+    font-family: "Arial Black", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wider;
+  }
+
+  .chip-outline {
+    @apply chip border border-ink/15 bg-paper text-ink;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-bold uppercase tracking-wider text-paper transition hover:bg-cypher-red disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/15 px-5 py-2 text-sm font-bold uppercase tracking-wider text-ink transition hover:border-ink hover:bg-ink hover:text-paper;
+  }
+}
