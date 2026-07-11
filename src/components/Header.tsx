@@ -20,7 +20,8 @@ export default function Header() {
             </Link>
         */}
         <Link href="/" className="display text-2xl font-black tracking-tight">
-          WORLD <span className="text-cypher-red">Cypher.</span>
+          <span className="text-cypher-red">WORLD</span> Cypher
+          <span className="text-cypher-red">.</span>
         </Link>
         <nav className="flex items-center gap-2 text-sm font-bold">
           <Link

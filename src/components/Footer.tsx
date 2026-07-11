@@ -5,7 +5,8 @@ export default function Footer() {
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <div className="display text-3xl font-black">
-              WORLD <span className="text-cypher-red">Cypher.</span>
+              <span className="text-cypher-red">WORLD</span> Cypher
+              <span className="text-cypher-red">.</span>
             </div>
             <p className="mt-2 max-w-md text-sm text-paper/70">
               ストリートダンスバトル情報サイト。広告なし、必要な情報だけ。
