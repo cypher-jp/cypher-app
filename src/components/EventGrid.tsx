@@ -1,16 +1,41 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import EventCard from "@/components/EventCard";
 import FilterBar, { DEFAULT_FILTER, type FilterState } from "@/components/FilterBar";
-import type { DanceEvent } from "@/types/event";
+import type { DanceEvent, EventType } from "@/types/event";
 
 interface Props {
   events: DanceEvent[];
+  initialType?: EventType | "any";
 }
 
-export default function EventGrid({ events }: Props) {
-  const [filter, setFilter] = useState<FilterState>(DEFAULT_FILTER);
+export default function EventGrid({ events, initialType = "battle" }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [filter, setFilter] = useState<FilterState>({
+    ...DEFAULT_FILTER,
+    type: initialType,
+  });
+
+  // フィルタ変更時にURLクエリ(?type=...)も更新して、共有可能なリンクにする。
+  const handleChange = useCallback(
+    (next: FilterState) => {
+      setFilter(next);
+      const params = new URLSearchParams(searchParams.toString());
+      if (next.type === "any") {
+        params.delete("type");
+      } else {
+        params.set("type", next.type);
+      }
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
 
   const filtered = useMemo(() => {
     const q = filter.query.trim().toLowerCase();
@@ -28,7 +53,7 @@ export default function EventGrid({ events }: Props) {
 
   return (
     <div className="flex flex-col gap-8">
-      <FilterBar value={filter} onChange={setFilter} resultCount={filtered.length} />
+      <FilterBar value={filter} onChange={handleChange} resultCount={filtered.length} />
 
       {filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-ink/20 bg-paper p-12 text-center">

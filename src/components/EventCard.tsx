@@ -35,7 +35,7 @@ export default function EventCard({ event }: { event: DanceEvent }) {
           />
         ) : (
           <div className="flex h-full items-center justify-center text-paper/40">
-            <span className="display text-5xl">CYPHER</span>
+            <span className="display text-4xl">WORLD Cypher.</span>
           </div>
         )}
         <div className="absolute left-3 top-3 flex gap-1.5">
