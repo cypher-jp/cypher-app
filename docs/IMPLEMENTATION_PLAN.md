@@ -161,6 +161,27 @@
 
 ---
 
+## Phase 2.5: 多言語対応（i18n）【Phase 2の後】
+
+グローバルサイト化のため、UIを多言語展開する。
+
+### 方針
+
+1. ルーティング: App Router のロケールセグメント `/[locale]/` 方式。対応言語は **ja（デフォルト）/ en / ko / zh / fr** の5言語。middleware で Accept-Language による自動リダイレクト
+2. ライブラリ: `next-intl` を採用（新規依存として許可）
+3. 翻訳対象: UI文言（ヘッダー・フィルタ・ボタン・Hero・フッター）、GENRE_LABEL / REGION_LABEL / EVENT_TYPE_LABEL。メッセージは `messages/ja.json` / `messages/en.json` に集約
+4. **イベントデータ本体（title / description）は当面翻訳しない**。タイトルは元々英語が多く、descriptionは原文のまま。将来 `description_en` カラム追加で対応
+5. SEO: `hreflang` alternates を generateMetadata / sitemap に追加。言語切替UIをヘッダーに設置
+6. 日付表示: ロケール対応（Intl.DateTimeFormat）
+
+### 受け入れ基準
+
+- [ ] `/en` で全UIが英語表示、`/ja` で日本語表示
+- [ ] 言語切替がヘッダーから可能で、選択が維持される
+- [ ] hreflang が両言語ページに出力される
+
+---
+
 ## Phase 3: スクレイピング自動収集【目安3〜5日】
 
 ### 3-1. DB変更（マイグレーション `supabase/migrations/002_scraper.sql`）
