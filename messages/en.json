@@ -1,0 +1,101 @@
+{
+  "nav": {
+    "events": "Events",
+    "calendar": "Calendar",
+    "submit": "Submit"
+  },
+  "hero": {
+    "eyebrow": "STREET DANCE BATTLE INFO, ONE PLACE",
+    "titleLine1": "FIND YOUR",
+    "titleLine2Prefix": "NEXT",
+    "titleHighlight": "BATTLE",
+    "titleEnd": ".",
+    "subcopyPrefix": "Discover dance battles worldwide, filtered by",
+    "subcopyHighlight": "genre × region",
+    "subcopySuffix": ". Straight to the entry page, zero ads."
+  },
+  "filters": {
+    "type": "TYPE",
+    "genre": "GENRE",
+    "region": "REGION",
+    "search": "SEARCH",
+    "searchPlaceholder": "Search by title or venue...",
+    "all": "All",
+    "resultCount": "events found",
+    "reset": "Reset filters"
+  },
+  "grid": {
+    "noMatchTitle": "NO MATCH",
+    "noMatchBody": "Try loosening your filters — there might be more out there."
+  },
+  "calendar": {
+    "eyebrow": "MONTHLY VIEW",
+    "title": "CALENDAR",
+    "subtitle": "Browse events by month. Badges show the number of events. Click to view details.",
+    "prev": "← Prev",
+    "next": "Next →",
+    "more": "+{count} more"
+  },
+  "event": {
+    "backToEvents": "← BACK TO EVENTS",
+    "date": "Date",
+    "deadline": "Entry Deadline",
+    "deadlinePassed": "Closed",
+    "venue": "Venue",
+    "about": "About",
+    "entryCta": "ENTRY / Details →",
+    "igCta": "View on Instagram",
+    "instagramSectionTitle": "Instagram",
+    "notFoundTitle": "EVENT NOT FOUND",
+    "notFoundBody": "This event has ended or does not exist.",
+    "backHome": "Back to Home",
+    "metaFallbackTitle": "Event not found",
+    "metaFallbackDescription": "Date, venue and entry information for {title}."
+  },
+  "footer": {
+    "tagline": "Street dance battle info, no ads, only what you need.",
+    "copyright": "© {year} WORLD Cypher.",
+    "contact": "Event submissions → @world_cypher"
+  },
+  "locale": {
+    "label": "Language",
+    "ja": "日本語",
+    "en": "English",
+    "ko": "한국어",
+    "zh": "中文",
+    "fr": "Français"
+  },
+  "labels": {
+    "eventType": {
+      "battle": "BATTLE",
+      "showcase": "SHOWCASE",
+      "workshop": "WORKSHOP",
+      "audition": "AUDITION",
+      "festival": "FESTIVAL"
+    },
+    "genre": {
+      "hiphop": "Hip Hop",
+      "house": "House",
+      "popping": "Popping",
+      "locking": "Locking",
+      "breaking": "Breaking",
+      "waacking": "Waacking",
+      "krump": "Krump",
+      "jazz": "Jazz",
+      "all": "All Styles"
+    },
+    "region": {
+      "tokyo": "Tokyo",
+      "osaka": "Osaka",
+      "nagoya": "Nagoya",
+      "fukuoka": "Fukuoka",
+      "sapporo": "Sapporo",
+      "okinawa": "Okinawa",
+      "korea": "Korea",
+      "taiwan": "Taiwan",
+      "us": "USA",
+      "eu": "Europe",
+      "other": "Other"
+    }
+  }
+}

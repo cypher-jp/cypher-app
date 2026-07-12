@@ -1,0 +1,101 @@
+{
+  "nav": {
+    "events": "Events",
+    "calendar": "Calendar",
+    "submit": "제보하기"
+  },
+  "hero": {
+    "eyebrow": "STREET DANCE BATTLE INFO, ONE PLACE",
+    "titleLine1": "FIND YOUR",
+    "titleLine2Prefix": "NEXT",
+    "titleHighlight": "BATTLE",
+    "titleEnd": ".",
+    "subcopyPrefix": "전 세계 댄스 배틀 정보를",
+    "subcopyHighlight": "장르 × 지역",
+    "subcopySuffix": "으로 필터링. 신청 페이지까지 한 번에, 광고 없이."
+  },
+  "filters": {
+    "type": "종류 / TYPE",
+    "genre": "장르 / GENRE",
+    "region": "지역 / REGION",
+    "search": "검색 / SEARCH",
+    "searchPlaceholder": "제목·장소로 검색...",
+    "all": "전체",
+    "resultCount": "건의 이벤트",
+    "reset": "필터 초기화"
+  },
+  "grid": {
+    "noMatchTitle": "NO MATCH",
+    "noMatchBody": "조건을 완화하면 더 많은 이벤트를 찾을 수 있어요. 필터를 초기화해보세요."
+  },
+  "calendar": {
+    "eyebrow": "MONTHLY VIEW",
+    "title": "CALENDAR",
+    "subtitle": "월별로 이벤트를 확인하세요. 날짜의 뱃지는 이벤트 수입니다. 클릭하면 상세 정보로 이동합니다.",
+    "prev": "← 이전",
+    "next": "다음 →",
+    "more": "외 {count}건"
+  },
+  "event": {
+    "backToEvents": "← BACK TO EVENTS",
+    "date": "개최일",
+    "deadline": "신청 마감일",
+    "deadlinePassed": "마감됨",
+    "venue": "장소",
+    "about": "About",
+    "entryCta": "ENTRY / 자세히 보기 →",
+    "igCta": "Instagram에서 보기",
+    "instagramSectionTitle": "Instagram",
+    "notFoundTitle": "EVENT NOT FOUND",
+    "notFoundBody": "이 이벤트는 종료되었거나 존재하지 않습니다.",
+    "backHome": "홈으로 돌아가기",
+    "metaFallbackTitle": "이벤트를 찾을 수 없습니다",
+    "metaFallbackDescription": "{title}의 개최일·장소·신청 정보."
+  },
+  "footer": {
+    "tagline": "스트리트 댄스 배틀 정보 사이트. 광고 없이, 필요한 정보만.",
+    "copyright": "© {year} WORLD Cypher.",
+    "contact": "이벤트 등록 문의 → @world_cypher"
+  },
+  "locale": {
+    "label": "언어",
+    "ja": "日本語",
+    "en": "English",
+    "ko": "한국어",
+    "zh": "中文",
+    "fr": "Français"
+  },
+  "labels": {
+    "eventType": {
+      "battle": "BATTLE",
+      "showcase": "SHOWCASE",
+      "workshop": "WORKSHOP",
+      "audition": "AUDITION",
+      "festival": "FESTIVAL"
+    },
+    "genre": {
+      "hiphop": "힙합",
+      "house": "하우스",
+      "popping": "팝핀",
+      "locking": "락킹",
+      "breaking": "브레이킹",
+      "waacking": "왁킹",
+      "krump": "크럼프",
+      "jazz": "재즈",
+      "all": "전 장르"
+    },
+    "region": {
+      "tokyo": "도쿄",
+      "osaka": "오사카",
+      "nagoya": "나고야",
+      "fukuoka": "후쿠오카",
+      "sapporo": "삿포로",
+      "okinawa": "오키나와",
+      "korea": "한국",
+      "taiwan": "대만",
+      "us": "미국",
+      "eu": "유럽",
+      "other": "기타"
+    }
+  }
+}

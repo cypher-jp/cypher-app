@@ -1,0 +1,101 @@
+{
+  "nav": {
+    "events": "Events",
+    "calendar": "Calendar",
+    "submit": "掲載依頼"
+  },
+  "hero": {
+    "eyebrow": "STREET DANCE BATTLE INFO, ONE PLACE",
+    "titleLine1": "FIND YOUR",
+    "titleLine2Prefix": "NEXT",
+    "titleHighlight": "BATTLE",
+    "titleEnd": ".",
+    "subcopyPrefix": "国内外のダンスバトル情報を",
+    "subcopyHighlight": "ジャンル × エリア",
+    "subcopySuffix": "で絞り込み。エントリー先まで一直線、広告ゼロ。"
+  },
+  "filters": {
+    "type": "種別 / TYPE",
+    "genre": "ジャンル / GENRE",
+    "region": "エリア / REGION",
+    "search": "検索 / SEARCH",
+    "searchPlaceholder": "タイトル・会場で検索...",
+    "all": "すべて",
+    "resultCount": "件のイベント",
+    "reset": "フィルタをリセット"
+  },
+  "grid": {
+    "noMatchTitle": "NO MATCH",
+    "noMatchBody": "条件を緩めると見つかるかも。フィルタをリセットしてみて。"
+  },
+  "calendar": {
+    "eyebrow": "MONTHLY VIEW",
+    "title": "CALENDAR",
+    "subtitle": "月別でイベントを見る。日付セルのバッジは件数。クリックで詳細へ。",
+    "prev": "← Prev",
+    "next": "Next →",
+    "more": "他{count}件"
+  },
+  "event": {
+    "backToEvents": "← BACK TO EVENTS",
+    "date": "開催日",
+    "deadline": "エントリー締切",
+    "deadlinePassed": "締切済み",
+    "venue": "会場",
+    "about": "About",
+    "entryCta": "ENTRY / 詳細へ →",
+    "igCta": "Instagramで見る",
+    "instagramSectionTitle": "Instagram",
+    "notFoundTitle": "EVENT NOT FOUND",
+    "notFoundBody": "このイベントは終了したか、存在しません。",
+    "backHome": "トップに戻る",
+    "metaFallbackTitle": "イベントが見つかりません",
+    "metaFallbackDescription": "{title} の開催日・会場・エントリー情報。"
+  },
+  "footer": {
+    "tagline": "ストリートダンスバトル情報サイト。広告なし、必要な情報だけ。",
+    "copyright": "© {year} WORLD Cypher.",
+    "contact": "イベント掲載のお問い合わせ → @world_cypher"
+  },
+  "locale": {
+    "label": "言語",
+    "ja": "日本語",
+    "en": "English",
+    "ko": "한국어",
+    "zh": "中文",
+    "fr": "Français"
+  },
+  "labels": {
+    "eventType": {
+      "battle": "BATTLE",
+      "showcase": "SHOWCASE",
+      "workshop": "WORKSHOP",
+      "audition": "AUDITION",
+      "festival": "FESTIVAL"
+    },
+    "genre": {
+      "hiphop": "Hip Hop",
+      "house": "House",
+      "popping": "Popping",
+      "locking": "Locking",
+      "breaking": "Breaking",
+      "waacking": "Waacking",
+      "krump": "Krump",
+      "jazz": "Jazz",
+      "all": "ALL STYLE"
+    },
+    "region": {
+      "tokyo": "東京",
+      "osaka": "大阪",
+      "nagoya": "名古屋",
+      "fukuoka": "福岡",
+      "sapporo": "札幌",
+      "okinawa": "沖縄",
+      "korea": "韓国",
+      "taiwan": "台湾",
+      "us": "アメリカ",
+      "eu": "ヨーロッパ",
+      "other": "その他"
+    }
+  }
+}
