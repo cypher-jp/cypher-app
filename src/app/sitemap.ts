@@ -1,31 +1,48 @@
 import type { MetadataRoute } from "next";
 import { fetchEvents } from "@/lib/supabase";
 import { SITE_URL } from "@/lib/site";
+import { routing } from "@/i18n/routing";
+
+function localeAlternates(pathSuffix: string): Record<string, string> {
+  const languages: Record<string, string> = {};
+  for (const locale of routing.locales) {
+    languages[locale] = `${SITE_URL}/${locale}${pathSuffix}`;
+  }
+  return languages;
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // fetchEvents は status = published のイベントのみ返す（src/lib/supabase.ts参照）。
   const events = await fetchEvents();
+  const lastModified = new Date();
 
-  const eventEntries: MetadataRoute.Sitemap = events.map((event) => ({
-    url: `${SITE_URL}/events/${event.id}`,
-    lastModified: new Date(),
-    changeFrequency: "daily",
-    priority: 0.8,
-  }));
+  const entries: MetadataRoute.Sitemap = [];
 
-  return [
-    {
-      url: SITE_URL,
-      lastModified: new Date(),
+  for (const locale of routing.locales) {
+    entries.push({
+      url: `${SITE_URL}/${locale}`,
+      lastModified,
       changeFrequency: "daily",
-      priority: 1,
-    },
-    {
-      url: `${SITE_URL}/calendar`,
-      lastModified: new Date(),
+      priority: locale === routing.defaultLocale ? 1 : 0.9,
+      alternates: { languages: localeAlternates("") },
+    });
+    entries.push({
+      url: `${SITE_URL}/${locale}/calendar`,
+      lastModified,
       changeFrequency: "daily",
       priority: 0.6,
-    },
-    ...eventEntries,
-  ];
+      alternates: { languages: localeAlternates("/calendar") },
+    });
+    for (const event of events) {
+      entries.push({
+        url: `${SITE_URL}/${locale}/events/${event.id}`,
+        lastModified,
+        changeFrequency: "daily",
+        priority: 0.8,
+        alternates: { languages: localeAlternates(`/events/${event.id}`) },
+      });
+    }
+  }
+
+  return entries;
 }

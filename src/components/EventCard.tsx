@@ -1,10 +1,8 @@
-import Link from "next/link";
-import {
-  DanceEvent,
-  EVENT_TYPE_LABEL,
-  GENRE_LABEL,
-  REGION_LABEL,
-} from "@/types/event";
+"use client";
+
+import { useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import type { DanceEvent } from "@/types/event";
 
 const TYPE_ACCENT: Record<DanceEvent["type"], string> = {
   battle: "bg-cypher-red text-paper",
@@ -15,8 +13,15 @@ const TYPE_ACCENT: Record<DanceEvent["type"], string> = {
 };
 
 export default function EventCard({ event }: { event: DanceEvent }) {
+  const locale = useLocale();
+  const tType = useTranslations("labels.eventType");
+  const tGenre = useTranslations("labels.genre");
+  const tRegion = useTranslations("labels.region");
+
   const dateObj = new Date(event.date);
-  const month = dateObj.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
+  const month = dateObj
+    .toLocaleDateString(locale, { month: "short" })
+    .toUpperCase();
   const day = dateObj.getDate();
   const year = dateObj.getFullYear();
 
@@ -40,7 +45,7 @@ export default function EventCard({ event }: { event: DanceEvent }) {
         )}
         <div className="absolute left-3 top-3 flex gap-1.5">
           <span className={`chip ${TYPE_ACCENT[event.type]}`}>
-            {EVENT_TYPE_LABEL[event.type]}
+            {tType(event.type)}
           </span>
         </div>
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-ink/90 to-transparent p-4">
@@ -58,8 +63,8 @@ export default function EventCard({ event }: { event: DanceEvent }) {
           {event.title}
         </h3>
         <div className="mt-2 flex flex-wrap gap-1.5">
-          <span className="chip-outline">{GENRE_LABEL[event.genre]}</span>
-          <span className="chip-outline">{REGION_LABEL[event.region]}</span>
+          <span className="chip-outline">{tGenre(event.genre)}</span>
+          <span className="chip-outline">{tRegion(event.region)}</span>
         </div>
         <p className="mt-3 line-clamp-2 text-sm text-ink/70">{event.venue}</p>
       </div>

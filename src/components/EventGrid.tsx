@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import EventCard from "@/components/EventCard";
 import FilterBar, { DEFAULT_FILTER, type FilterState } from "@/components/FilterBar";
 import type { DanceEvent, EventType } from "@/types/event";
@@ -12,6 +14,7 @@ interface Props {
 }
 
 export default function EventGrid({ events, initialType = "battle" }: Props) {
+  const t = useTranslations("grid");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -57,10 +60,8 @@ export default function EventGrid({ events, initialType = "battle" }: Props) {
 
       {filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-ink/20 bg-paper p-12 text-center">
-          <div className="display text-2xl font-black">NO MATCH</div>
-          <p className="mt-2 text-sm text-ink/60">
-            条件を緩めると見つかるかも。フィルタをリセットしてみて。
-          </p>
+          <div className="display text-2xl font-black">{t("noMatchTitle")}</div>
+          <p className="mt-2 text-sm text-ink/60">{t("noMatchBody")}</p>
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

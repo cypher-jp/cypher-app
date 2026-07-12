@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import type { DanceEvent } from "@/types/event";
 import { MOCK_EVENTS } from "@/lib/mockEvents";
+import { rowToEvent } from "@/lib/eventMapper";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -21,6 +22,7 @@ export const isSupabaseEnabled = client !== null;
 /**
  * Supabaseが繋がっていればDBから、なければモックを返す。
  * 設定し忘れててもサイトが落ちない安全網。
+ * 公開側専用: RLSにより status='published' のみ取得できる(anonキー)。
  */
 export async function fetchEvents(): Promise<DanceEvent[]> {
   if (!client) return MOCK_EVENTS;
@@ -55,25 +57,4 @@ export async function fetchEventById(id: string): Promise<DanceEvent | null> {
   }
 
   return rowToEvent(data);
-}
-
-// SupabaseのDBスキーマ → アプリの型に変換
-function rowToEvent(row: Record<string, unknown>): DanceEvent {
-  return {
-    id: String(row.id),
-    title: String(row.title ?? ""),
-    type: (row.type as DanceEvent["type"]) ?? "battle",
-    genre: (row.genre as DanceEvent["genre"]) ?? "all",
-    region: (row.region as DanceEvent["region"]) ?? "other",
-    date: String(row.date ?? ""),
-    deadline: row.deadline ? String(row.deadline) : undefined,
-    venue: String(row.venue ?? ""),
-    description: String(row.description ?? ""),
-    flyerUrl: row.flyer_url ? String(row.flyer_url) : undefined,
-    igHandle: row.ig_handle ? String(row.ig_handle) : undefined,
-    igPostUrl: row.ig_post_url ? String(row.ig_post_url) : undefined,
-    entryUrl: row.entry_url ? String(row.entry_url) : undefined,
-    status: (row.status as DanceEvent["status"]) ?? "published",
-    source: row.source ? String(row.source) : undefined,
-  };
 }

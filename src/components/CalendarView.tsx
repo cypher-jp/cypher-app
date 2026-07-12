@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import type { DanceEvent } from "@/types/event";
-import { EVENT_TYPE_LABEL } from "@/types/event";
+import { EVENT_TYPES } from "@/types/event";
 
 const TYPE_DOT: Record<DanceEvent["type"], string> = {
   battle: "bg-cypher-red",
@@ -18,6 +19,10 @@ interface Props {
 }
 
 export default function CalendarView({ events }: Props) {
+  const locale = useLocale();
+  const t = useTranslations("calendar");
+  const tType = useTranslations("labels.eventType");
+
   const today = new Date();
   const initial = events.length > 0 ? new Date(events[0].date) : today;
   const [cursor, setCursor] = useState(
@@ -37,10 +42,18 @@ export default function CalendarView({ events }: Props) {
   }, [events]);
 
   const cells = useMemo(() => buildMonthCells(cursor), [cursor]);
-  const monthLabel = cursor.toLocaleDateString("en-US", {
+  const monthLabel = new Intl.DateTimeFormat(locale, {
     month: "long",
     year: "numeric",
-  });
+  }).format(cursor);
+
+  const weekdayLabels = useMemo(() => {
+    const formatter = new Intl.DateTimeFormat(locale, { weekday: "short" });
+    // 2024-01-07 は日曜日始まり
+    return Array.from({ length: 7 }, (_, i) =>
+      formatter.format(new Date(2024, 0, 7 + i)).toUpperCase(),
+    );
+  }, [locale]);
 
   const prev = () =>
     setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1));
@@ -55,18 +68,18 @@ export default function CalendarView({ events }: Props) {
         </div>
         <div className="flex gap-2">
           <button onClick={prev} className="btn-ghost">
-            ← Prev
+            {t("prev")}
           </button>
           <button onClick={next} className="btn-ghost">
-            Next →
+            {t("next")}
           </button>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-7 gap-px overflow-hidden rounded-xl border border-ink/15 bg-ink/15 text-xs">
-        {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d) => (
+        {weekdayLabels.map((d, i) => (
           <div
-            key={d}
+            key={`${d}-${i}`}
             className="bg-ink py-2 text-center font-bold uppercase tracking-widest text-paper"
           >
             {d}
@@ -116,7 +129,7 @@ export default function CalendarView({ events }: Props) {
                     ))}
                     {dayEvents.length > 3 && (
                       <span className="px-1 text-[10px] text-ink/50">
-                        +{dayEvents.length - 3} more
+                        {t("more", { count: dayEvents.length - 3 })}
                       </span>
                     )}
                   </div>
@@ -128,11 +141,11 @@ export default function CalendarView({ events }: Props) {
       </div>
 
       <div className="mt-5 flex flex-wrap gap-3 text-[11px]">
-        {(Object.keys(TYPE_DOT) as DanceEvent["type"][]).map((t) => (
-          <div key={t} className="flex items-center gap-1.5">
-            <span className={`h-2 w-2 rounded-full ${TYPE_DOT[t]}`} />
+        {EVENT_TYPES.map((type) => (
+          <div key={type} className="flex items-center gap-1.5">
+            <span className={`h-2 w-2 rounded-full ${TYPE_DOT[type]}`} />
             <span className="font-bold uppercase tracking-widest text-ink/70">
-              {EVENT_TYPE_LABEL[t]}
+              {tType(type)}
             </span>
           </div>
         ))}

@@ -39,4 +39,9 @@ html, body {
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/15 px-5 py-2 text-sm font-bold uppercase tracking-wider text-ink transition hover:border-ink hover:bg-ink hover:text-paper;
   }
+
+  /* 管理画面のフォーム入力欄(input/select/textarea)共通スタイル */
+  .input {
+    @apply w-full rounded-xl border border-ink/15 bg-paper px-4 py-2 text-sm text-ink focus:border-ink focus:outline-none;
+  }
 }

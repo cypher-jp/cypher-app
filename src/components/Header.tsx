@@ -1,9 +1,13 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import LocaleSwitcher from "@/components/LocaleSwitcher";
 
-export default function Header() {
+export default async function Header() {
+  const t = await getTranslations("nav");
+
   return (
     <header className="sticky top-0 z-30 border-b border-ink/10 bg-paper/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
         {/*
           public/logo.png を配置したら、下のテキストロゴを next/image に差し替える。
           例:
@@ -28,13 +32,13 @@ export default function Header() {
             href="/"
             className="rounded-full px-3 py-1.5 uppercase tracking-wider hover:bg-ink hover:text-paper"
           >
-            Events
+            {t("events")}
           </Link>
           <Link
             href="/calendar"
             className="rounded-full px-3 py-1.5 uppercase tracking-wider hover:bg-ink hover:text-paper"
           >
-            Calendar
+            {t("calendar")}
           </Link>
           <a
             href="https://www.instagram.com/world_cypher/"
@@ -42,8 +46,9 @@ export default function Header() {
             rel="noopener noreferrer"
             className="hidden rounded-full bg-ink px-3 py-1.5 uppercase tracking-wider text-paper hover:bg-cypher-red sm:inline-flex"
           >
-            Submit
+            {t("submit")}
           </a>
+          <LocaleSwitcher />
         </nav>
       </div>
     </header>
