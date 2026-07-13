@@ -31,6 +31,11 @@ export type Region =
 
 export type EventStatus = "published" | "pending" | "draft";
 
+// Phase 3: 自動翻訳対象言語（ja原文以外）。next-intlのロケール(ja/en/ko/zh/fr)のうち ja を除いたもの。
+export type I18nLocale = "en" | "ko" | "zh" | "fr";
+
+export const I18N_LOCALES: I18nLocale[] = ["en", "ko", "zh", "fr"];
+
 export interface DanceEvent {
   id: string;
   title: string;
@@ -41,6 +46,8 @@ export interface DanceEvent {
   deadline?: string;        // 申し込み締切
   venue: string;
   description: string;
+  // Claude API による自動翻訳結果。キーが無い/空文字の言語は原文(description)にフォールバック表示する。
+  descriptionI18n?: Partial<Record<I18nLocale, string>>;
   flyerUrl?: string;
   igHandle?: string;        // @なし
   igPostUrl?: string;

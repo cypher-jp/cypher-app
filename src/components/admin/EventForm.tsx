@@ -18,6 +18,14 @@ import {
   ADMIN_STATUS_LABEL,
 } from "@/lib/admin/labels";
 import { extractIgHandle } from "@/lib/ig";
+import { I18N_LOCALES, type I18nLocale } from "@/types/event";
+
+const I18N_LOCALE_LABEL: Record<I18nLocale, string> = {
+  en: "英語",
+  ko: "韓国語",
+  zh: "中国語",
+  fr: "フランス語",
+};
 
 export interface EventFormValues {
   title: string;
@@ -34,6 +42,8 @@ export interface EventFormValues {
   status: EventStatus;
   source: string;
   flyerUrl: string;
+  // Phase 3: スクレイパー/翻訳バッチが自動生成した訳文。読み取り専用表示のみ(フォームからは編集不可)。
+  descriptionI18n?: Partial<Record<I18nLocale, string>>;
 }
 
 interface Props {
@@ -158,6 +168,35 @@ export default function EventForm({ action, defaultValues, submitLabel }: Props)
           className="input"
         />
       </Field>
+
+      {defaultValues?.descriptionI18n &&
+        Object.keys(defaultValues.descriptionI18n).length > 0 && (
+          <div className="rounded-xl border border-ink/10 bg-ink/[0.03] p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-ink/50">
+              自動翻訳(読み取り専用・編集不可)
+            </p>
+            <p className="mt-1 text-xs text-ink/40">
+              説明を変更しても訳文は自動更新されません。翻訳をやり直すには
+              scripts/translate-existing.ts を再実行してください。
+            </p>
+            <dl className="mt-3 flex flex-col gap-3">
+              {I18N_LOCALES.map((locale) => {
+                const text = defaultValues.descriptionI18n?.[locale];
+                if (!text) return null;
+                return (
+                  <div key={locale}>
+                    <dt className="text-xs font-bold text-ink/60">
+                      {I18N_LOCALE_LABEL[locale]}
+                    </dt>
+                    <dd className="mt-1 whitespace-pre-line text-sm text-ink/70">
+                      {text}
+                    </dd>
+                  </div>
+                );
+              })}
+            </dl>
+          </div>
+        )}
 
       <div className="grid gap-4 md:grid-cols-2">
         <Field label="Instagram投稿URL">

@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { fetchEventById } from "@/lib/supabase";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
+import { getLocalizedDescription } from "@/lib/eventI18n";
 import InstagramEmbed from "@/components/InstagramEmbed";
 import { routing } from "@/i18n/routing";
 import { buildEventTypeLabels, buildGenreLabels, buildRegionLabels } from "@/types/event";
@@ -26,8 +27,9 @@ export async function generateMetadata({
     return { title: `${t("metaFallbackTitle")} | ${SITE_NAME}` };
   }
 
+  const localizedDescription = getLocalizedDescription(event, locale);
   const description =
-    event.description?.trim().slice(0, 120) ||
+    localizedDescription?.trim().slice(0, 120) ||
     t("metaFallbackDescription", { title: event.title });
   const title = `${event.title} | ${SITE_NAME}`;
 
@@ -76,6 +78,8 @@ export default async function EventDetailPage({ params }: PageProps) {
       : formatDate(event.deadline, params.locale)
     : null;
 
+  const localizedDescription = getLocalizedDescription(event, params.locale);
+
   const eventUrl = `${SITE_URL}/${params.locale}/events/${event.id}`;
   const jsonLd = {
     "@context": "https://schema.org",
@@ -90,7 +94,7 @@ export default async function EventDetailPage({ params }: PageProps) {
       address: event.venue,
     },
     ...(event.flyerUrl ? { image: [event.flyerUrl] } : {}),
-    description: event.description,
+    description: localizedDescription,
     organizer: {
       "@type": "Organization",
       name: SITE_NAME,
@@ -161,7 +165,7 @@ export default async function EventDetailPage({ params }: PageProps) {
               {t("about")}
             </h2>
             <p className="mt-3 whitespace-pre-line text-base leading-relaxed text-ink/85">
-              {event.description}
+              {localizedDescription}
             </p>
           </div>
 

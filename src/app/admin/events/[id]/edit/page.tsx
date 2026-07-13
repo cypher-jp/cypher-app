@@ -41,6 +41,7 @@ export default async function AdminEditEventPage({ params, searchParams }: Props
             status: event.status ?? "pending",
             source: event.source ?? "",
             flyerUrl: event.flyerUrl ?? "",
+            descriptionI18n: event.descriptionI18n,
           }}
           submitLabel="保存する"
         />
