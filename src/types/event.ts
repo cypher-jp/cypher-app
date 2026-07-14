@@ -16,15 +16,23 @@ export type Genre =
   | "jazz"
   | "all";
 
+// 地方ブロック区分（都道府県単位ではなく、地方単位で分類する）。
+// et-stage側は都道府県で情報を持っているため、抽出時に都道府県→ブロックへ変換する。
+// 詳細は docs/STATUS_AND_NEXT.md の T1 を参照。
 export type Region =
-  | "tokyo"
-  | "osaka"
-  | "nagoya"
-  | "fukuoka"
-  | "sapporo"
-  | "okinawa"
+  | "hokkaido"
+  | "tohoku"
+  | "kanto"
+  | "hokuriku"
+  | "tokai"
+  | "kansai"
+  | "chugoku"
+  | "shikoku"
+  | "kyushu"
+  | "online"
   | "korea"
   | "taiwan"
+  | "asia"
   | "us"
   | "eu"
   | "other";
@@ -77,14 +85,19 @@ export const GENRES: Genre[] = [
 ];
 
 export const REGIONS: Region[] = [
-  "tokyo",
-  "osaka",
-  "nagoya",
-  "fukuoka",
-  "sapporo",
-  "okinawa",
+  "hokkaido",
+  "tohoku",
+  "kanto",
+  "hokuriku",
+  "tokai",
+  "kansai",
+  "chugoku",
+  "shikoku",
+  "kyushu",
+  "online",
   "korea",
   "taiwan",
+  "asia",
   "us",
   "eu",
   "other",
@@ -129,14 +142,19 @@ export function buildRegionLabels(
   t: (key: Region) => string,
 ): Record<Region, string> {
   return {
-    tokyo: t("tokyo"),
-    osaka: t("osaka"),
-    nagoya: t("nagoya"),
-    fukuoka: t("fukuoka"),
-    sapporo: t("sapporo"),
-    okinawa: t("okinawa"),
+    hokkaido: t("hokkaido"),
+    tohoku: t("tohoku"),
+    kanto: t("kanto"),
+    hokuriku: t("hokuriku"),
+    tokai: t("tokai"),
+    kansai: t("kansai"),
+    chugoku: t("chugoku"),
+    shikoku: t("shikoku"),
+    kyushu: t("kyushu"),
+    online: t("online"),
     korea: t("korea"),
     taiwan: t("taiwan"),
+    asia: t("asia"),
     us: t("us"),
     eu: t("eu"),
     other: t("other"),
