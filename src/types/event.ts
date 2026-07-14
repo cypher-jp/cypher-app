@@ -16,11 +16,25 @@ export type Genre =
   | "jazz"
   | "all";
 
-// 地方ブロック区分（都道府県単位ではなく、地方単位で分類する）。
-// et-stage側は都道府県で情報を持っているため、抽出時に都道府県→ブロックへ変換する。
+// ダンスシーンが盛んな主要12都道府県は個別キー、それ以外は地方ブロックでまとめる方式。
+// 例: 関東ブロック(kanto)は東京/神奈川/千葉/埼玉を除いた茨城・栃木・群馬が該当。
+// et-stage側は都道府県で情報を持っているため、抽出時に都道府県→この区分へ変換する。
 // 詳細は docs/STATUS_AND_NEXT.md の T1 を参照。
 export type Region =
+  // 個別化した主要都道府県（北から順）
   | "hokkaido"
+  | "miyagi"
+  | "tokyo"
+  | "kanagawa"
+  | "chiba"
+  | "saitama"
+  | "niigata"
+  | "aichi"
+  | "kyoto"
+  | "osaka"
+  | "hiroshima"
+  | "fukuoka"
+  // 上記を除いた地方ブロック（「その他」扱い）
   | "tohoku"
   | "kanto"
   | "hokuriku"
@@ -29,6 +43,7 @@ export type Region =
   | "chugoku"
   | "shikoku"
   | "kyushu"
+  // 国内以外
   | "online"
   | "korea"
   | "taiwan"
@@ -84,15 +99,27 @@ export const GENRES: Genre[] = [
   "all",
 ];
 
+// 表示順: 北から南へ、個別化した都道府県→その地方の残りブロックの順に並べる。
 export const REGIONS: Region[] = [
   "hokkaido",
+  "miyagi",
   "tohoku",
+  "tokyo",
+  "kanagawa",
+  "chiba",
+  "saitama",
   "kanto",
+  "niigata",
   "hokuriku",
+  "aichi",
   "tokai",
+  "kyoto",
+  "osaka",
   "kansai",
+  "hiroshima",
   "chugoku",
   "shikoku",
+  "fukuoka",
   "kyushu",
   "online",
   "korea",
@@ -143,13 +170,24 @@ export function buildRegionLabels(
 ): Record<Region, string> {
   return {
     hokkaido: t("hokkaido"),
+    miyagi: t("miyagi"),
     tohoku: t("tohoku"),
+    tokyo: t("tokyo"),
+    kanagawa: t("kanagawa"),
+    chiba: t("chiba"),
+    saitama: t("saitama"),
     kanto: t("kanto"),
+    niigata: t("niigata"),
     hokuriku: t("hokuriku"),
+    aichi: t("aichi"),
     tokai: t("tokai"),
+    kyoto: t("kyoto"),
+    osaka: t("osaka"),
     kansai: t("kansai"),
+    hiroshima: t("hiroshima"),
     chugoku: t("chugoku"),
     shikoku: t("shikoku"),
+    fukuoka: t("fukuoka"),
     kyushu: t("kyushu"),
     online: t("online"),
     korea: t("korea"),
