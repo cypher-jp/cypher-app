@@ -43,6 +43,7 @@ async function collectFromSource(
         sourceUrl: page.sourceUrl,
         source: source.name,
         descriptionI18n,
+        flyerUrl: page.flyerUrl,
       });
       console.log(`  ok: ${extracted.title} (${extracted.date})`);
     } catch (err) {

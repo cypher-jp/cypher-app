@@ -48,6 +48,7 @@ function toRow(record: ScrapedEventRecord): Record<string, unknown> {
     venue: record.venue,
     description: record.description,
     entry_url: record.entryUrl ?? null,
+    flyer_url: record.flyerUrl ?? null,
     source: record.source,
     source_url: record.sourceUrl,
     description_i18n:

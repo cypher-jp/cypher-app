@@ -9,6 +9,8 @@ export interface RawEventPage {
   sourceUrl: string;
   /** Claude抽出用に整形したテキスト(タイトル/日時/会場/本文などを1つにまとめたもの) */
   rawText: string;
+  /** フライヤー画像URL(一覧サムネ or og:image)。取得元サイトにホストされた画像への参照 */
+  flyerUrl?: string;
 }
 
 /** Claude APIによる抽出結果(バリデーション済み) */
@@ -32,6 +34,7 @@ export interface ScrapedEventRecord extends ExtractedEvent {
   sourceUrl: string;
   source: string; // 取得元の識別子("etstage" 等)
   descriptionI18n?: TranslationMap;
+  flyerUrl?: string;
 }
 
 /** 1つの情報源(サイト)を表すインターフェース。scripts/sources/*.ts が実装する */
