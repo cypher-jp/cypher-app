@@ -89,13 +89,16 @@ const SYSTEM_PROMPT = `あなたはストリートダンスのイベント情報
   "deadline": "YYYY-MM-DD" | null, // エントリー締切(無ければnull)
   "venue": string,                // 会場名
   "description": string,          // 日本語の説明文(元テキストの要点を保った自然な日本語。300字程度まで)
-  "entry_url": string | null      // 参加エントリーができるURL(無ければnull)
+  "entry_url": string | null,     // 参加エントリーができるURL(無ければnull)
+  "ig_handle": string | null,     // 主催者/イベントのInstagramアカウント名(@は付けない。無ければnull)
+  "ig_url": string | null         // Instagramの投稿またはプロフィールのURL(無ければnull)
 }
 
 分類のルール:
 - genre/region は上記の列挙値の中から最も近いものを選ぶこと。判断できない場合は genre="all", region="other" とする。
 - type が不明な場合は "battle" とする。
-- date が読み取れない場合でも、必ずISO形式の日付文字列を出力すること(完全に不明な場合のみ null を許容する)。`;
+- date が読み取れない場合でも、必ずISO形式の日付文字列を出力すること(完全に不明な場合のみ null を許容する)。
+- ig_handle はテキスト中の「@アカウント名」「instagram.com/アカウント名」等から抽出する。イベント公式または主催者のものを優先し、確信が持てない場合は null とする。`;
 
 /**
  * 生テキスト1件からイベント情報を抽出する。
@@ -152,6 +155,23 @@ export async function extractEventFromText(
       ? parsed.entry_url.trim()
       : undefined;
 
+  const igHandle =
+    typeof parsed.ig_handle === "string" && parsed.ig_handle.trim()
+      ? parsed.ig_handle.trim().replace(/^@/, "")
+      : undefined;
+
+  const igUrlRaw =
+    typeof parsed.ig_url === "string" && parsed.ig_url.trim()
+      ? parsed.ig_url.trim()
+      : undefined;
+  // instagram.com のURLのみ採用(誤抽出防止)
+  const igUrl =
+    igUrlRaw && /^https?:\/\/(www\.)?instagram\.com\//.test(igUrlRaw)
+      ? igUrlRaw
+      : igHandle
+        ? `https://www.instagram.com/${igHandle}/`
+        : undefined;
+
   return {
     title,
     type: normalizeType(parsed.type),
@@ -162,5 +182,7 @@ export async function extractEventFromText(
     venue,
     description,
     entryUrl,
+    igHandle,
+    igUrl,
   };
 }

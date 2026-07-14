@@ -24,6 +24,10 @@ export interface ExtractedEvent {
   venue: string;
   description: string;
   entryUrl?: string;
+  /** 主催者/イベントのInstagramアカウント名(@なし) */
+  igHandle?: string;
+  /** Instagramの投稿 or プロフィールURL */
+  igUrl?: string;
 }
 
 /** 5言語翻訳結果。キーが無い/空文字の言語は呼び出し側でフォールバックする */

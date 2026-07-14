@@ -49,6 +49,8 @@ function toRow(record: ScrapedEventRecord): Record<string, unknown> {
     description: record.description,
     entry_url: record.entryUrl ?? null,
     flyer_url: record.flyerUrl ?? null,
+    ig_handle: record.igHandle ?? null,
+    ig_post_url: record.igUrl ?? null,
     source: record.source,
     source_url: record.sourceUrl,
     description_i18n:
