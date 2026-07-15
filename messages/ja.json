@@ -12,7 +12,11 @@
     "titleEnd": ".",
     "subcopyPrefix": "国内外のダンスバトル情報を",
     "subcopyHighlight": "ジャンル × エリア",
-    "subcopySuffix": "で絞り込み。エントリー先まで一直線、広告ゼロ。"
+    "subcopySuffix": "で絞り込み。開催日・締切・エントリー先まで一直線。"
+  },
+  "home": {
+    "weekendBattles": "今週末のバトル",
+    "upcomingDeadlines": "締切まで7日以内"
   },
   "filters": {
     "type": "種別 / TYPE",
@@ -53,7 +57,7 @@
     "metaFallbackDescription": "{title} の開催日・会場・エントリー情報。"
   },
   "footer": {
-    "tagline": "ストリートダンスバトル情報サイト。広告なし、必要な情報だけ。",
+    "tagline": "ストリートダンスバトル情報サイト。開催日・会場・エントリー締切まで、必要な情報だけ。",
     "copyright": "© {year} WORLD Cypher.",
     "contact": "イベント掲載のお問い合わせ → @world_cypher"
   },
@@ -106,11 +110,22 @@
       "fukuoka": "福岡",
       "kyushu": "九州・沖縄（その他）",
       "online": "オンライン",
-      "korea": "韓国",
-      "taiwan": "台湾",
-      "asia": "アジア",
-      "us": "アメリカ",
-      "eu": "ヨーロッパ",
+      "seoul": "ソウル",
+      "busan": "釜山",
+      "korea": "韓国（その他）",
+      "taipei": "台北",
+      "taiwan": "台湾（その他）",
+      "shanghai": "上海",
+      "beijing": "北京",
+      "chengdu": "成都",
+      "asia": "アジア（その他）",
+      "newyork": "ニューヨーク",
+      "losangeles": "ロサンゼルス",
+      "us": "アメリカ（その他）",
+      "paris": "パリ",
+      "amsterdam": "アムステルダム",
+      "berlin": "ベルリン",
+      "eu": "ヨーロッパ（その他）",
       "other": "その他"
     }
   }

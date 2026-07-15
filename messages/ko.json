@@ -12,7 +12,11 @@
     "titleEnd": ".",
     "subcopyPrefix": "전 세계 댄스 배틀 정보를",
     "subcopyHighlight": "장르 × 지역",
-    "subcopySuffix": "으로 필터링. 신청 페이지까지 한 번에, 광고 없이."
+    "subcopySuffix": "으로 필터링. 날짜·마감일·신청 페이지까지 한 번에."
+  },
+  "home": {
+    "weekendBattles": "이번 주말 배틀",
+    "upcomingDeadlines": "마감 7일 이내"
   },
   "filters": {
     "type": "종류 / TYPE",
@@ -53,7 +57,7 @@
     "metaFallbackDescription": "{title}의 개최일·장소·신청 정보."
   },
   "footer": {
-    "tagline": "스트리트 댄스 배틀 정보 사이트. 광고 없이, 필요한 정보만.",
+    "tagline": "스트리트 댄스 배틀 정보 사이트. 날짜・장소・신청 마감일까지 한눈에.",
     "copyright": "© {year} WORLD Cypher.",
     "contact": "이벤트 등록 문의 → @world_cypher"
   },
@@ -106,11 +110,22 @@
       "fukuoka": "후쿠오카",
       "kyushu": "규슈・오키나와(기타)",
       "online": "온라인",
-      "korea": "한국",
-      "taiwan": "대만",
-      "asia": "아시아",
-      "us": "미국",
-      "eu": "유럽",
+      "seoul": "서울",
+      "busan": "부산",
+      "korea": "한국(기타)",
+      "taipei": "타이베이",
+      "taiwan": "대만(기타)",
+      "shanghai": "상하이",
+      "beijing": "베이징",
+      "chengdu": "청두",
+      "asia": "아시아(기타)",
+      "newyork": "뉴욕",
+      "losangeles": "로스앤젤레스",
+      "us": "미국(기타)",
+      "paris": "파리",
+      "amsterdam": "암스테르담",
+      "berlin": "베를린",
+      "eu": "유럽(기타)",
       "other": "기타"
     }
   }

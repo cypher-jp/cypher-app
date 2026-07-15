@@ -12,7 +12,11 @@
     "titleEnd": ".",
     "subcopyPrefix": "按",
     "subcopyHighlight": "舞种 × 地区",
-    "subcopySuffix": "筛选全球街舞battle信息，直达报名页面，零广告。"
+    "subcopySuffix": "筛选全球街舞battle信息，日期、截止日期、报名链接一目了然。"
+  },
+  "home": {
+    "weekendBattles": "本周末的Battle",
+    "upcomingDeadlines": "报名截止7天内"
   },
   "filters": {
     "type": "类型 / TYPE",
@@ -53,7 +57,7 @@
     "metaFallbackDescription": "{title} 的举办日期、地点及报名信息。"
   },
   "footer": {
-    "tagline": "街舞battle信息网站。无广告，只提供你需要的信息。",
+    "tagline": "街舞battle信息网站。日期、场地、报名截止一目了然。",
     "copyright": "© {year} WORLD Cypher.",
     "contact": "活动投稿咨询 → @world_cypher"
   },
@@ -106,11 +110,22 @@
       "fukuoka": "福冈",
       "kyushu": "九州・冲绳（其他）",
       "online": "线上",
-      "korea": "韩国",
-      "taiwan": "台湾",
-      "asia": "亚洲",
-      "us": "美国",
-      "eu": "欧洲",
+      "seoul": "首尔",
+      "busan": "釜山",
+      "korea": "韩国（其他）",
+      "taipei": "台北",
+      "taiwan": "台湾（其他）",
+      "shanghai": "上海",
+      "beijing": "北京",
+      "chengdu": "成都",
+      "asia": "亚洲（其他）",
+      "newyork": "纽约",
+      "losangeles": "洛杉矶",
+      "us": "美国（其他）",
+      "paris": "巴黎",
+      "amsterdam": "阿姆斯特丹",
+      "berlin": "柏林",
+      "eu": "欧洲（其他）",
       "other": "其他"
     }
   }

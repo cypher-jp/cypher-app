@@ -12,7 +12,11 @@
     "titleEnd": ".",
     "subcopyPrefix": "Découvrez les battles de danse du monde entier, filtrés par",
     "subcopyHighlight": "style × région",
-    "subcopySuffix": ". Direct vers la page d'inscription, zéro publicité."
+    "subcopySuffix": ". Dates, délais et liens d'inscription au même endroit."
+  },
+  "home": {
+    "weekendBattles": "Battles ce week-end",
+    "upcomingDeadlines": "Inscription sous 7 jours"
   },
   "filters": {
     "type": "TYPE",
@@ -53,7 +57,7 @@
     "metaFallbackDescription": "Date, lieu et informations d'inscription pour {title}."
   },
   "footer": {
-    "tagline": "Site d'informations sur les battles de street dance. Sans publicité, seulement l'essentiel.",
+    "tagline": "Site d'informations sur les battles de street dance. Dates, lieux et délais d'inscription, en un clin d'œil.",
     "copyright": "© {year} WORLD Cypher.",
     "contact": "Pour soumettre un événement → @world_cypher"
   },
@@ -106,11 +110,22 @@
       "fukuoka": "Fukuoka",
       "kyushu": "Kyushu-Okinawa (Autre)",
       "online": "En ligne",
-      "korea": "Corée",
-      "taiwan": "Taïwan",
-      "asia": "Asie",
-      "us": "États-Unis",
-      "eu": "Europe",
+      "seoul": "Séoul",
+      "busan": "Busan",
+      "korea": "Corée (Autre)",
+      "taipei": "Taipei",
+      "taiwan": "Taïwan (Autre)",
+      "shanghai": "Shanghai",
+      "beijing": "Pékin",
+      "chengdu": "Chengdu",
+      "asia": "Asie (Autre)",
+      "newyork": "New York",
+      "losangeles": "Los Angeles",
+      "us": "États-Unis (Autre)",
+      "paris": "Paris",
+      "amsterdam": "Amsterdam",
+      "berlin": "Berlin",
+      "eu": "Europe (Autre)",
       "other": "Autre"
     }
   }
