@@ -29,7 +29,7 @@ export async function generateMetadata({
 
   const descriptions: Record<AppLocale, string> = {
     ja: "国内・海外のダンスバトル情報を、ジャンル × エリアで検索。エントリー先まで一直線。",
-    en: "Discover dance battles worldwide, filtered by genre and region. Straight to the entry page, zero ads.",
+    en: "Discover dance battles worldwide, filtered by genre and region. Straight to the entry page.",
     ko: "전 세계 댄스 배틀 정보를 장르 × 지역으로 검색하세요. 신청 페이지까지 한 번에.",
     zh: "按舞种与地区筛选全球街舞battle信息,直达报名页面。",
     fr: "Découvrez les battles de danse du monde entier, filtrés par style et région.",

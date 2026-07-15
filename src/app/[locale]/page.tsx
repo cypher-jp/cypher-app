@@ -1,7 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { setRequestLocale } from "next-intl/server";
 import EventGrid from "@/components/EventGrid";
+import FeaturedSection from "@/components/FeaturedSection";
 import { fetchEvents } from "@/lib/supabase";
+import { getUpcomingDeadlines, getWeekendBattles } from "@/lib/featured";
 import { EVENT_TYPES, type EventType } from "@/types/event";
 
 export const revalidate = 300; // 5分キャッシュ
@@ -14,6 +16,7 @@ interface HomePageProps {
 export default async function HomePage({ params, searchParams }: HomePageProps) {
   setRequestLocale(params.locale);
   const events = await fetchEvents();
+  const tHome = await getTranslations("home");
 
   // URLクエリ ?type=... があればそれを初期フィルタに、無ければ battle をデフォルトに。
   const rawType = searchParams.type;
@@ -24,9 +27,22 @@ export default async function HomePage({ params, searchParams }: HomePageProps) 
         ? (rawType as EventType)
         : "battle";
 
+  const weekendBattles = getWeekendBattles(events);
+  const upcomingDeadlines = getUpcomingDeadlines(events, 7);
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
       <Hero />
+      <div className="mt-10 flex flex-col gap-10">
+        <FeaturedSection
+          title={tHome("weekendBattles")}
+          events={weekendBattles}
+        />
+        <FeaturedSection
+          title={tHome("upcomingDeadlines")}
+          events={upcomingDeadlines}
+        />
+      </div>
       <div className="mt-10">
         <EventGrid events={events} initialType={initialType} />
       </div>

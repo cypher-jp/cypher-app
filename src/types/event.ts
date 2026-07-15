@@ -45,10 +45,23 @@ export type Region =
   | "kyushu"
   // 国内以外
   | "online"
+  // 海外は主要都市を個別キー、それ以外は国・大陸単位の「その他」ブロックでまとめる
+  // （日本と同じ考え方）。例: korea は個別化したソウル・釜山を除いた韓国その他。
+  | "seoul"
+  | "busan"
   | "korea"
+  | "taipei"
   | "taiwan"
+  | "shanghai"
+  | "beijing"
+  | "chengdu"
   | "asia"
+  | "newyork"
+  | "losangeles"
   | "us"
+  | "paris"
+  | "amsterdam"
+  | "berlin"
   | "eu"
   | "other";
 
@@ -122,10 +135,21 @@ export const REGIONS: Region[] = [
   "fukuoka",
   "kyushu",
   "online",
+  "seoul",
+  "busan",
   "korea",
+  "taipei",
   "taiwan",
+  "shanghai",
+  "beijing",
+  "chengdu",
   "asia",
+  "newyork",
+  "losangeles",
   "us",
+  "paris",
+  "amsterdam",
+  "berlin",
   "eu",
   "other",
 ];
@@ -190,10 +214,21 @@ export function buildRegionLabels(
     fukuoka: t("fukuoka"),
     kyushu: t("kyushu"),
     online: t("online"),
+    seoul: t("seoul"),
+    busan: t("busan"),
     korea: t("korea"),
+    taipei: t("taipei"),
     taiwan: t("taiwan"),
+    shanghai: t("shanghai"),
+    beijing: t("beijing"),
+    chengdu: t("chengdu"),
     asia: t("asia"),
+    newyork: t("newyork"),
+    losangeles: t("losangeles"),
     us: t("us"),
+    paris: t("paris"),
+    amsterdam: t("amsterdam"),
+    berlin: t("berlin"),
     eu: t("eu"),
     other: t("other"),
   };
