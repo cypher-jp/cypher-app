@@ -9,13 +9,14 @@
 //   SUPABASE_URL                 … 例: https://xxxx.supabase.co (--dry-run時は不要)
 //   SUPABASE_SERVICE_ROLE_KEY    … Supabaseのservice roleキー (--dry-run時は不要)
 import { etstage } from "./sources/etstage";
+import { breakingCalendar } from "./sources/breaking-calendar";
 import { extractEventFromText } from "./lib/extract";
 import { translateDescription } from "./lib/translate";
 import { upsertScrapedEvents } from "./lib/db";
 import type { EventSource, ScrapedEventRecord } from "./lib/types";
 
 /** 収集対象の情報源。新しいサイトは scripts/sources/ に追加してここに並べる */
-const SOURCES: EventSource[] = [etstage];
+const SOURCES: EventSource[] = [etstage, breakingCalendar];
 
 async function collectFromSource(
   source: EventSource,
