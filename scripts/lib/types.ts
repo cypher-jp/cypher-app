@@ -39,6 +39,8 @@ export interface ScrapedEventRecord extends ExtractedEvent {
   source: string; // 取得元の識別子("etstage" 等)
   descriptionI18n?: TranslationMap;
   flyerUrl?: string;
+  /** page.rawText の SHA-256(hex)。次回実行時に同じ値ならClaude抽出をスキップする判定に使う */
+  contentHash: string;
 }
 
 /** 1つの情報源(サイト)を表すインターフェース。scripts/sources/*.ts が実装する */

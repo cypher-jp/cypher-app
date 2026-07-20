@@ -36,9 +36,118 @@ interface ExistingRow {
   source_url: string;
 }
 
+/** fetchExistingContentHashes() の戻り値の1件分 */
+export interface ExistingHashInfo {
+  status: string;
+  /** 保存済みハッシュ。列が無い/未設定の場合はnull(常にClaude抽出させるため) */
+  contentHash: string | null;
+}
+
+/**
+ * events.content_hash 列が存在するかどうかのキャッシュ。
+ * null = 未確認、true/false = 確認済み。
+ * migration(006_scraper_content_hash.sql)未適用の環境でもエラーにせず動くようにするための後方互換フラグ。
+ */
+let contentHashColumnAvailable: boolean | null = null;
+
+/** content_hash列の有無を1回だけ確認する(以後はキャッシュを使う) */
+async function ensureContentHashProbe(db: SupabaseClient): Promise<boolean> {
+  if (contentHashColumnAvailable !== null) return contentHashColumnAvailable;
+  const { error } = await db.from("events").select("content_hash").limit(1);
+  contentHashColumnAvailable = !error;
+  if (error) {
+    console.warn(
+      "[db] events.content_hash 列が見つかりません。変更なしイベントのスキップ判定なしで全件抽出します。" +
+        "supabase/migrations/006_scraper_content_hash.sql を Supabase の SQL Editor で実行すると有効になります。",
+    );
+  }
+  return contentHashColumnAvailable;
+}
+
+/**
+ * 指定した source_url の既存行から status と content_hash を取得する。
+ * content_hash列が無い環境(migration未適用)でも動くようフォールバックする(その場合 contentHash は常にnull)。
+ * scrape.ts が「変更なしイベントはClaude呼び出しをスキップする」判定に使う。
+ */
+export async function fetchExistingContentHashes(
+  sourceUrls: string[],
+): Promise<Map<string, ExistingHashInfo>> {
+  const result = new Map<string, ExistingHashInfo>();
+  if (sourceUrls.length === 0) return result;
+
+  const db = getServiceClient();
+  const hasHashColumn = await ensureContentHashProbe(db);
+  const columns = hasHashColumn ? "source_url,status,content_hash" : "source_url,status";
+
+  const { data, error } = await db
+    .from("events")
+    .select(columns)
+    .in("source_url", sourceUrls);
+
+  if (error) {
+    throw new Error(`既存ハッシュの取得に失敗しました: ${error.message}`);
+  }
+
+  for (const row of (data ?? []) as unknown as {
+    source_url: string;
+    status: string;
+    content_hash?: string | null;
+  }[]) {
+    result.set(row.source_url, {
+      status: row.status,
+      contentHash: hasHashColumn ? (row.content_hash ?? null) : null,
+    });
+  }
+  return result;
+}
+
+/**
+ * 指定した source_url 行の content_hash 列「だけ」を更新する(status/本文/updated_at には一切触れない)。
+ *
+ * 用途: DBに既存行はあるが content_hash が未登録(null)の場合。
+ * migration(006_scraper_content_hash.sql)デプロイ直後は既存の全行がこの状態になるため、
+ * 何もしなければ初回実行で全件Claude抽出が走ってしまう(≒課金が発生する)。
+ * scrape.ts 側でその行のClaude抽出自体はスキップしつつ、今回fetchしたrawTextから計算した
+ * 指紋だけをここで登録しておくことで、次回以降は通常の一致判定でスキップできるようになる
+ * (=初回移行コストをゼロにする)。
+ *
+ * published行に対しても安全: 更新するのは content_hash 列のみで、status/updated_at/本文は変更しない。
+ * content_hash列が無い環境(migration未適用)では何もしない(呼び出し元でensureContentHashProbeの
+ * 結果を見て判断するため、ここでも念のため再チェックする)。
+ */
+export async function backfillContentHashes(
+  updates: { sourceUrl: string; contentHash: string }[],
+): Promise<{ updated: number; errors: number }> {
+  const result = { updated: 0, errors: 0 };
+  if (updates.length === 0) return result;
+
+  const db = getServiceClient();
+  const hasHashColumn = await ensureContentHashProbe(db);
+  if (!hasHashColumn) return result;
+
+  for (const { sourceUrl, contentHash } of updates) {
+    const { error } = await db
+      .from("events")
+      .update({ content_hash: contentHash })
+      .eq("source_url", sourceUrl);
+    if (error) {
+      result.errors++;
+      console.error(
+        `  [db] content_hash登録失敗: ${sourceUrl}: ${error.message}`,
+      );
+    } else {
+      result.updated++;
+    }
+  }
+  return result;
+}
+
 /** ScrapedEventRecord → events テーブルの行(snake_case)へ変換 */
-function toRow(record: ScrapedEventRecord): Record<string, unknown> {
-  return {
+function toRow(
+  record: ScrapedEventRecord,
+  hasHashColumn: boolean,
+): Record<string, unknown> {
+  const row: Record<string, unknown> = {
     title: record.title,
     type: record.type,
     genre: record.genre,
@@ -59,6 +168,10 @@ function toRow(record: ScrapedEventRecord): Record<string, unknown> {
         : null,
     updated_at: new Date().toISOString(),
   };
+  if (hasHashColumn && record.contentHash) {
+    row.content_hash = record.contentHash;
+  }
+  return row;
 }
 
 /**
@@ -79,6 +192,7 @@ export async function upsertScrapedEvents(
   if (records.length === 0) return summary;
 
   const db = getServiceClient();
+  const hasHashColumn = await ensureContentHashProbe(db);
   const urls = records.map((r) => r.sourceUrl);
 
   const { data: existingRows, error: selectError } = await db
@@ -100,7 +214,7 @@ export async function upsertScrapedEvents(
       if (!existing) {
         const { error } = await db
           .from("events")
-          .insert({ ...toRow(record), status: "pending" });
+          .insert({ ...toRow(record, hasHashColumn), status: "pending" });
         if (error) throw new Error(error.message);
         summary.inserted++;
         console.log(`  [db] insert(pending): ${record.title}`);
@@ -112,7 +226,7 @@ export async function upsertScrapedEvents(
       } else {
         const { error } = await db
           .from("events")
-          .update(toRow(record))
+          .update(toRow(record, hasHashColumn))
           .eq("id", existing.id);
         if (error) throw new Error(error.message);
         summary.updated++;
