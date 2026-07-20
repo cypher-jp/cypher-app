@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { fetchEventById } from "@/lib/supabase";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { getLocalizedDescription } from "@/lib/eventI18n";
+import { isPastEvent } from "@/lib/eventDate";
 import InstagramEmbed from "@/components/InstagramEmbed";
 import { routing } from "@/i18n/routing";
 import { buildEventTypeLabels, buildGenreLabels, buildRegionLabels } from "@/types/event";
@@ -68,6 +69,8 @@ export default async function EventDetailPage({ params }: PageProps) {
   const genreLabels = buildGenreLabels((k) => tGenre(k));
   const regionLabels = buildRegionLabels((k) => tRegion(k));
 
+  // 過去イベントも直接URLでは開ける(SEO資産として残す)。表示上だけ終了扱いにする。
+  const eventEnded = isPastEvent(event.date);
   const dateText = formatDate(event.date, params.locale);
   const deadlinePassed = event.deadline
     ? new Date(event.deadline).getTime() < Date.now()
@@ -136,6 +139,11 @@ export default async function EventDetailPage({ params }: PageProps) {
         </div>
 
         <div className="p-8 md:p-12">
+          {eventEnded && (
+            <div className="mb-4 inline-block rounded-full bg-ink/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-ink/60">
+              {t("endedNotice")}
+            </div>
+          )}
           <div className="flex flex-wrap gap-2">
             <span className="chip bg-ink text-paper">
               {typeLabels[event.type]}
