@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { rowToEvent } from "@/lib/eventMapper";
+import { buildDedupeKey } from "@/lib/admin/dedupe";
 import type { DanceEvent, EventStatus } from "@/types/event";
 
 const FLYERS_BUCKET = "flyers";
@@ -150,6 +151,38 @@ export async function updateEventStatus(
     return false;
   }
   return true;
+}
+
+/**
+ * 承認しようとしているイベントと「同一イベントらしき」承認待ち(pending)の
+ * 他の行を探す。重複判定は開催日+正規化タイトルの一致(lib/admin/dedupe.ts)。
+ * DBスキーマを変更せず、承認時にその場で突き合わせる方式。
+ */
+export async function findDuplicatePendingEventIds(
+  supabase: SupabaseClient,
+  event: Pick<DanceEvent, "id" | "date" | "title">,
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("events")
+    .select("id,title,date")
+    .eq("status", "pending")
+    .eq("date", event.date)
+    .neq("id", event.id);
+
+  if (error || !data) {
+    if (error) {
+      console.warn(
+        "[admin] findDuplicatePendingEventIds failed:",
+        error.message,
+      );
+    }
+    return [];
+  }
+
+  const key = buildDedupeKey(event);
+  return (data as { id: string; title: string; date: string }[])
+    .filter((row) => buildDedupeKey({ date: row.date, title: row.title }) === key)
+    .map((row) => String(row.id));
 }
 
 /**
