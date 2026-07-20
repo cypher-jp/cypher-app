@@ -33,6 +33,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
       alternates: { languages: localeAlternates("/calendar") },
     });
+    entries.push({
+      url: `${SITE_URL}/${locale}/archive`,
+      lastModified,
+      changeFrequency: "daily",
+      priority: 0.5,
+      alternates: { languages: localeAlternates("/archive") },
+    });
     for (const event of events) {
       entries.push({
         url: `${SITE_URL}/${locale}/events/${event.id}`,
