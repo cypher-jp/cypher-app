@@ -2,6 +2,7 @@
   "nav": {
     "events": "Events",
     "calendar": "Calendar",
+    "archive": "Archive",
     "submit": "Submit"
   },
   "hero": {
@@ -40,8 +41,14 @@
     "next": "Next →",
     "more": "+{count} more"
   },
+  "archive": {
+    "eyebrow": "PAST EVENTS",
+    "title": "ARCHIVE",
+    "subtitle": "A list of events that have already taken place, newest first."
+  },
   "event": {
     "backToEvents": "← BACK TO EVENTS",
+    "endedNotice": "This event has ended",
     "date": "Date",
     "deadline": "Entry Deadline",
     "deadlinePassed": "Closed",

@@ -2,6 +2,7 @@
   "nav": {
     "events": "Events",
     "calendar": "Calendar",
+    "archive": "Archive",
     "submit": "제보하기"
   },
   "hero": {
@@ -40,8 +41,14 @@
     "next": "다음 →",
     "more": "외 {count}건"
   },
+  "archive": {
+    "eyebrow": "PAST EVENTS",
+    "title": "ARCHIVE",
+    "subtitle": "종료된 이벤트 목록입니다. 개최일이 최신순으로 표시됩니다."
+  },
   "event": {
     "backToEvents": "← BACK TO EVENTS",
+    "endedNotice": "이 이벤트는 종료되었습니다",
     "date": "개최일",
     "deadline": "신청 마감일",
     "deadlinePassed": "마감됨",

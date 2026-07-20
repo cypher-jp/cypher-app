@@ -2,6 +2,7 @@
   "nav": {
     "events": "Events",
     "calendar": "Calendar",
+    "archive": "Archive",
     "submit": "投稿活动"
   },
   "hero": {
@@ -40,8 +41,14 @@
     "next": "下个月 →",
     "more": "还有{count}项"
   },
+  "archive": {
+    "eyebrow": "PAST EVENTS",
+    "title": "ARCHIVE",
+    "subtitle": "已结束的活动列表，按举办日期从新到旧排列。"
+  },
   "event": {
     "backToEvents": "← BACK TO EVENTS",
+    "endedNotice": "该活动已结束",
     "date": "举办日期",
     "deadline": "报名截止",
     "deadlinePassed": "已截止",

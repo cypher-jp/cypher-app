@@ -2,6 +2,7 @@
   "nav": {
     "events": "Events",
     "calendar": "Calendar",
+    "archive": "Archive",
     "submit": "掲載依頼"
   },
   "hero": {
@@ -40,8 +41,14 @@
     "next": "Next →",
     "more": "他{count}件"
   },
+  "archive": {
+    "eyebrow": "PAST EVENTS",
+    "title": "ARCHIVE",
+    "subtitle": "開催を終えたイベントの一覧。開催日が新しい順に表示しています。"
+  },
   "event": {
     "backToEvents": "← BACK TO EVENTS",
+    "endedNotice": "このイベントは終了しました",
     "date": "開催日",
     "deadline": "エントリー締切",
     "deadlinePassed": "締切済み",

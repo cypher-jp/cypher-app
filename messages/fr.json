@@ -2,6 +2,7 @@
   "nav": {
     "events": "Events",
     "calendar": "Calendar",
+    "archive": "Archive",
     "submit": "Soumettre"
   },
   "hero": {
@@ -40,8 +41,14 @@
     "next": "Suiv. →",
     "more": "+{count} de plus"
   },
+  "archive": {
+    "eyebrow": "PAST EVENTS",
+    "title": "ARCHIVE",
+    "subtitle": "Liste des événements terminés, du plus récent au plus ancien."
+  },
   "event": {
     "backToEvents": "← BACK TO EVENTS",
+    "endedNotice": "Cet événement est terminé",
     "date": "Date",
     "deadline": "Date limite d'inscription",
     "deadlinePassed": "Clos",
