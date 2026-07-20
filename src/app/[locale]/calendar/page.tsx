@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { fetchEvents } from "@/lib/supabase";
+import { fetchUpcomingEvents } from "@/lib/supabase";
 import CalendarView from "@/components/CalendarView";
 
 export const revalidate = 300;
@@ -11,7 +11,8 @@ interface Props {
 export default async function CalendarPage({ params }: Props) {
   setRequestLocale(params.locale);
   const t = await getTranslations("calendar");
-  const events = await fetchEvents();
+  // 開催日(JST基準)が今日以降のイベントのみ。過去のイベントは/archiveへ自動で移る。
+  const events = await fetchUpcomingEvents();
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
