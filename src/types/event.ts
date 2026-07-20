@@ -59,9 +59,30 @@ export type Region =
   | "newyork"
   | "losangeles"
   | "us"
+  // ヨーロッパは「国＋首都」の2階層。国キーは首都以外の開催地または国名までしか
+  // 分からない場合に使い、首都開催と判明している場合は首都キーを使う。
+  // 対応国リストに無いヨーロッパの国は eu（ヨーロッパその他）に丸める。
+  // 首都キー(paris/amsterdam/berlin)は旧バージョンからの互換のため元の位置にも残置。
+  | "france"
   | "paris"
-  | "amsterdam"
+  | "germany"
   | "berlin"
+  | "netherlands"
+  | "amsterdam"
+  | "belgium"
+  | "brussels"
+  | "uk"
+  | "london"
+  | "italy"
+  | "rome"
+  | "spain"
+  | "madrid"
+  | "poland"
+  | "warsaw"
+  | "switzerland"
+  | "zurich"
+  | "russia"
+  | "moscow"
   | "eu"
   | "other";
 
@@ -147,12 +168,62 @@ export const REGIONS: Region[] = [
   "newyork",
   "losangeles",
   "us",
+  // ヨーロッパ: 「国→その首都」の並びが隣接するようにする
+  "france",
   "paris",
-  "amsterdam",
+  "germany",
   "berlin",
+  "netherlands",
+  "amsterdam",
+  "belgium",
+  "brussels",
+  "uk",
+  "london",
+  "italy",
+  "rome",
+  "spain",
+  "madrid",
+  "poland",
+  "warsaw",
+  "switzerland",
+  "zurich",
+  "russia",
+  "moscow",
   "eu",
   "other",
 ];
+
+// ヨーロッパの「国キー → [国キー, 首都キー]」対応。
+// フィルタで国を選んだ時に、国キー本体に加えて対応する首都キーの行もヒットさせるために使う。
+// 例: france を選択 → region が france または paris の行が対象。
+// ここに載っていない region（首都キー自身や eu、日本国内など）はグループ化せず単独一致のみ。
+export const REGION_GROUPS: Partial<Record<Region, Region[]>> = {
+  france: ["france", "paris"],
+  germany: ["germany", "berlin"],
+  netherlands: ["netherlands", "amsterdam"],
+  belgium: ["belgium", "brussels"],
+  uk: ["uk", "london"],
+  italy: ["italy", "rome"],
+  spain: ["spain", "madrid"],
+  poland: ["poland", "warsaw"],
+  switzerland: ["switzerland", "zurich"],
+  russia: ["russia", "moscow"],
+};
+
+/**
+ * フィルタで選択された region（"any" も許容）に対して、実データの region がヒットするか判定する。
+ * ヨーロッパの国キーが選ばれた場合は REGION_GROUPS を展開して国＋首都の両方にマッチさせる。
+ * それ以外のキーは従来通りの完全一致。
+ */
+export function matchesRegionFilter(
+  eventRegion: Region,
+  filterRegion: Region | "any",
+): boolean {
+  if (filterRegion === "any") return true;
+  const group = REGION_GROUPS[filterRegion];
+  if (group) return group.includes(eventRegion);
+  return eventRegion === filterRegion;
+}
 
 export const EVENT_STATUSES: EventStatus[] = ["pending", "published", "draft"];
 
@@ -226,9 +297,26 @@ export function buildRegionLabels(
     newyork: t("newyork"),
     losangeles: t("losangeles"),
     us: t("us"),
+    france: t("france"),
     paris: t("paris"),
-    amsterdam: t("amsterdam"),
+    germany: t("germany"),
     berlin: t("berlin"),
+    netherlands: t("netherlands"),
+    amsterdam: t("amsterdam"),
+    belgium: t("belgium"),
+    brussels: t("brussels"),
+    uk: t("uk"),
+    london: t("london"),
+    italy: t("italy"),
+    rome: t("rome"),
+    spain: t("spain"),
+    madrid: t("madrid"),
+    poland: t("poland"),
+    warsaw: t("warsaw"),
+    switzerland: t("switzerland"),
+    zurich: t("zurich"),
+    russia: t("russia"),
+    moscow: t("moscow"),
     eu: t("eu"),
     other: t("other"),
   };
