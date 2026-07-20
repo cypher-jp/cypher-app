@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { extractIgHandle } from "@/lib/ig";
 import {
+  fetchAdminEventById,
+  findDuplicatePendingEventIds,
   insertEvent,
   updateEvent,
   updateEventStatus,
@@ -46,9 +48,25 @@ export async function signOutAction(): Promise<void> {
   redirect("/admin/login");
 }
 
+/**
+ * 1件承認。承認前に「同一イベントらしき」他の承認待ち行(重複候補)を探し、
+ * 承認したものが選ばれるように、残りは却下(status='draft')にして
+ * 承認待ち一覧から自動的に外す(DELETEはしない。詳細は lib/admin/events.ts の
+ * findDuplicatePendingEventIds / lib/admin/dedupe.ts を参照)。
+ */
 export async function approveEventAction(id: string): Promise<void> {
   const supabase = createSupabaseServerClient();
+  const event = await fetchAdminEventById(id);
+
   await updateEventStatus(supabase, id, "published");
+
+  if (event) {
+    const duplicateIds = await findDuplicatePendingEventIds(supabase, event);
+    for (const duplicateId of duplicateIds) {
+      await updateEventStatus(supabase, duplicateId, "draft");
+    }
+  }
+
   revalidatePublicPaths(id);
   revalidatePath("/admin");
 }
@@ -58,6 +76,18 @@ export async function rejectEventAction(id: string): Promise<void> {
   await updateEventStatus(supabase, id, "draft");
   revalidatePublicPaths(id);
   revalidatePath("/admin");
+}
+
+/**
+ * 一括承認。承認待ち一覧でチェックした複数件をまとめて承認する。
+ * 1件承認(approveEventAction)のロジックをそのまま順番に呼び出すだけなので、
+ * 重複候補の自動却下も1件ずつのときと同じように働く。
+ */
+export async function bulkApproveEventsAction(ids: string[]): Promise<void> {
+  const uniqueIds = Array.from(new Set(ids)).filter(Boolean);
+  for (const id of uniqueIds) {
+    await approveEventAction(id);
+  }
 }
 
 interface ParsedForm {
