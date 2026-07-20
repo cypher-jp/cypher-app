@@ -1,5 +1,5 @@
-// Claude API でイベントページの生テキストを構造化JSONへ変換する。
-import Anthropic from "@anthropic-ai/sdk";
+// AI(Gemini優先/Anthropicフォールバック)でイベントページの生テキストを構造化JSONへ変換する。
+// 実際のAPI呼び出しは ./ai-client に集約されている(プロバイダ切り替え・レート制限対応はそちら)。
 import {
   EVENT_TYPES,
   GENRES,
@@ -8,26 +8,8 @@ import {
   type Genre,
   type Region,
 } from "../../src/types/event";
+import { generateText } from "./ai-client";
 import type { ExtractedEvent } from "./types";
-
-const DEFAULT_MODEL = "claude-haiku-4-5-20251001";
-
-function getModel(): string {
-  return process.env.ANTHROPIC_MODEL?.trim() || DEFAULT_MODEL;
-}
-
-let client: Anthropic | null = null;
-function getClient(): Anthropic {
-  if (client) return client;
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      "ANTHROPIC_API_KEY が設定されていません。GitHub Secrets / ローカルのexport を確認してください。",
-    );
-  }
-  client = new Anthropic({ apiKey });
-  return client;
-}
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -70,7 +52,7 @@ function extractJsonBlock(text: string): unknown {
   const start = text.indexOf("{");
   const end = text.lastIndexOf("}");
   if (start === -1 || end === -1 || end < start) {
-    throw new Error("Claudeの応答からJSONブロックを見つけられませんでした");
+    throw new Error("AI応答からJSONブロックを見つけられませんでした");
   }
   return JSON.parse(text.slice(start, end + 1));
 }
@@ -173,29 +155,21 @@ export async function extractEventFromText(
   rawText: string,
   opts: { now?: Date } = {},
 ): Promise<ExtractedEvent | null> {
-  const anthropic = getClient();
   const now = opts.now ?? new Date();
 
-  const message = await anthropic.messages.create({
-    model: getModel(),
-    max_tokens: 1024,
+  const text = await generateText({
     system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: rawText }],
+    user: rawText,
+    maxTokens: 1024,
+    jsonResponse: true,
   });
-
-  const textBlock = message.content.find(
-    (block): block is Anthropic.TextBlock => block.type === "text",
-  );
-  if (!textBlock) {
-    throw new Error("Claudeの応答にtextブロックがありませんでした");
-  }
 
   let parsed: Record<string, unknown>;
   try {
-    parsed = extractJsonBlock(textBlock.text) as Record<string, unknown>;
+    parsed = extractJsonBlock(text) as Record<string, unknown>;
   } catch (err) {
     throw new Error(
-      `Claude応答のJSONパースに失敗しました: ${
+      `AI応答のJSONパースに失敗しました: ${
         err instanceof Error ? err.message : String(err)
       }`,
     );

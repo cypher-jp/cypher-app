@@ -1,32 +1,14 @@
-// Claude API で説明文(日本語)を en/ko/zh/fr へ一括翻訳する。
-import Anthropic from "@anthropic-ai/sdk";
+// AI(Gemini優先/Anthropicフォールバック)で説明文(日本語)を en/ko/zh/fr へ一括翻訳する。
+// 実際のAPI呼び出しは ./ai-client に集約されている(プロバイダ切り替え・レート制限対応はそちら)。
 import { I18N_LOCALES, type I18nLocale } from "../../src/types/event";
+import { generateText } from "./ai-client";
 import type { TranslationMap } from "./types";
-
-const DEFAULT_MODEL = "claude-haiku-4-5-20251001";
-
-function getModel(): string {
-  return process.env.ANTHROPIC_MODEL?.trim() || DEFAULT_MODEL;
-}
-
-let client: Anthropic | null = null;
-function getClient(): Anthropic {
-  if (client) return client;
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      "ANTHROPIC_API_KEY が設定されていません。GitHub Secrets / ローカルのexport を確認してください。",
-    );
-  }
-  client = new Anthropic({ apiKey });
-  return client;
-}
 
 function extractJsonBlock(text: string): unknown {
   const start = text.indexOf("{");
   const end = text.lastIndexOf("}");
   if (start === -1 || end === -1 || end < start) {
-    throw new Error("Claudeの応答からJSONブロックを見つけられませんでした");
+    throw new Error("AI応答からJSONブロックを見つけられませんでした");
   }
   return JSON.parse(text.slice(start, end + 1));
 }
@@ -67,24 +49,16 @@ export async function translateDescription(
   const trimmed = description.trim();
   if (!trimmed) return {};
 
-  const anthropic = getClient();
-  const message = await anthropic.messages.create({
-    model: getModel(),
-    max_tokens: 2048,
+  const text = await generateText({
     system: buildSystemPrompt(),
-    messages: [{ role: "user", content: trimmed }],
+    user: trimmed,
+    maxTokens: 2048,
+    jsonResponse: true,
   });
-
-  const textBlock = message.content.find(
-    (block): block is Anthropic.TextBlock => block.type === "text",
-  );
-  if (!textBlock) {
-    throw new Error("Claudeの応答にtextブロックがありませんでした");
-  }
 
   let parsed: Record<string, unknown>;
   try {
-    parsed = extractJsonBlock(textBlock.text) as Record<string, unknown>;
+    parsed = extractJsonBlock(text) as Record<string, unknown>;
   } catch (err) {
     throw new Error(
       `翻訳結果のJSONパースに失敗しました: ${
