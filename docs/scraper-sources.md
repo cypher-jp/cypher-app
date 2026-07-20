@@ -1,8 +1,8 @@
 # スクレイピング対象サイト一覧
 
 **用途**: T5(スクレイパー対象サイトの追加)の実装候補を一元管理する資料。
-**最終調査**: 2026-07-15(オーナーからの候補21件 + robots.txt確認)。
-**現状の実装済みソース**: `et-stage`・`breaking-calendar`(いずれも`scripts/sources/`配下に実装済み、`scripts/scrape.ts`のSOURCESに登録、毎朝JST6:00にGitHub Actionsで自動実行)。`breaking-calendar`は2026-07-20実装(robots.txt再確認済み・全許可)。本書に載っている他サイトは**まだ実装されていない**(候補段階)。
+**最終調査**: 2026-07-20(オーナーからの候補21件 + robots.txt確認 + Dance Alive Japan/TOTF調査)。
+**現状の実装済みソース**: `et-stage`・`breaking-calendar`・`and8`・`dance-alive`(いずれも`scripts/sources/`配下に実装済み、`scripts/scrape.ts`のSOURCESに登録)。`et-stage`・`breaking-calendar`は毎朝JST6:00にGitHub Actionsで自動実行中。`and8`はscripts/sources/and8.tsとして実装済みだが本番デプロイ(GitHub Actions登録)は別途確認が必要。`dance-alive`は2026-07-20実装(robots.txt再確認済み・許可)。`TOTF(app.totf.io)`は2026-07-20に調査した結果、実装を見送った(理由は下記表参照)。本書に載っているその他のサイトは**まだ実装されていない**(候補段階)。
 
 **注意**: robots.txtは各サイト運営者側の都合でいつでも変更されうる。実装に着手する直前に必ず再確認すること(`curl https://<domain>/robots.txt`で目視確認 or 既存の`scripts/lib/fetch.ts`のUA明記ルールに従う)。
 
@@ -15,9 +15,9 @@
 | サイト | URL | robots.txt | メモ |
 |---|---|---|---|
 | ブレイキンカレンダー | https://breaking-calendar.com/ja | 🟢 全許可 | **実装済み(2026-07-20、`scripts/sources/breaking-calendar.ts`)。** Breaking特化のイベントカレンダー。日本語ページあり。トップページJSON-LD(CollectionPage)から今後開催の詳細URL一覧(既定40件)を取得し、各詳細ページのJSON-LD(Event)から タイトル/日付/会場を構造化取得 |
-| AND8.DANCE | https://and8.dance/ | 🟢 全許可 | 海外最大競合と評価されているアグリゲーターサイト自体。参考にジャンル・地域バランスも意識すること(T6-4参照) |
-| Dance Alive Japan | https://dancealivejapan.com/ | 🟢 全許可 | 国内ダンスイベント全般のアグリゲーター |
-| TOTF (app.totf.io) | https://app.totf.io/events | 🟢 全許可 | イベント一覧アプリ。海外イベントも含む可能性あり |
+| AND8.DANCE | https://and8.dance/ | 🟢 全許可 | **実装済み(`scripts/sources/and8.ts`)。** 海外最大競合と評価されているアグリゲーターサイト自体。ドイツ語版一覧(/de/events)のHTMLテーブルから今後開催の全件を取得し、詳細ページをcheerioでパース(JSON-LD無し) |
+| Dance Alive Japan | https://dancealivejapan.com/ | 🟢 全許可 | **実装済み(2026-07-20、`scripts/sources/dance-alive.ts`)。** 事前想定は「国内ダンスイベント全般のアグリゲーター」だったが、実地調査の結果は他団体横断の汎用アグリゲーターではなく、DANCEALIVEブランド自身の地区予選(CHARISMAX/KIDS等)のスケジュールページ(WordPress製)だった。/schedule/ 一覧(今後開催の25件、ページネーション無し)→ 詳細ページを.entry-box(DATE/VENUE等)クラスからcheerioでパース。JSON-LDはWebPage型のみでEvent型は無い |
+| TOTF (app.totf.io) | https://app.totf.io/events | 🟢 全許可 | **調査済み・実装見送り(2026-07-20)。** サイト自体のmeta descriptionが示す通り "Industry and street dance ranking and comparison"=ダンサーのランキング/戦績比較データベースであり、事前開催告知(今後のイベント一覧)ではなく開催後の結果記録が主目的と判明。SPA(React/CRA)でJSON-LD無し・`__NEXT_DATA__`も無いため、JSバンドル(`static/js/*.chunk.js`)を解析して同一オリジンの公開JSON API `/api/events/list`(全5,232件のid+name一覧、robots.txt上も許可)と詳細API `/api/events/<id>` を発見できたが、直近追加分(id降順)を複数件サンプル取得したところ`startDate`が軒並み2026-07-12〜07-19(調査時点2026-07-20の直前〜当日)で未来日程が皆無、`venue`/`description`もほぼ常に空文字、開催国も韓国・台湾・フランス等海外が大半だった。一覧APIに日付フィルタが無く全5,232件を都度詳細取得しないと未来日程の有無すら判別できず、2秒間隔ポリシー下では現実的でない上に得られても空欄だらけになる見込みが高いため、費用対効果が低いと判断しスキップした。将来的に運営側がAPIに日付フィルタや「今後開催」フラグを用意すれば再検討の余地あり |
 
 ---
 
