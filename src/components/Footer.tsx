@@ -1,7 +1,9 @@
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 
 export default async function Footer() {
   const t = await getTranslations("footer");
+  const tNav = await getTranslations("nav");
 
   return (
     <footer className="border-t border-ink/10 bg-ink text-paper">
@@ -24,6 +26,9 @@ export default async function Footer() {
             >
               {t("contact")}
             </a>
+            <Link href="/archive" className="hover:text-paper">
+              {tNav("archive")}
+            </Link>
           </div>
         </div>
       </div>

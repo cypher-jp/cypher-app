@@ -40,6 +40,12 @@ export default async function Header() {
           >
             {t("calendar")}
           </Link>
+          <Link
+            href="/archive"
+            className="rounded-full px-3 py-1.5 uppercase tracking-wider hover:bg-ink hover:text-paper"
+          >
+            {t("archive")}
+          </Link>
           <a
             href="https://www.instagram.com/world_cypher/"
             target="_blank"
