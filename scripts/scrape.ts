@@ -10,13 +10,15 @@
 //   SUPABASE_SERVICE_ROLE_KEY    … Supabaseのservice roleキー (--dry-run時は不要)
 import { etstage } from "./sources/etstage";
 import { breakingCalendar } from "./sources/breaking-calendar";
+import { and8 } from "./sources/and8";
+import { danceAlive } from "./sources/dance-alive";
 import { extractEventFromText } from "./lib/extract";
 import { translateDescription } from "./lib/translate";
 import { upsertScrapedEvents } from "./lib/db";
 import type { EventSource, ScrapedEventRecord } from "./lib/types";
 
 /** 収集対象の情報源。新しいサイトは scripts/sources/ に追加してここに並べる */
-const SOURCES: EventSource[] = [etstage, breakingCalendar];
+const SOURCES: EventSource[] = [etstage, breakingCalendar, and8, danceAlive];
 
 async function collectFromSource(
   source: EventSource,
