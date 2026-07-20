@@ -1,3 +1,11 @@
+# 毎朝JST 6:00 にイベント情報を自動収集して Supabase に pending 投入するワークフロー。
+# 手動実行: GitHub → Actions → "Scrape dance events" → Run workflow
+#
+# 必要な Secrets (リポジトリの Settings → Secrets and variables → Actions):
+#   SUPABASE_URL              … https://qvzamnypgjyipyneeqgs.supabase.co
+#   SUPABASE_SERVICE_ROLE_KEY … Supabase の Secret key (sb_secret_...)
+#   GEMINI_API_KEY            … Google AI Studio で発行したAPIキー(無料枠。設定時はこちらが優先される)
+#   ANTHROPIC_API_KEY         … console.anthropic.com で発行したAPIキー(GEMINI_API_KEY未設定時のフォールバック)
 name: Scrape dance events
 
 on:
@@ -27,4 +35,6 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
