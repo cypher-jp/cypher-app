@@ -22,11 +22,22 @@
 //     見出し"Links"の兄弟要素<a>を拾ってrawTextへ追記する(シェアボタン・内部リンクは除外)。
 //     entry_url/ig_handle等の最終判定はextract.ts(Claude)に任せる。
 //   - フライヤー画像: 詳細ページのimageは https://breaking-calendar.com/api/og-image/<id> という
-//     自動生成OGカードであり実物のフライヤーではないため、flyerUrlは付与しない。
+//     自動生成OGカード(イベント名+日付入り)。実物のフライヤーではないため、まずは「Links」セクションの
+//     外部リンク(主催者の公式サイト等)先ページのog:imageから実物フライヤーの取得を試み、
+//     取れた場合のみそちらを優先する。取れなければ従来どおりOGカードにフォールバックする(2026-07-20 改修)。
+//
+// ▼ 外部リンクからのフライヤー取得(2026-07-20 追加)
+//   - 対象は「Links」セクションの外部リンクのうち、下記BLOCKED_LINK_DOMAINSに載っていない
+//     一般サイトの最初の1件のみ(複数リンクがあっても深追いしない)。
+//   - 訪問前に必ずそのドメインのrobots.txtをcheckRobotsTxt()で確認し、拒否されていればスキップする。
+//   - 取得したページのmeta og:image(無ければog:image:secure_url / twitter:image)を実物フライヤー候補とする。
+//   - 相対URLは絶対化し、.html等の明らかに画像でないURL・空値は不採用としてフォールバックする。
+//   - タイムアウト・4xx/5xx・og:image無し等の失敗はすべて静かにフォールバックし、実行全体を止めない。
 //
 // ▼ マナー
 //   - politeFetch: リクエスト間隔2秒以上 / UA "WorldCypherBot/1.0" 明記 / リトライ制御
 //   - 1回の実行: 詳細ページは SCRAPE_BC_MAX_EVENTS 件まで
+//   - 外部リンクも同じpoliteFetch経由でアクセスするため、上記の間隔・UA・リトライ規約がそのまま適用される
 import * as cheerio from "cheerio";
 import { checkRobotsTxt, fetchText } from "../lib/fetch";
 import type { EventSource, RawEventPage } from "../lib/types";
@@ -47,6 +58,131 @@ const NON_CONTENT_LINK_PATTERN =
 
 /** Claudeに渡す1ページあたりの最大文字数(トークン節約) */
 const MAX_RAW_TEXT_LENGTH = 12000;
+
+/**
+ * 「Links」セクションの外部リンクのうち、実物フライヤー取得のために訪問してはいけないドメイン。
+ * 理由ごとに分類しているので、追加・削除する際はここにコメント付きで記録すること。
+ *   - SNS系: 個別ページの構造が不安定/ログイン要求等でog:imageの安定取得が見込めず、
+ *     プラットフォームごとの利用規約上もスクレイピング対象として不適切なため訪問しない。
+ *   - 規約リスク: 利用規約でスクレイピングを明示的に禁止している可能性が高いため訪問しない。
+ *   - robots.txt: 実地調査でClaudeBotをDisallowしていることを確認済みのため訪問しない。
+ */
+const BLOCKED_LINK_DOMAINS: ReadonlyArray<{ domain: string; reason: string }> = [
+  { domain: "instagram.com", reason: "SNS: ページ構造が不安定でスクレイピング非推奨" },
+  { domain: "facebook.com", reason: "SNS: 同上" },
+  { domain: "twitter.com", reason: "SNS: 同上" },
+  { domain: "x.com", reason: "SNS: 同上" },
+  { domain: "youtube.com", reason: "SNS: 同上" },
+  { domain: "tiktok.com", reason: "SNS: 同上" },
+  { domain: "linktr.ee", reason: "SNS系リンク集約サービス: 同上" },
+  { domain: "line.me", reason: "SNS: LINE公式アカウント等" },
+  { domain: "redbull.com", reason: "規約リスク: 利用規約でスクレイピング禁止の可能性が高い" },
+  { domain: "bboychamps.com", reason: "robots.txt調査済み: ClaudeBotをDisallow" },
+  { domain: "summerdanceforever.com", reason: "robots.txt調査済み: ClaudeBotをDisallow" },
+];
+
+/** 明らかに画像でないURL(HTMLページ等)を除外するための拡張子パターン */
+const NON_IMAGE_URL_PATTERN = /\.(html?|php|aspx?|jsp|jsx?|json|xml|pdf)(\?.*)?$/i;
+
+/** hostnameが禁止ドメイン(またはそのサブドメイン)に一致するか判定する */
+function isBlockedLinkDomain(hostname: string): { blocked: boolean; reason?: string } {
+  const host = hostname.toLowerCase().replace(/^www\./, "");
+  for (const { domain, reason } of BLOCKED_LINK_DOMAINS) {
+    if (host === domain || host.endsWith(`.${domain}`)) {
+      return { blocked: true, reason };
+    }
+  }
+  return { blocked: false };
+}
+
+/**
+ * 「Links」の外部リンク一覧から、実物フライヤー取得のために訪問してよい最初の1件を選ぶ。
+ * 禁止ドメイン・http/https以外のURLは読み飛ばす。1件も無ければundefined。
+ */
+function pickExternalLinkToVisit(links: string[]): URL | undefined {
+  for (const link of links) {
+    let parsed: URL;
+    try {
+      parsed = new URL(link);
+    } catch {
+      continue;
+    }
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") continue;
+
+    const { blocked, reason } = isBlockedLinkDomain(parsed.hostname);
+    if (blocked) {
+      console.log(
+        `[breaking-calendar] 外部リンク訪問スキップ(禁止ドメイン: ${reason}): ${link}`,
+      );
+      continue;
+    }
+    return parsed;
+  }
+  return undefined;
+}
+
+/** 相対URLをbaseページのURLで絶対化する。失敗時はnull */
+function toAbsoluteImageUrl(raw: string, base: URL): string | null {
+  try {
+    return new URL(raw, base).toString();
+  } catch {
+    return null;
+  }
+}
+
+/** 画像URLとして妥当そうか(HTML/PDF等の非画像拡張子でないか)を簡易判定する */
+function looksLikeImageUrl(url: string): boolean {
+  let pathname: string;
+  try {
+    pathname = new URL(url).pathname;
+  } catch {
+    return false;
+  }
+  return !NON_IMAGE_URL_PATTERN.test(pathname);
+}
+
+/**
+ * 「Links」セクションの外部リンク(最初の1件のみ)を訪問し、そのページのog:imageから
+ * 実物フライヤー画像のURLを取得する。robots.txt拒否・タイムアウト・4xx/5xx・og:image無し等の
+ * 失敗はすべてundefinedを返して呼び出し側でOGカードにフォールバックさせる(実行全体は止めない)。
+ */
+async function fetchRealFlyerFromExternalLink(links: string[]): Promise<string | undefined> {
+  const target = pickExternalLinkToVisit(links);
+  if (!target) return undefined;
+
+  try {
+    const robots = await checkRobotsTxt(target.origin, target.pathname || "/");
+    if (!robots.allowed) {
+      console.log(
+        `[breaking-calendar] 外部リンクrobots.txtにより訪問中止: ${target.toString()} (${robots.reason})`,
+      );
+      return undefined;
+    }
+
+    const html = await fetchText(target.toString());
+    const $ = cheerio.load(html);
+    const raw =
+      $('meta[property="og:image"]').attr("content") ||
+      $('meta[property="og:image:secure_url"]').attr("content") ||
+      $('meta[name="twitter:image"]').attr("content");
+    if (!raw || !raw.trim()) return undefined;
+
+    const absolute = toAbsoluteImageUrl(raw.trim(), target);
+    if (!absolute || !looksLikeImageUrl(absolute)) return undefined;
+
+    console.log(
+      `[breaking-calendar] 外部リンクから実物フライヤーを取得: ${target.toString()} -> ${absolute}`,
+    );
+    return absolute;
+  } catch (err) {
+    console.log(
+      `[breaking-calendar] 外部リンクからのフライヤー取得失敗(OGカードへフォールバック): ${target.toString()}: ${
+        err instanceof Error ? err.message : String(err)
+      }`,
+    );
+    return undefined;
+  }
+}
 
 function parsePositiveInt(value: string | undefined, fallback: number): number {
   const n = value ? Number.parseInt(value, 10) : NaN;
@@ -202,7 +338,13 @@ export const breakingCalendar: EventSource = {
         ].filter((v): v is string => v !== null);
 
         const rawText = parts.join("\n").slice(0, MAX_RAW_TEXT_LENGTH);
-        pages.push({ sourceUrl: url, rawText });
+        // 詳細URL末尾のイベントIDから自動生成OGカード画像のURL(フォールバック用)を組み立てる
+        const eventId = url.split("/").filter(Boolean).pop();
+        const ogCardFlyerUrl = eventId ? `${ORIGIN}/api/og-image/${eventId}` : undefined;
+        // まず外部リンク(主催者サイト等)から実物フライヤーの取得を試み、取れなければOGカードを使う
+        const realFlyerUrl = await fetchRealFlyerFromExternalLink(links);
+        const flyerUrl = realFlyerUrl ?? ogCardFlyerUrl;
+        pages.push({ sourceUrl: url, rawText, flyerUrl });
       } catch (err) {
         console.error(
           `[breaking-calendar] 詳細ページ取得失敗: ${url}: ${
