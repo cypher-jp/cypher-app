@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { setRequestLocale } from "next-intl/server";
 import EventGrid from "@/components/EventGrid";
 import FeaturedSection from "@/components/FeaturedSection";
-import { fetchEvents } from "@/lib/supabase";
+import { fetchUpcomingEvents } from "@/lib/supabase";
 import { getUpcomingDeadlines, getWeekendBattles } from "@/lib/featured";
 import { EVENT_TYPES, type EventType } from "@/types/event";
 
@@ -15,7 +15,8 @@ interface HomePageProps {
 
 export default async function HomePage({ params, searchParams }: HomePageProps) {
   setRequestLocale(params.locale);
-  const events = await fetchEvents();
+  // 開催日(JST基準)が今日以降のイベントのみ。過去のイベントは/archiveへ自動で移る。
+  const events = await fetchUpcomingEvents();
   const tHome = await getTranslations("home");
 
   // URLクエリ ?type=... があればそれを初期フィルタに、無ければ battle をデフォルトに。
