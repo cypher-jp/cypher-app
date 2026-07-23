@@ -16,6 +16,10 @@ html, body {
   color: var(--ink);
   font-family: var(--font-body, "Inter", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif);
   -webkit-font-smoothing: antialiased;
+  /* 保険: 子要素の横幅計算が崩れてもページ全体が横スクロール可能になるのを防ぐ。
+     本質的な修正は各コンポーネント側(overflow-x-auto + min-w-0)で行うこと。 */
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 @layer components {
@@ -43,5 +47,15 @@ html, body {
   /* 管理画面のフォーム入力欄(input/select/textarea)共通スタイル */
   .input {
     @apply w-full rounded-xl border border-ink/15 bg-paper px-4 py-2 text-sm text-ink focus:border-ink focus:outline-none;
+  }
+
+  /* 横スクロールコンテナ(ヘッダーnav・トップページの横並びカード列など)で
+     スクロールバーを非表示にするための共通ユーティリティ。 */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }
