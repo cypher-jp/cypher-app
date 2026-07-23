@@ -21,6 +21,7 @@ import { wdcTokyo } from "./sources/wdc-tokyo";
 import { ido } from "./sources/ido";
 import { hipHopInternational } from "./sources/hip-hop-international";
 import { worldBattleSources } from "./sources/world-battles";
+import { choomza } from "./sources/choomza";
 import { extractEventFromText } from "./lib/extract";
 import { translateDescription } from "./lib/translate";
 import {
@@ -43,6 +44,7 @@ const SOURCES: EventSource[] = [
   ido,
   hipHopInternational,
   ...worldBattleSources,
+  choomza,
 ];
 
 /** SCRAPE_FORCE_REFRESH=1 のときは変更なしスキップを行わず全件Claude抽出する */
