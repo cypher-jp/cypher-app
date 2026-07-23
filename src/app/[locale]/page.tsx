@@ -34,7 +34,7 @@ export default async function HomePage({ params, searchParams }: HomePageProps) 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
       <Hero />
-      <div className="mt-10 flex flex-col gap-10">
+      <div className="mt-10 flex min-w-0 flex-col gap-10">
         <FeaturedSection
           title={tHome("weekendBattles")}
           events={weekendBattles}
