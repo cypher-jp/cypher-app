@@ -1,12 +1,15 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import EventCard from "@/components/EventCard";
 import FilterBar, { DEFAULT_FILTER, type FilterState } from "@/components/FilterBar";
-import type { DanceEvent, EventType } from "@/types/event";
+import Pagination from "@/components/Pagination";
+import { matchesRegionFilter, type DanceEvent, type EventType } from "@/types/event";
+
+const PAGE_SIZE = 12;
 
 interface Props {
   events: DanceEvent[];
@@ -45,7 +48,7 @@ export default function EventGrid({ events, initialType = "battle" }: Props) {
     return events.filter((e) => {
       if (filter.type !== "any" && e.type !== filter.type) return false;
       if (filter.genre !== "any" && e.genre !== filter.genre) return false;
-      if (filter.region !== "any" && e.region !== filter.region) return false;
+      if (!matchesRegionFilter(e.region, filter.region)) return false;
       if (q) {
         const haystack = `${e.title} ${e.venue} ${e.description}`.toLowerCase();
         if (!haystack.includes(q)) return false;
@@ -54,8 +57,24 @@ export default function EventGrid({ events, initialType = "battle" }: Props) {
     });
   }, [events, filter]);
 
+  const [page, setPage] = useState(1);
+  const gridTopRef = useRef<HTMLDivElement>(null);
+
+  // フィルタ結果が変わったら1ページ目に戻す(古いフィルタでのページ番号のまま残らないように)。
+  useEffect(() => {
+    setPage(1);
+  }, [filtered]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const handlePageChange = useCallback((next: number) => {
+    setPage(next);
+    gridTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
   return (
-    <div className="flex flex-col gap-8">
+    <div ref={gridTopRef} className="flex flex-col gap-8">
       <FilterBar value={filter} onChange={handleChange} resultCount={filtered.length} />
 
       {filtered.length === 0 ? (
@@ -64,11 +83,18 @@ export default function EventGrid({ events, initialType = "battle" }: Props) {
           <p className="mt-2 text-sm text-ink/60">{t("noMatchBody")}</p>
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((event) => (
-            <EventCard key={event.id} event={event} />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {paginated.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onChange={handlePageChange}
+          />
+        </>
       )}
     </div>
   );
