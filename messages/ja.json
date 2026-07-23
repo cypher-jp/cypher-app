@@ -27,11 +27,18 @@
     "searchPlaceholder": "タイトル・会場で検索...",
     "all": "すべて",
     "resultCount": "件のイベント",
-    "reset": "フィルタをリセット"
+    "reset": "フィルタをリセット",
+    "domestic": "国内",
+    "overseas": "海外"
   },
   "grid": {
     "noMatchTitle": "NO MATCH",
     "noMatchBody": "条件を緩めると見つかるかも。フィルタをリセットしてみて。"
+  },
+  "pagination": {
+    "prev": "前へ",
+    "next": "次へ",
+    "pageAria": "{page}ページ目"
   },
   "calendar": {
     "eyebrow": "MONTHLY VIEW",

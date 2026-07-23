@@ -27,7 +27,14 @@
     "searchPlaceholder": "제목·장소로 검색...",
     "all": "전체",
     "resultCount": "건의 이벤트",
-    "reset": "필터 초기화"
+    "reset": "필터 초기화",
+    "domestic": "국내",
+    "overseas": "해외"
+  },
+  "pagination": {
+    "prev": "이전",
+    "next": "다음",
+    "pageAria": "{page}페이지"
   },
   "grid": {
     "noMatchTitle": "NO MATCH",

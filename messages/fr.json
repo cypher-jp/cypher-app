@@ -27,7 +27,14 @@
     "searchPlaceholder": "Rechercher par titre ou lieu...",
     "all": "Tous",
     "resultCount": "événements",
-    "reset": "Réinitialiser les filtres"
+    "reset": "Réinitialiser les filtres",
+    "domestic": "Japon",
+    "overseas": "International"
+  },
+  "pagination": {
+    "prev": "Préc.",
+    "next": "Suiv.",
+    "pageAria": "Page {page}"
   },
   "grid": {
     "noMatchTitle": "NO MATCH",

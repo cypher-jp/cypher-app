@@ -27,7 +27,14 @@
     "searchPlaceholder": "Search by title or venue...",
     "all": "All",
     "resultCount": "events found",
-    "reset": "Reset filters"
+    "reset": "Reset filters",
+    "domestic": "Japan",
+    "overseas": "Overseas"
+  },
+  "pagination": {
+    "prev": "Prev",
+    "next": "Next",
+    "pageAria": "Page {page}"
   },
   "grid": {
     "noMatchTitle": "NO MATCH",
