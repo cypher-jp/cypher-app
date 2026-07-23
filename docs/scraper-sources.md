@@ -1,8 +1,8 @@
 # スクレイピング対象サイト一覧
 
 **用途**: T5(スクレイパー対象サイトの追加)の実装候補を一元管理する資料。
-**最終調査**: 2026-07-23(国内3サイト実装に加え、オーナー提供の世界サイト候補リストを一括トリアージし11ソースを追加実装)。
-**現状の実装済みソース**: `et-stage`・`breaking-calendar`・`and8`・`dance-alive`・`freestyle-session-japan`・`dance-delight`・`juste-debout-tokyo`・`wdc-tokyo`・`ido`・`hip-hop-international`、および単発サイト共通ファクトリ(`scripts/lib/single-page-source.ts`)による9ソース=`battle-of-the-year`・`the-legits-blast`・`undisputed-masters`・`notorious-ibe`・`streetstar`・`sdk-europe`・`joat-festival`・`kod-keepondancing`・`juste-debout-world`(`scripts/sources/world-battles.ts`に集約)。いずれも`scripts/scrape.ts`のSOURCESに登録済み。`et-stage`・`breaking-calendar`は毎朝JST6:00にGitHub Actionsで自動実行中。`and8`はscripts/sources/and8.tsとして実装済みだが本番デプロイ(GitHub Actions登録)は別途確認が必要。`dance-alive`は2026-07-20実装(robots.txt再確認済み・許可)。`freestyle-session-japan`は2026-07-21実装(WP REST API経由・robots.txt確認済み・許可)。`dance-delight`・`juste-debout-tokyo`・`wdc-tokyo`は2026-07-23実装(robots.txt再確認済み・許可。詳細は各表の行を参照)。`TOTF(app.totf.io)`は2026-07-20に調査した結果、実装を見送った(理由は下記表参照)。本書に載っているその他のサイトは**まだ実装されていない**(候補段階)。
+**最終調査**: 2026-07-23(国内3サイト+世界サイト11ソース+Choomzaを追加実装。実装済み計20ソース)。
+**現状の実装済みソース**: `et-stage`・`breaking-calendar`・`and8`・`dance-alive`・`freestyle-session-japan`・`dance-delight`・`juste-debout-tokyo`・`wdc-tokyo`・`ido`・`hip-hop-international`、および単発サイト共通ファクトリ(`scripts/lib/single-page-source.ts`)による9ソース=`battle-of-the-year`・`the-legits-blast`・`undisputed-masters`・`notorious-ibe`・`streetstar`・`sdk-europe`・`joat-festival`・`kod-keepondancing`・`juste-debout-world`(`scripts/sources/world-battles.ts`に集約)、および`choomza`(2026-07-23実装・世界アグリゲーター)。いずれも`scripts/scrape.ts`のSOURCESに登録済み。`et-stage`・`breaking-calendar`は毎朝JST6:00にGitHub Actionsで自動実行中。`and8`はscripts/sources/and8.tsとして実装済みだが本番デプロイ(GitHub Actions登録)は別途確認が必要。`dance-alive`は2026-07-20実装(robots.txt再確認済み・許可)。`freestyle-session-japan`は2026-07-21実装(WP REST API経由・robots.txt確認済み・許可)。`dance-delight`・`juste-debout-tokyo`・`wdc-tokyo`は2026-07-23実装(robots.txt再確認済み・許可。詳細は各表の行を参照)。`TOTF(app.totf.io)`は2026-07-20に調査した結果、実装を見送った(理由は下記表参照)。本書に載っているその他のサイトは**まだ実装されていない**(候補段階)。
 
 **注意**: robots.txtは各サイト運営者側の都合でいつでも変更されうる。実装に着手する直前に必ず再確認すること(`curl https://<domain>/robots.txt`で目視確認 or 既存の`scripts/lib/fetch.ts`のUA明記ルールに従う)。
 
@@ -40,6 +40,7 @@
 | JOAT Festival (joatfestival.com) | `joat-festival` | 共通ファクトリ | WP製。取得OK |
 | KOD / Keep On Dancing (kod-keepondancing.com) | `kod-keepondancing` | 共通ファクトリ | Wix製。取得OK(現状は企業情報中心) |
 | Juste Debout 本家 (juste-debout.com) | `juste-debout-world` | 共通ファクトリ | WP製。パリ世界大会(Accor Arena)。取得OK |
+| **Choomza (choomza.com)** | `choomza` | カスタム(`scripts/sources/choomza.ts`) | **実装済み(2026-07-23)。** 世界のダンスイベントを網羅するアグリゲーター。robots.txtは実質無制限。トップの検索フォームへ `user_location[distance]=3`(worldwide)+住所空でPOSTすると世界中の今後開催一覧(調査時点28件)がSSRで返る(PHPSESSIDセッション)。詳細ページから日時・都市/会場・種別・ジャンル・説明・主催者IG・フライヤー(og:image)を取得。POSTが必要な一覧取得のみ素のfetch(UA明記・2秒間隔は自前で遵守)、詳細はfetchText。他ソースとの重複はadminの重複グルーピングで統合 |
 
 ### 見送り(理由つき)
 
@@ -48,7 +49,6 @@
 | World Breaking Classic (worldbreakingclassic.com) | robots.txtは許可だが本文がJS描画でHTML取得では0文字(2026-07-23実測)。SSR化されたら共通ファクトリで追加可 |
 | World of Dance (worldofdance.com/events) | イベント一覧がJS描画でHTML取得では内容が取れない。API調査が必要なため見送り |
 | WDSF Calendar (worlddancesport.org) | robots全許可・SSRだが、掲載の大半が社交ダンスでBreaking絞り込みパラメータの特定が必要。費用対効果が低いため見送り(re-check可) |
-| Choomza (choomza.com) | 世界のバトルを網羅する有望なアグリゲーターだが、既定表示が位置情報依存(Columbus, US基準)で「worldwide一覧」のURLパラメータ特定に追加調査が必要。**次に増やすならここが本命** |
 | Hip Hop Unite (hiphopunite.com) | 調査時点でサーバーが503(到達不可)。復旧したら再調査 |
 | UDO Street Dance (udostreetdance.com) | robots全許可だが多数イベントを持つ団体サイトで、単発ページ方式では1件しか抽出できない。専用実装が必要なため今回見送り |
 | Freestyle Session 本家 (freestylesession.com) | Shopify製・物販中心でイベント情報が薄い(従来方針どおり) |
