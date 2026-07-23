@@ -1,8 +1,8 @@
 # スクレイピング対象サイト一覧
 
 **用途**: T5(スクレイパー対象サイトの追加)の実装候補を一元管理する資料。
-**最終調査**: 2026-07-23(Dance Delight / Juste Debout Tokyo / WDC TOKYO の3サイトを調査・実装)。
-**現状の実装済みソース**: `et-stage`・`breaking-calendar`・`and8`・`dance-alive`・`freestyle-session-japan`・`dance-delight`・`juste-debout-tokyo`・`wdc-tokyo`(いずれも`scripts/sources/`配下に実装済み、`scripts/scrape.ts`のSOURCESに登録)。`et-stage`・`breaking-calendar`は毎朝JST6:00にGitHub Actionsで自動実行中。`and8`はscripts/sources/and8.tsとして実装済みだが本番デプロイ(GitHub Actions登録)は別途確認が必要。`dance-alive`は2026-07-20実装(robots.txt再確認済み・許可)。`freestyle-session-japan`は2026-07-21実装(WP REST API経由・robots.txt確認済み・許可)。`dance-delight`・`juste-debout-tokyo`・`wdc-tokyo`は2026-07-23実装(robots.txt再確認済み・許可。詳細は各表の行を参照)。`TOTF(app.totf.io)`は2026-07-20に調査した結果、実装を見送った(理由は下記表参照)。本書に載っているその他のサイトは**まだ実装されていない**(候補段階)。
+**最終調査**: 2026-07-23(国内3サイト実装に加え、オーナー提供の世界サイト候補リストを一括トリアージし11ソースを追加実装)。
+**現状の実装済みソース**: `et-stage`・`breaking-calendar`・`and8`・`dance-alive`・`freestyle-session-japan`・`dance-delight`・`juste-debout-tokyo`・`wdc-tokyo`・`ido`・`hip-hop-international`、および単発サイト共通ファクトリ(`scripts/lib/single-page-source.ts`)による9ソース=`battle-of-the-year`・`the-legits-blast`・`undisputed-masters`・`notorious-ibe`・`streetstar`・`sdk-europe`・`joat-festival`・`kod-keepondancing`・`juste-debout-world`(`scripts/sources/world-battles.ts`に集約)。いずれも`scripts/scrape.ts`のSOURCESに登録済み。`et-stage`・`breaking-calendar`は毎朝JST6:00にGitHub Actionsで自動実行中。`and8`はscripts/sources/and8.tsとして実装済みだが本番デプロイ(GitHub Actions登録)は別途確認が必要。`dance-alive`は2026-07-20実装(robots.txt再確認済み・許可)。`freestyle-session-japan`は2026-07-21実装(WP REST API経由・robots.txt確認済み・許可)。`dance-delight`・`juste-debout-tokyo`・`wdc-tokyo`は2026-07-23実装(robots.txt再確認済み・許可。詳細は各表の行を参照)。`TOTF(app.totf.io)`は2026-07-20に調査した結果、実装を見送った(理由は下記表参照)。本書に載っているその他のサイトは**まだ実装されていない**(候補段階)。
 
 **注意**: robots.txtは各サイト運営者側の都合でいつでも変更されうる。実装に着手する直前に必ず再確認すること(`curl https://<domain>/robots.txt`で目視確認 or 既存の`scripts/lib/fetch.ts`のUA明記ルールに従う)。
 
@@ -21,6 +21,44 @@
 
 ---
 
+## 1.5 世界サイト一括トリアージ結果(2026-07-23)
+
+オーナー提供の世界大会・団体サイト候補リストを一括調査した結果。robots.txtは全サイト実装直前に再確認済み。
+
+### 実装済み
+
+| サイト | ソース名 | 方式 | メモ |
+|---|---|---|---|
+| IDO 大会カレンダー (ido-dance.com) | `ido` | カスタム(`scripts/sources/ido.ts`) | Contao CMS製・年別一覧(今年+翌年)。全45大会中、大会名キーワードでストリート系(HIP HOP/BREAKING/POPPING等)のみ抽出(調査時点8件)。robots: /contao/のみ禁止 |
+| Hip Hop International 世界スケジュール | `hip-hop-international` | カスタム(`scripts/sources/hip-hop-international.ts`) | /schedule-of-events-worldwide/ の table.t1(約60行)から、終了日が未来の大会のみ抽出(調査時点15件)。個別リンク・会場情報なし(開催国・都市は大会名から)。robots: WP標準 |
+| Battle Of The Year (battleoftheyear.net) | `battle-of-the-year` | 共通ファクトリ | Prismic製・SSR。トップページ取得OK(約3.4k字) |
+| The Legits Blast (thelegitsblast.com) | `the-legits-blast` | 共通ファクトリ | WP製。取得OK |
+| Undisputed Masters (undisputedmasters.com) | `undisputed-masters` | 共通ファクトリ | WP製。KYOTO等の日本開催情報あり・取得OK(約5.4k字) |
+| The Notorious IBE (thenotoriousibe.com) | `notorious-ibe` | 共通ファクトリ | WP製。取得OK |
+| Streetstar (streetstar.se) | `streetstar` | 共通ファクトリ | WP製。取得OK(現状Past Events中心のため当面イベント抽出なしの可能性) |
+| SDK Europe (sdkeurope.com) | `sdk-europe` | 共通ファクトリ | WP製。取得OK |
+| JOAT Festival (joatfestival.com) | `joat-festival` | 共通ファクトリ | WP製。取得OK |
+| KOD / Keep On Dancing (kod-keepondancing.com) | `kod-keepondancing` | 共通ファクトリ | Wix製。取得OK(現状は企業情報中心) |
+| Juste Debout 本家 (juste-debout.com) | `juste-debout-world` | 共通ファクトリ | WP製。パリ世界大会(Accor Arena)。取得OK |
+
+### 見送り(理由つき)
+
+| サイト | 理由 |
+|---|---|
+| World Breaking Classic (worldbreakingclassic.com) | robots.txtは許可だが本文がJS描画でHTML取得では0文字(2026-07-23実測)。SSR化されたら共通ファクトリで追加可 |
+| World of Dance (worldofdance.com/events) | イベント一覧がJS描画でHTML取得では内容が取れない。API調査が必要なため見送り |
+| WDSF Calendar (worlddancesport.org) | robots全許可・SSRだが、掲載の大半が社交ダンスでBreaking絞り込みパラメータの特定が必要。費用対効果が低いため見送り(re-check可) |
+| Choomza (choomza.com) | 世界のバトルを網羅する有望なアグリゲーターだが、既定表示が位置情報依存(Columbus, US基準)で「worldwide一覧」のURLパラメータ特定に追加調査が必要。**次に増やすならここが本命** |
+| Hip Hop Unite (hiphopunite.com) | 調査時点でサーバーが503(到達不可)。復旧したら再調査 |
+| UDO Street Dance (udostreetdance.com) | robots全許可だが多数イベントを持つ団体サイトで、単発ページ方式では1件しか抽出できない。専用実装が必要なため今回見送り |
+| Freestyle Session 本家 (freestylesession.com) | Shopify製・物販中心でイベント情報が薄い(従来方針どおり) |
+| Red Bull系 (redbull.com: BC One / Dance Your Style) | 利用規約でスクレイピング禁止の可能性が高い(従来方針どおり。実装前に規約確認必須) |
+| linktr.ee/fusionconceptfestival | リンク集のみで開催情報の実体なし |
+| House Dance International (Instagram) | Instagramのため対象外(規約方針) |
+| bboychamps.com / summerdanceforever.com | robots.txtでClaudeBotを明示ブロック(従来方針どおり除外) |
+
+---
+
 ## 2. 実装優先度：中(単発イベント運営サイト)
 
 robots.txtは全許可だが、運営団体が年1〜数回の自社イベントのみを載せているサイト。スクレイパーを書くコスト対効果が低いため、**手動登録(admin画面)の方がROIが高い可能性がある**。まとめて実装するなら後回しでよい。
@@ -28,10 +66,10 @@ robots.txtは全許可だが、運営団体が年1〜数回の自社イベント
 | サイト | URL | robots.txt | メモ |
 |---|---|---|---|
 | Freestyle Session Japan | https://freestylesessionjapan.com/ | 🟢 全許可 | **実装済み(2026-07-21、`scripts/sources/freestyle-session-japan.ts`)。** HTML一覧ページではなくWP REST API(`/wp-json/wp/v2/posts?_embed=1`)を利用。ニュース記事(イベント告知)をrawTextとして返し、アイキャッチ画像をflyerUrlとする。イベントでない記事の除外は他ソースと同様extract.ts側(日付なし/過去日→null)に委ねる |
-| Undisputed Masters | https://undisputedmasters.com/ | 🟢 全許可 | |
-| The Legits Blast | https://thelegitsblast.com/en/ | 🟢 全許可 | 英語サイト |
-| World Breaking Classic | https://worldbreakingclassic.com/ | 🟢 全許可 | |
-| Battle Of The Year | https://battleoftheyear.net/en | 🟢 全許可 | 世界的に有名な大会。英語サイト |
+| Undisputed Masters | https://undisputedmasters.com/ | 🟢 全許可 | **実装済み(2026-07-23)** → 1.5参照 |
+| The Legits Blast | https://thelegitsblast.com/en/ | 🟢 全許可 | 英語サイト。**実装済み(2026-07-23)** → 1.5参照 |
+| World Breaking Classic | https://worldbreakingclassic.com/ | 🟢 全許可 | **見送り(JS描画で本文取得不可)** → 1.5参照 |
+| Battle Of The Year | https://battleoftheyear.net/en | 🟢 全許可 | 世界的に有名な大会。**実装済み(2026-07-23)** → 1.5参照 |
 | World DanceSport Federation | https://www.worlddancesport.org/breaking | 🟢 全許可 | 競技ダンス公式団体。海外イベントの網羅性に寄与 |
 | WDC TOKYO | https://www.wdc.tokyo/ | 🟢 全許可(Wix自動生成。?lightbox= URLのみ禁止) | **実装済み(2026-07-23、`scripts/sources/wdc-tokyo.ts`)。** Wix製・年1回開催の単発イベントサイト。開催情報がトップページに集約されているためトップページ1枚のみ取得(1実行あたり計2リクエスト)。フライヤーはog:image |
 | forever-jp | https://www.forever-jp.com/ | 🟢 全許可 | |
