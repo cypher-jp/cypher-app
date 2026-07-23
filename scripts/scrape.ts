@@ -18,6 +18,9 @@ import { freestyleSessionJapan } from "./sources/freestyle-session-japan";
 import { danceDelight } from "./sources/dance-delight";
 import { justeDeboutTokyo } from "./sources/juste-debout-tokyo";
 import { wdcTokyo } from "./sources/wdc-tokyo";
+import { ido } from "./sources/ido";
+import { hipHopInternational } from "./sources/hip-hop-international";
+import { worldBattleSources } from "./sources/world-battles";
 import { extractEventFromText } from "./lib/extract";
 import { translateDescription } from "./lib/translate";
 import {
@@ -37,6 +40,9 @@ const SOURCES: EventSource[] = [
   danceDelight,
   justeDeboutTokyo,
   wdcTokyo,
+  ido,
+  hipHopInternational,
+  ...worldBattleSources,
 ];
 
 /** SCRAPE_FORCE_REFRESH=1 のときは変更なしスキップを行わず全件Claude抽出する */
