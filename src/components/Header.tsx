@@ -23,26 +23,35 @@ export default async function Header() {
               />
             </Link>
         */}
-        <Link href="/" className="display text-2xl font-black tracking-tight">
+        <Link
+          href="/"
+          className="display shrink-0 text-2xl font-black tracking-tight"
+        >
           <span className="text-cypher-red">WORLD</span> Cypher
           <span className="text-cypher-red">.</span>
         </Link>
-        <nav className="flex items-center gap-2 text-sm font-bold">
+        {/*
+          スマホ幅ではロゴ込みで全項目がコンテナ幅に収まらないため、nav自体を
+          横スクロールコンテナにして封じ込める(min-w-0で縮小を許可 + overflow-x-auto)。
+          これが無いと、nav全体の実寸がページ(body/html)の横幅を押し広げ、
+          画面全体が横スクロールしてしまう。
+        */}
+        <nav className="no-scrollbar flex min-w-0 items-center gap-2 overflow-x-auto text-sm font-bold">
           <Link
             href="/"
-            className="rounded-full px-3 py-1.5 uppercase tracking-wider hover:bg-ink hover:text-paper"
+            className="shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 uppercase tracking-wider hover:bg-ink hover:text-paper"
           >
             {t("events")}
           </Link>
           <Link
             href="/calendar"
-            className="rounded-full px-3 py-1.5 uppercase tracking-wider hover:bg-ink hover:text-paper"
+            className="shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 uppercase tracking-wider hover:bg-ink hover:text-paper"
           >
             {t("calendar")}
           </Link>
           <Link
             href="/archive"
-            className="rounded-full px-3 py-1.5 uppercase tracking-wider hover:bg-ink hover:text-paper"
+            className="shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 uppercase tracking-wider hover:bg-ink hover:text-paper"
           >
             {t("archive")}
           </Link>
@@ -50,11 +59,13 @@ export default async function Header() {
             href="https://www.instagram.com/world_cypher/"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden rounded-full bg-ink px-3 py-1.5 uppercase tracking-wider text-paper hover:bg-cypher-red sm:inline-flex"
+            className="hidden shrink-0 whitespace-nowrap rounded-full bg-ink px-3 py-1.5 uppercase tracking-wider text-paper hover:bg-cypher-red sm:inline-flex"
           >
             {t("submit")}
           </a>
-          <LocaleSwitcher />
+          <span className="shrink-0">
+            <LocaleSwitcher />
+          </span>
         </nav>
       </div>
     </header>
