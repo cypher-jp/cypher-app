@@ -193,6 +193,68 @@ export const REGIONS: Region[] = [
   "other",
 ];
 
+// フィルタのエリアチップを「国内/海外」タブで切り替えるための分類。
+// "online" はどちらの地理区分にも属さないため、この2つには含めずFilterBar側で単独チップとして扱う。
+export const DOMESTIC_REGIONS: Region[] = [
+  "hokkaido",
+  "miyagi",
+  "tohoku",
+  "tokyo",
+  "kanagawa",
+  "chiba",
+  "saitama",
+  "kanto",
+  "niigata",
+  "hokuriku",
+  "aichi",
+  "tokai",
+  "kyoto",
+  "osaka",
+  "kansai",
+  "hiroshima",
+  "chugoku",
+  "shikoku",
+  "fukuoka",
+  "kyushu",
+];
+
+export const OVERSEAS_REGIONS: Region[] = [
+  "seoul",
+  "busan",
+  "korea",
+  "taipei",
+  "taiwan",
+  "shanghai",
+  "beijing",
+  "chengdu",
+  "asia",
+  "newyork",
+  "losangeles",
+  "us",
+  "france",
+  "paris",
+  "germany",
+  "berlin",
+  "netherlands",
+  "amsterdam",
+  "belgium",
+  "brussels",
+  "uk",
+  "london",
+  "italy",
+  "rome",
+  "spain",
+  "madrid",
+  "poland",
+  "warsaw",
+  "switzerland",
+  "zurich",
+  "russia",
+  "moscow",
+  "eu",
+  "other",
+];
+
 // ヨーロッパの「国キー → [国キー, 首都キー]」対応。
 // フィルタで国を選んだ時に、国キー本体に加えて対応する首都キーの行もヒットさせるために使う。
 // 例: france を選択 → region が france または paris の行が対象。
