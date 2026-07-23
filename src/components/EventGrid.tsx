@@ -7,7 +7,8 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import EventCard from "@/components/EventCard";
 import FilterBar, { DEFAULT_FILTER, type FilterState } from "@/components/FilterBar";
 import Pagination from "@/components/Pagination";
-import { matchesRegionFilter, type DanceEvent, type EventType } from "@/types/event";
+import { filterEvents } from "@/lib/filterEvents";
+import type { DanceEvent, EventType } from "@/types/event";
 
 const PAGE_SIZE = 12;
 
@@ -43,19 +44,7 @@ export default function EventGrid({ events, initialType = "battle" }: Props) {
     [pathname, router, searchParams],
   );
 
-  const filtered = useMemo(() => {
-    const q = filter.query.trim().toLowerCase();
-    return events.filter((e) => {
-      if (filter.type !== "any" && e.type !== filter.type) return false;
-      if (filter.genre !== "any" && e.genre !== filter.genre) return false;
-      if (!matchesRegionFilter(e.region, filter.region)) return false;
-      if (q) {
-        const haystack = `${e.title} ${e.venue} ${e.description}`.toLowerCase();
-        if (!haystack.includes(q)) return false;
-      }
-      return true;
-    });
-  }, [events, filter]);
+  const filtered = useMemo(() => filterEvents(events, filter), [events, filter]);
 
   const [page, setPage] = useState(1);
   const gridTopRef = useRef<HTMLDivElement>(null);

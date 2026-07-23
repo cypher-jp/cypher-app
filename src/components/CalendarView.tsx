@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import FilterBar, { DEFAULT_FILTER, type FilterState } from "@/components/FilterBar";
+import { filterEvents } from "@/lib/filterEvents";
 import type { DanceEvent } from "@/types/event";
 import { EVENT_TYPES } from "@/types/event";
 
@@ -29,9 +31,12 @@ export default function CalendarView({ events }: Props) {
     new Date(initial.getFullYear(), initial.getMonth(), 1),
   );
 
+  const [filter, setFilter] = useState<FilterState>(DEFAULT_FILTER);
+  const filtered = useMemo(() => filterEvents(events, filter), [events, filter]);
+
   const eventsByDay = useMemo(() => {
     const map = new Map<string, DanceEvent[]>();
-    for (const e of events) {
+    for (const e of filtered) {
       const d = new Date(e.date);
       const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
       const arr = map.get(key) ?? [];
@@ -39,7 +44,7 @@ export default function CalendarView({ events }: Props) {
       map.set(key, arr);
     }
     return map;
-  }, [events]);
+  }, [filtered]);
 
   const cells = useMemo(() => buildMonthCells(cursor), [cursor]);
   const monthLabel = new Intl.DateTimeFormat(locale, {
@@ -61,94 +66,97 @@ export default function CalendarView({ events }: Props) {
     setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1));
 
   return (
-    <div className="rounded-2xl border border-ink/10 bg-paper p-5 shadow-card md:p-8">
-      <div className="flex items-center justify-between">
-        <div className="display text-2xl font-black md:text-3xl">
-          {monthLabel}
-        </div>
-        <div className="flex gap-2">
-          <button onClick={prev} className="btn-ghost">
-            {t("prev")}
-          </button>
-          <button onClick={next} className="btn-ghost">
-            {t("next")}
-          </button>
-        </div>
-      </div>
-
-      <div className="mt-6 grid grid-cols-7 gap-px overflow-hidden rounded-xl border border-ink/15 bg-ink/15 text-xs">
-        {weekdayLabels.map((d, i) => (
-          <div
-            key={`${d}-${i}`}
-            className="bg-ink py-2 text-center font-bold uppercase tracking-widest text-paper"
-          >
-            {d}
+    <div className="flex flex-col gap-8">
+      <FilterBar value={filter} onChange={setFilter} resultCount={filtered.length} />
+      <div className="rounded-2xl border border-ink/10 bg-paper p-5 shadow-card md:p-8">
+        <div className="flex items-center justify-between">
+          <div className="display text-2xl font-black md:text-3xl">
+            {monthLabel}
           </div>
-        ))}
-        {cells.map((cell, idx) => {
-          const key = cell
-            ? `${cell.getFullYear()}-${cell.getMonth()}-${cell.getDate()}`
-            : `pad-${idx}`;
-          const dayEvents = cell ? eventsByDay.get(key) ?? [] : [];
-          const isToday =
-            cell &&
-            cell.getFullYear() === today.getFullYear() &&
-            cell.getMonth() === today.getMonth() &&
-            cell.getDate() === today.getDate();
+          <div className="flex gap-2">
+            <button onClick={prev} className="btn-ghost">
+              {t("prev")}
+            </button>
+            <button onClick={next} className="btn-ghost">
+              {t("next")}
+            </button>
+          </div>
+        </div>
 
-          return (
+        <div className="mt-6 grid grid-cols-7 gap-px overflow-hidden rounded-xl border border-ink/15 bg-ink/15 text-xs">
+          {weekdayLabels.map((d, i) => (
             <div
-              key={key}
-              className={`min-h-[88px] bg-paper p-2 ${
-                cell ? "" : "opacity-40"
-              }`}
+              key={`${d}-${i}`}
+              className="bg-ink py-2 text-center font-bold uppercase tracking-widest text-paper"
             >
-              {cell && (
-                <>
-                  <div
-                    className={`display text-sm font-black ${
-                      isToday ? "text-cypher-red" : "text-ink"
-                    }`}
-                  >
-                    {cell.getDate()}
-                  </div>
-                  <div className="mt-1 flex flex-col gap-0.5">
-                    {dayEvents.slice(0, 3).map((e) => (
-                      <Link
-                        key={e.id}
-                        href={`/events/${e.id}`}
-                        className="group flex items-center gap-1.5 rounded px-1 py-0.5 text-[10px] hover:bg-ink hover:text-paper"
-                      >
-                        <span
-                          className={`h-1.5 w-1.5 shrink-0 rounded-full ${TYPE_DOT[e.type]}`}
-                        />
-                        <span className="truncate font-bold">
-                          {e.title}
-                        </span>
-                      </Link>
-                    ))}
-                    {dayEvents.length > 3 && (
-                      <span className="px-1 text-[10px] text-ink/50">
-                        {t("more", { count: dayEvents.length - 3 })}
-                      </span>
-                    )}
-                  </div>
-                </>
-              )}
+              {d}
             </div>
-          );
-        })}
-      </div>
+          ))}
+          {cells.map((cell, idx) => {
+            const key = cell
+              ? `${cell.getFullYear()}-${cell.getMonth()}-${cell.getDate()}`
+              : `pad-${idx}`;
+            const dayEvents = cell ? eventsByDay.get(key) ?? [] : [];
+            const isToday =
+              cell &&
+              cell.getFullYear() === today.getFullYear() &&
+              cell.getMonth() === today.getMonth() &&
+              cell.getDate() === today.getDate();
 
-      <div className="mt-5 flex flex-wrap gap-3 text-[11px]">
-        {EVENT_TYPES.map((type) => (
-          <div key={type} className="flex items-center gap-1.5">
-            <span className={`h-2 w-2 rounded-full ${TYPE_DOT[type]}`} />
-            <span className="font-bold uppercase tracking-widest text-ink/70">
-              {tType(type)}
-            </span>
-          </div>
-        ))}
+            return (
+              <div
+                key={key}
+                className={`min-h-[88px] bg-paper p-2 ${
+                  cell ? "" : "opacity-40"
+                }`}
+              >
+                {cell && (
+                  <>
+                    <div
+                      className={`display text-sm font-black ${
+                        isToday ? "text-cypher-red" : "text-ink"
+                      }`}
+                    >
+                      {cell.getDate()}
+                    </div>
+                    <div className="mt-1 flex flex-col gap-0.5">
+                      {dayEvents.slice(0, 3).map((e) => (
+                        <Link
+                          key={e.id}
+                          href={`/events/${e.id}`}
+                          className="group flex items-center gap-1.5 rounded px-1 py-0.5 text-[10px] hover:bg-ink hover:text-paper"
+                        >
+                          <span
+                            className={`h-1.5 w-1.5 shrink-0 rounded-full ${TYPE_DOT[e.type]}`}
+                          />
+                          <span className="truncate font-bold">
+                            {e.title}
+                          </span>
+                        </Link>
+                      ))}
+                      {dayEvents.length > 3 && (
+                        <span className="px-1 text-[10px] text-ink/50">
+                          {t("more", { count: dayEvents.length - 3 })}
+                        </span>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-3 text-[11px]">
+          {EVENT_TYPES.map((type) => (
+            <div key={type} className="flex items-center gap-1.5">
+              <span className={`h-2 w-2 rounded-full ${TYPE_DOT[type]}`} />
+              <span className="font-bold uppercase tracking-widest text-ink/70">
+                {tType(type)}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
