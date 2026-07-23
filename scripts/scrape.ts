@@ -14,6 +14,10 @@ import { etstage } from "./sources/etstage";
 import { breakingCalendar } from "./sources/breaking-calendar";
 import { and8 } from "./sources/and8";
 import { danceAlive } from "./sources/dance-alive";
+import { freestyleSessionJapan } from "./sources/freestyle-session-japan";
+import { danceDelight } from "./sources/dance-delight";
+import { justeDeboutTokyo } from "./sources/juste-debout-tokyo";
+import { wdcTokyo } from "./sources/wdc-tokyo";
 import { extractEventFromText } from "./lib/extract";
 import { translateDescription } from "./lib/translate";
 import {
@@ -24,7 +28,16 @@ import {
 import type { EventSource, ScrapedEventRecord } from "./lib/types";
 
 /** 収集対象の情報源。新しいサイトは scripts/sources/ に追加してここに並べる */
-const SOURCES: EventSource[] = [etstage, breakingCalendar, and8, danceAlive];
+const SOURCES: EventSource[] = [
+  etstage,
+  breakingCalendar,
+  and8,
+  danceAlive,
+  freestyleSessionJapan,
+  danceDelight,
+  justeDeboutTokyo,
+  wdcTokyo,
+];
 
 /** SCRAPE_FORCE_REFRESH=1 のときは変更なしスキップを行わず全件Claude抽出する */
 const FORCE_REFRESH = process.env.SCRAPE_FORCE_REFRESH === "1";
