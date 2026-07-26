@@ -16,8 +16,8 @@ export type Genre =
   | "jazz"
   | "all";
 
-// ダンスシーンが盛んな主要12都道府県は個別キー、それ以外は地方ブロックでまとめる方式。
-// 例: 関東ブロック(kanto)は東京/神奈川/千葉/埼玉を除いた茨城・栃木・群馬が該当。
+// ダンスシーンが盛んな主要13都道府県は個別キー、それ以外は地方ブロックでまとめる方式。
+// 例: 関東ブロック(kanto)は東京/神奈川/千葉/埼玉/茨城を除いた栃木・群馬が該当。
 // et-stage側は都道府県で情報を持っているため、抽出時に都道府県→この区分へ変換する。
 // 詳細は docs/STATUS_AND_NEXT.md の T1 を参照。
 export type Region =
@@ -28,6 +28,7 @@ export type Region =
   | "kanagawa"
   | "chiba"
   | "saitama"
+  | "ibaraki"
   | "niigata"
   | "aichi"
   | "kyoto"
@@ -55,6 +56,7 @@ export type Region =
   | "shanghai"
   | "beijing"
   | "chengdu"
+  | "china"
   | "asia"
   | "newyork"
   | "losangeles"
@@ -109,6 +111,8 @@ export interface DanceEvent {
   igHandle?: string;        // @なし
   igPostUrl?: string;
   entryUrl?: string;
+  /** エントリー受付終了フラグ(adminの「締め切りました」ボタンで手動セット) */
+  entryClosed?: boolean;
   status?: EventStatus;
   source?: string;          // どこから取得したか
 }
@@ -142,6 +146,7 @@ export const REGIONS: Region[] = [
   "kanagawa",
   "chiba",
   "saitama",
+  "ibaraki",
   "kanto",
   "niigata",
   "hokuriku",
@@ -164,6 +169,7 @@ export const REGIONS: Region[] = [
   "shanghai",
   "beijing",
   "chengdu",
+  "china",
   "asia",
   "newyork",
   "losangeles",
@@ -203,6 +209,7 @@ export const DOMESTIC_REGIONS: Region[] = [
   "kanagawa",
   "chiba",
   "saitama",
+  "ibaraki",
   "kanto",
   "niigata",
   "hokuriku",
@@ -227,6 +234,7 @@ export const OVERSEAS_REGIONS: Region[] = [
   "shanghai",
   "beijing",
   "chengdu",
+  "china",
   "asia",
   "newyork",
   "losangeles",
@@ -333,6 +341,7 @@ export function buildRegionLabels(
     kanagawa: t("kanagawa"),
     chiba: t("chiba"),
     saitama: t("saitama"),
+    ibaraki: t("ibaraki"),
     kanto: t("kanto"),
     niigata: t("niigata"),
     hokuriku: t("hokuriku"),
@@ -355,6 +364,7 @@ export function buildRegionLabels(
     shanghai: t("shanghai"),
     beijing: t("beijing"),
     chengdu: t("chengdu"),
+    china: t("china"),
     asia: t("asia"),
     newyork: t("newyork"),
     losangeles: t("losangeles"),
