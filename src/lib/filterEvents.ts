@@ -1,6 +1,6 @@
 import type { FilterState } from "@/components/FilterBar";
 import { getEventGenres, matchesRegionFilter, type DanceEvent } from "@/types/event";
- 
+
 /** EventGrid・CalendarView共通のフィルタ適用ロジック。 */
 export function filterEvents(events: DanceEvent[], filter: FilterState): DanceEvent[] {
   const q = filter.query.trim().toLowerCase();
@@ -21,4 +21,3 @@ export function filterEvents(events: DanceEvent[], filter: FilterState): DanceEv
     return true;
   });
 }
- 
