@@ -72,14 +72,19 @@ export default async function EventDetailPage({ params }: PageProps) {
   // 過去イベントも直接URLでは開ける(SEO資産として残す)。表示上だけ終了扱いにする。
   const eventEnded = isPastEvent(event.date);
   const dateText = formatDate(event.date, params.locale);
-  const deadlinePassed = event.deadline
-    ? new Date(event.deadline).getTime() < Date.now()
-    : false;
+  // adminの「締め切りました」フラグ(entryClosed)は締切日と無関係に受付終了として扱う
+  const deadlinePassed =
+    event.entryClosed === true ||
+    (event.deadline
+      ? new Date(event.deadline).getTime() < Date.now()
+      : false);
   const deadlineText = event.deadline
     ? deadlinePassed
       ? t("deadlinePassed")
       : formatDate(event.deadline, params.locale)
-    : null;
+    : event.entryClosed === true
+      ? t("deadlinePassed")
+      : null;
 
   const localizedDescription = getLocalizedDescription(event, params.locale);
 
