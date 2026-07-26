@@ -2,19 +2,22 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { rowToEvent } from "@/lib/eventMapper";
 import { buildDedupeKey } from "@/lib/admin/dedupe";
-import type { DanceEvent, EventStatus } from "@/types/event";
+import type { DanceEvent, EventStatus , Genre } from "@/types/event";
 
 const FLYERS_BUCKET = "flyers";
 
 export async function fetchAdminEvents(
   status: EventStatus,
+  genre?: Genre,
 ): Promise<DanceEvent[]> {
   const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("events")
     .select("*")
-    .eq("status", status)
-    .order("created_at", { ascending: false });
+    .eq("status", status);
+  // ジャンル絞り込み(公開中タブ含む全タブで有効)。未指定なら全ジャンル。
+  if (genre) query = query.eq("genre", genre);
+  const { data, error } = await query.order("created_at", { ascending: false });
 
   if (error || !data) {
     console.warn("[admin] fetchAdminEvents failed:", error?.message);
