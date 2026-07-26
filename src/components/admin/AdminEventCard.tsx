@@ -9,7 +9,7 @@ import {
   ADMIN_GENRE_LABEL,
   ADMIN_REGION_LABEL,
 } from "@/lib/admin/labels";
-import type { DanceEvent } from "@/types/event";
+import { getEventGenres, type DanceEvent } from "@/types/event";
 
 export default function AdminEventCard({ event }: { event: DanceEvent }) {
   return (
@@ -33,7 +33,11 @@ export default function AdminEventCard({ event }: { event: DanceEvent }) {
           <span className="chip bg-ink text-paper">
             {ADMIN_EVENT_TYPE_LABEL[event.type]}
           </span>
-          <span className="chip-outline">{ADMIN_GENRE_LABEL[event.genre]}</span>
+          {getEventGenres(event).map((g) => (
+            <span key={g} className="chip-outline">
+              {ADMIN_GENRE_LABEL[g]}
+            </span>
+          ))}
           <span className="chip-outline">{ADMIN_REGION_LABEL[event.region]}</span>
           {event.entryClosed && (
             <span className="chip bg-ink/60 text-paper">受付終了</span>

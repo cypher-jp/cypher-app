@@ -31,6 +31,7 @@ export interface EventFormValues {
   title: string;
   type: EventType;
   genre: Genre;
+  genres: Genre[];
   region: Region;
   date: string;
   deadline: string;
@@ -102,18 +103,24 @@ export default function EventForm({ action, defaultValues, submitLabel }: Props)
             ))}
           </select>
         </Field>
-        <Field label="ジャンル">
-          <select
-            name="genre"
-            defaultValue={defaultValues?.genre ?? "all"}
-            className="input"
-          >
+        <Field label="ジャンル(複数選択可。FREESTYLE/ALL STYLE表記の大会のみ「ALL STYLE」)">
+          <div className="flex flex-wrap gap-x-4 gap-y-2 pt-1">
             {GENRES.map((v) => (
-              <option key={v} value={v}>
+              <label key={v} className="flex items-center gap-1.5 text-sm">
+                <input
+                  type="checkbox"
+                  name="genres"
+                  value={v}
+                  defaultChecked={(defaultValues?.genres &&
+                  defaultValues.genres.length > 0
+                    ? defaultValues.genres
+                    : [defaultValues?.genre ?? "all"]
+                  ).includes(v)}
+                />
                 {ADMIN_GENRE_LABEL[v]}
-              </option>
+              </label>
             ))}
-          </select>
+          </div>
         </Field>
         <Field label="エリア *">
           <select
