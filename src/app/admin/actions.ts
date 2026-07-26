@@ -1,5 +1,5 @@
 "use server";
-
+ 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -15,7 +15,7 @@ import {
 } from "@/lib/admin/events";
 import type { EventStatus } from "@/types/event";
 import { routing } from "@/i18n/routing";
-
+ 
 function revalidatePublicPaths(eventId?: string) {
   for (const locale of routing.locales) {
     revalidatePath(`/${locale}`);
@@ -23,31 +23,31 @@ function revalidatePublicPaths(eventId?: string) {
     if (eventId) revalidatePath(`/${locale}/events/${eventId}`);
   }
 }
-
+ 
 export async function signInAction(formData: FormData): Promise<void> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-
+ 
   if (!email || !password) {
     redirect(`/admin/login?error=${encodeURIComponent("メールアドレスとパスワードを入力してください")}`);
   }
-
+ 
   const supabase = createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-
+ 
   if (error) {
     redirect(`/admin/login?error=${encodeURIComponent(error.message)}`);
   }
-
+ 
   redirect("/admin");
 }
-
+ 
 export async function signOutAction(): Promise<void> {
   const supabase = createSupabaseServerClient();
   await supabase.auth.signOut();
   redirect("/admin/login");
 }
-
+ 
 /**
  * 1件承認。承認前に「同一イベントらしき」他の承認待ち行(重複候補)を探し、
  * 承認したものが選ばれるように、残りは却下(status='draft')にして
@@ -57,27 +57,47 @@ export async function signOutAction(): Promise<void> {
 export async function approveEventAction(id: string): Promise<void> {
   const supabase = createSupabaseServerClient();
   const event = await fetchAdminEventById(id);
-
+ 
   await updateEventStatus(supabase, id, "published");
-
+ 
   if (event) {
     const duplicateIds = await findDuplicatePendingEventIds(supabase, event);
     for (const duplicateId of duplicateIds) {
       await updateEventStatus(supabase, duplicateId, "draft");
     }
   }
-
+ 
   revalidatePublicPaths(id);
   revalidatePath("/admin");
 }
-
+ 
+/**
+ * 「締め切りました」トグル。エントリー受付終了フラグ(entry_closed)を付け外しする。
+ * オーナーが実物の告知を確認し、締め切っていたら押す運用(自動判定はしない)。
+ */
+export async function toggleEntryClosedAction(
+  id: string,
+  closed: boolean,
+): Promise<void> {
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase
+    .from("events")
+    .update({ entry_closed: closed })
+    .eq("id", id);
+  if (error) {
+    console.warn("[admin] toggleEntryClosedAction failed:", error.message);
+  }
+  revalidatePublicPaths(id);
+  revalidatePath("/admin");
+}
+ 
 export async function rejectEventAction(id: string): Promise<void> {
   const supabase = createSupabaseServerClient();
   await updateEventStatus(supabase, id, "draft");
   revalidatePublicPaths(id);
   revalidatePath("/admin");
 }
-
+ 
 /**
  * 一括承認。承認待ち一覧でチェックした複数件をまとめて承認する。
  * 1件承認(approveEventAction)のロジックをそのまま順番に呼び出すだけなので、
@@ -89,7 +109,7 @@ export async function bulkApproveEventsAction(ids: string[]): Promise<void> {
     await approveEventAction(id);
   }
 }
-
+ 
 interface ParsedForm {
   title: string;
   type: string;
@@ -106,7 +126,7 @@ interface ParsedForm {
   source: string | null;
   flyerFile: File | null;
 }
-
+ 
 function parseEventForm(formData: FormData): ParsedForm {
   const title = String(formData.get("title") ?? "").trim();
   const type = String(formData.get("type") ?? "battle");
@@ -123,13 +143,13 @@ function parseEventForm(formData: FormData): ParsedForm {
   const status: EventStatus =
     statusRaw === "published" || statusRaw === "draft" ? statusRaw : "pending";
   const sourceRaw = String(formData.get("source") ?? "").trim();
-
+ 
   const igHandle = igHandleRaw || extractIgHandle(igPostUrlRaw) || null;
-
+ 
   const flyerEntry = formData.get("flyer");
   const flyerFile =
     flyerEntry instanceof File && flyerEntry.size > 0 ? flyerEntry : null;
-
+ 
   return {
     title,
     type,
@@ -147,18 +167,18 @@ function parseEventForm(formData: FormData): ParsedForm {
     flyerFile,
   };
 }
-
+ 
 export async function createEventAction(formData: FormData): Promise<void> {
   const parsed = parseEventForm(formData);
-
+ 
   if (!parsed.title || !parsed.date) {
     redirect(
       `/admin/new?error=${encodeURIComponent("タイトルと開催日は必須です")}`,
     );
   }
-
+ 
   const supabase = createSupabaseServerClient();
-
+ 
   let flyerUrl: string | null = null;
   if (parsed.flyerFile) {
     try {
@@ -168,7 +188,7 @@ export async function createEventAction(formData: FormData): Promise<void> {
       redirect(`/admin/new?error=${encodeURIComponent(message)}`);
     }
   }
-
+ 
   const input: EventInput = {
     title: parsed.title,
     type: parsed.type,
@@ -185,34 +205,34 @@ export async function createEventAction(formData: FormData): Promise<void> {
     status: parsed.status,
     source: parsed.source ?? "manual",
   };
-
+ 
   const result = await insertEvent(supabase, input);
   if (!result) {
     redirect(`/admin/new?error=${encodeURIComponent("登録に失敗しました")}`);
   }
-
+ 
   revalidatePublicPaths(result.id);
   revalidatePath("/admin");
   redirect(`/admin?tab=${input.status}`);
 }
-
+ 
 export async function updateEventAction(
   id: string,
   formData: FormData,
 ): Promise<void> {
   const parsed = parseEventForm(formData);
-
+ 
   if (!parsed.title || !parsed.date) {
     redirect(
       `/admin/events/${id}/edit?error=${encodeURIComponent("タイトルと開催日は必須です")}`,
     );
   }
-
+ 
   const supabase = createSupabaseServerClient();
-
+ 
   const existingFlyerUrl = String(formData.get("existingFlyerUrl") ?? "").trim();
   let flyerUrl: string | null = existingFlyerUrl || null;
-
+ 
   if (parsed.flyerFile) {
     try {
       flyerUrl = await uploadFlyer(supabase, parsed.flyerFile);
@@ -221,7 +241,7 @@ export async function updateEventAction(
       redirect(`/admin/events/${id}/edit?error=${encodeURIComponent(message)}`);
     }
   }
-
+ 
   const input: EventInput = {
     title: parsed.title,
     type: parsed.type,
@@ -238,14 +258,15 @@ export async function updateEventAction(
     status: parsed.status,
     source: parsed.source,
   };
-
+ 
   const ok = await updateEvent(supabase, id, input);
   if (!ok) {
     redirect(`/admin/events/${id}/edit?error=${encodeURIComponent("更新に失敗しました")}`);
   }
-
+ 
   revalidatePublicPaths(id);
   revalidatePath("/admin");
   revalidatePath(`/admin/events/${id}/edit`);
   redirect(`/admin?tab=${input.status}`);
 }
+ 
