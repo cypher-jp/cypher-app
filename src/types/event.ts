@@ -1,10 +1,11 @@
+
 export type EventType =
   | "battle"
   | "showcase"
   | "workshop"
   | "audition"
   | "festival";
-
+ 
 export type Genre =
   | "hiphop"
   | "house"
@@ -15,7 +16,7 @@ export type Genre =
   | "krump"
   | "jazz"
   | "all";
-
+ 
 // ダンスシーンが盛んな主要13都道府県は個別キー、それ以外は地方ブロックでまとめる方式。
 // 例: 関東ブロック(kanto)は東京/神奈川/千葉/埼玉/茨城を除いた栃木・群馬が該当。
 // et-stage側は都道府県で情報を持っているため、抽出時に都道府県→この区分へ変換する。
@@ -87,19 +88,21 @@ export type Region =
   | "moscow"
   | "eu"
   | "other";
-
+ 
 export type EventStatus = "published" | "pending" | "draft";
-
+ 
 // Phase 3: 自動翻訳対象言語（ja原文以外）。next-intlのロケール(ja/en/ko/zh/fr)のうち ja を除いたもの。
 export type I18nLocale = "en" | "ko" | "zh" | "fr";
-
+ 
 export const I18N_LOCALES: I18nLocale[] = ["en", "ko", "zh", "fr"];
-
+ 
 export interface DanceEvent {
   id: string;
   title: string;
   type: EventType;
   genre: Genre;
+  /** 開催ジャンル一覧(部門制の大会は複数)。未設定の旧データは genre(単一)へフォールバック(getEventGenres参照) */
+  genres?: Genre[];
   region: Region;
   date: string;             // ISO yyyy-mm-dd
   deadline?: string;        // 申し込み締切
@@ -116,7 +119,7 @@ export interface DanceEvent {
   status?: EventStatus;
   source?: string;          // どこから取得したか
 }
-
+ 
 export const EVENT_TYPES: EventType[] = [
   "battle",
   "showcase",
@@ -124,7 +127,7 @@ export const EVENT_TYPES: EventType[] = [
   "audition",
   "festival",
 ];
-
+ 
 export const GENRES: Genre[] = [
   "hiphop",
   "house",
@@ -136,7 +139,7 @@ export const GENRES: Genre[] = [
   "jazz",
   "all",
 ];
-
+ 
 // 表示順: 北から南へ、個別化した都道府県→その地方の残りブロックの順に並べる。
 export const REGIONS: Region[] = [
   "hokkaido",
@@ -198,7 +201,7 @@ export const REGIONS: Region[] = [
   "eu",
   "other",
 ];
-
+ 
 // フィルタのエリアチップを「国内/海外」タブで切り替えるための分類。
 // "online" はどちらの地理区分にも属さないため、この2つには含めずFilterBar側で単独チップとして扱う。
 export const DOMESTIC_REGIONS: Region[] = [
@@ -224,7 +227,7 @@ export const DOMESTIC_REGIONS: Region[] = [
   "fukuoka",
   "kyushu",
 ];
-
+ 
 export const OVERSEAS_REGIONS: Region[] = [
   "seoul",
   "busan",
@@ -262,7 +265,7 @@ export const OVERSEAS_REGIONS: Region[] = [
   "eu",
   "other",
 ];
-
+ 
 // ヨーロッパの「国キー → [国キー, 首都キー]」対応。
 // フィルタで国を選んだ時に、国キー本体に加えて対応する首都キーの行もヒットさせるために使う。
 // 例: france を選択 → region が france または paris の行が対象。
@@ -279,7 +282,7 @@ export const REGION_GROUPS: Partial<Record<Region, Region[]>> = {
   switzerland: ["switzerland", "zurich"],
   russia: ["russia", "moscow"],
 };
-
+ 
 /**
  * フィルタで選択された region（"any" も許容）に対して、実データの region がヒットするか判定する。
  * ヨーロッパの国キーが選ばれた場合は REGION_GROUPS を展開して国＋首都の両方にマッチさせる。
@@ -294,9 +297,20 @@ export function matchesRegionFilter(
   if (group) return group.includes(eventRegion);
   return eventRegion === filterRegion;
 }
-
+ 
 export const EVENT_STATUSES: EventStatus[] = ["pending", "published", "draft"];
-
+ 
+/**
+ * イベントの開催ジャンル一覧を返す。
+ * genres(複数ジャンル)が設定されていればそれを、無い旧データは genre(単一)を1要素配列で返す。
+ * "all" は「FREESTYLE / ALL STYLE と明記された大会」を意味し、フィルタではどのジャンルにもヒットする。
+ */
+export function getEventGenres(
+  event: Pick<DanceEvent, "genre" | "genres">,
+): Genre[] {
+  return event.genres && event.genres.length > 0 ? event.genres : [event.genre];
+}
+ 
 /**
  * next-intl の useTranslations("labels.eventType") 等から得た翻訳関数を渡すと、
  * 型安全な Record<EventType, string> を組み立てる。
@@ -313,7 +327,7 @@ export function buildEventTypeLabels(
     festival: t("festival"),
   };
 }
-
+ 
 export function buildGenreLabels(
   t: (key: Genre) => string,
 ): Record<Genre, string> {
@@ -329,7 +343,7 @@ export function buildGenreLabels(
     all: t("all"),
   };
 }
-
+ 
 export function buildRegionLabels(
   t: (key: Region) => string,
 ): Record<Region, string> {
@@ -393,3 +407,4 @@ export function buildRegionLabels(
     other: t("other"),
   };
 }
+ 
