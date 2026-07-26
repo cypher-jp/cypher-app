@@ -18,6 +18,8 @@ export interface ExtractedEvent {
   title: string;
   type: EventType;
   genre: Genre;
+  /** 開催ジャンル一覧(部門制の大会は複数、FREESTYLE表記の大会は["all"]) */
+  genres: Genre[];
   region: Region;
   date: string; // ISO yyyy-mm-dd
   deadline?: string; // ISO yyyy-mm-dd
