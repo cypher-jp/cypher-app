@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import type { DanceEvent } from "@/types/event";
+import { getEventGenres, type DanceEvent } from "@/types/event";
 
 const TYPE_ACCENT: Record<DanceEvent["type"], string> = {
   battle: "bg-cypher-red text-paper",
@@ -63,7 +63,11 @@ export default function EventCard({ event }: { event: DanceEvent }) {
           {event.title}
         </h3>
         <div className="mt-2 flex flex-wrap gap-1.5">
-          <span className="chip-outline">{tGenre(event.genre)}</span>
+          {getEventGenres(event).map((g) => (
+            <span key={g} className="chip-outline">
+              {tGenre(g)}
+            </span>
+          ))}
           <span className="chip-outline">{tRegion(event.region)}</span>
         </div>
         <p className="mt-3 line-clamp-2 text-sm text-ink/70">{event.venue}</p>
