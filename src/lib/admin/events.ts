@@ -16,7 +16,8 @@ export async function fetchAdminEvents(
     .select("*")
     .eq("status", status);
   // ジャンル絞り込み(公開中タブ含む全タブで有効)。未指定なら全ジャンル。
-  if (genre) query = query.eq("genre", genre);
+  // 部門制の大会(genresに複数持つ)も拾えるよう、genres配列に対するcontainsで判定する。
+  if (genre) query = query.contains("genres", [genre]);
   const { data, error } = await query.order("created_at", { ascending: false });
 
   if (error || !data) {
@@ -62,6 +63,7 @@ export interface EventInput {
   title: string;
   type: string;
   genre: string;
+  genres: string[];
   region: string;
   date: string;
   deadline: string | null;
@@ -85,6 +87,7 @@ export async function insertEvent(
       title: input.title,
       type: input.type,
       genre: input.genre,
+      genres: input.genres,
       region: input.region,
       date: input.date,
       deadline: input.deadline,
@@ -118,6 +121,7 @@ export async function updateEvent(
       title: input.title,
       type: input.type,
       genre: input.genre,
+      genres: input.genres,
       region: input.region,
       date: input.date,
       deadline: input.deadline,
