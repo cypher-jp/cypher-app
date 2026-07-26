@@ -4,10 +4,11 @@ import AdminEventCard from "@/components/admin/AdminEventCard";
 import PendingEventsBoard from "@/components/admin/PendingEventsBoard";
 import { fetchAdminEvents, fetchAdminEventCounts } from "@/lib/admin/events";
 import { groupPendingEvents } from "@/lib/admin/dedupe";
-import type { EventStatus } from "@/types/event";
+import { ADMIN_GENRE_LABEL } from "@/lib/admin/labels";
+import { GENRES, type EventStatus, type Genre } from "@/types/event";
 
 interface Props {
-  searchParams: { tab?: string };
+  searchParams: { tab?: string; genre?: string };
 }
 
 export default async function AdminHomePage({ searchParams }: Props) {
@@ -16,8 +17,13 @@ export default async function AdminHomePage({ searchParams }: Props) {
       ? searchParams.tab
       : "pending";
 
+  // ジャンル絞り込み(全タブ共通)。不正な値は無視して全件表示。
+  const genre: Genre | undefined = GENRES.includes(searchParams.genre as Genre)
+    ? (searchParams.genre as Genre)
+    : undefined;
+
   const [events, counts] = await Promise.all([
-    fetchAdminEvents(tab),
+    fetchAdminEvents(tab, genre),
     fetchAdminEventCounts(),
   ]);
 
@@ -39,6 +45,25 @@ export default async function AdminHomePage({ searchParams }: Props) {
 
       <div className="mt-6">
         <AdminTabs current={tab} counts={counts} />
+      </div>
+
+      {/* ジャンル絞り込みチップ(公開中タブ含む全タブで有効) */}
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        <Link
+          href={`/admin?tab=${tab}`}
+          className={genre === undefined ? "chip bg-ink text-paper" : "chip-outline"}
+        >
+          全ジャンル
+        </Link>
+        {GENRES.map((g) => (
+          <Link
+            key={g}
+            href={`/admin?tab=${tab}&genre=${g}`}
+            className={genre === g ? "chip bg-ink text-paper" : "chip-outline"}
+          >
+            {ADMIN_GENRE_LABEL[g]}
+          </Link>
+        ))}
       </div>
 
       {tab === "pending" && duplicateGroupCount > 0 && (
