@@ -32,6 +32,7 @@ export function rowToEvent(row: Record<string, unknown>): DanceEvent {
     igHandle: row.ig_handle ? String(row.ig_handle) : undefined,
     igPostUrl: row.ig_post_url ? String(row.ig_post_url) : undefined,
     entryUrl: row.entry_url ? String(row.entry_url) : undefined,
+    entryClosed: row.entry_closed === true,
     status: (row.status as DanceEvent["status"]) ?? "published",
     source: row.source ? String(row.source) : undefined,
   };
