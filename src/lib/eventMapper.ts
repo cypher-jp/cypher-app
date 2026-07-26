@@ -1,4 +1,4 @@
-import { I18N_LOCALES, type DanceEvent } from "@/types/event";
+import { GENRES, I18N_LOCALES, type DanceEvent, type Genre } from "@/types/event";
 
 // description_i18n(jsonb) を安全にパースする。想定外の形(null/文字列以外の値等)は無視する。
 function parseDescriptionI18n(value: unknown): DanceEvent["descriptionI18n"] {
@@ -14,6 +14,18 @@ function parseDescriptionI18n(value: unknown): DanceEvent["descriptionI18n"] {
   return Object.keys(result).length > 0 ? result : undefined;
 }
 
+// genres(text[])を安全にパースする。既知のジャンル値のみ残し、空なら undefined(genre単一へのフォールバック用)。
+function parseGenres(value: unknown): Genre[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const result: Genre[] = [];
+  for (const v of value) {
+    if (typeof v === "string" && (GENRES as string[]).includes(v) && !result.includes(v as Genre)) {
+      result.push(v as Genre);
+    }
+  }
+  return result.length > 0 ? result : undefined;
+}
+
 // SupabaseのDBスキーマ(snake_case) → アプリの型(camelCase) に変換。
 // 公開側(src/lib/supabase.ts)と管理画面側(src/lib/admin/events.ts)の両方から使う共通ロジック。
 export function rowToEvent(row: Record<string, unknown>): DanceEvent {
@@ -22,6 +34,7 @@ export function rowToEvent(row: Record<string, unknown>): DanceEvent {
     title: String(row.title ?? ""),
     type: (row.type as DanceEvent["type"]) ?? "battle",
     genre: (row.genre as DanceEvent["genre"]) ?? "all",
+    genres: parseGenres(row.genres),
     region: (row.region as DanceEvent["region"]) ?? "other",
     date: String(row.date ?? ""),
     deadline: row.deadline ? String(row.deadline) : undefined,
