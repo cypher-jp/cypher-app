@@ -39,6 +39,28 @@ function normalizeGenre(value: unknown): Genre {
   return "all";
 }
 
+/**
+ * genres(配列)の正規化。未知の値は捨て、"all"が含まれる場合は["all"]に丸める
+ * (「FREESTYLE表記の大会」の意味を保つため個別ジャンルと併記させない)。
+ * 空になった場合は旧形式のgenre(単一)からフォールバックする。
+ */
+function normalizeGenres(value: unknown, fallback: unknown): Genre[] {
+  const result: Genre[] = [];
+  if (Array.isArray(value)) {
+    for (const v of value) {
+      if (typeof v === "string") {
+        const lower = v.toLowerCase().trim();
+        if ((GENRES as string[]).includes(lower) && !result.includes(lower as Genre)) {
+          result.push(lower as Genre);
+        }
+      }
+    }
+  }
+  if (result.includes("all")) return ["all"];
+  if (result.length > 0) return result;
+  return [normalizeGenre(fallback)];
+}
+
 function normalizeRegion(value: unknown): Region {
   if (typeof value === "string") {
     const lower = value.toLowerCase().trim();
@@ -65,7 +87,7 @@ const SYSTEM_PROMPT = `あなたはストリートダンスのイベント情報
 {
   "title": string,               // イベント名
   "type": "${EVENT_TYPES.join('" | "')}",
-  "genre": "${GENRES.join('" | "')}",
+  "genres": ["${GENRES.join('" | "')}"], // 開催ジャンルの配列(1つ以上)
   "region": "${REGIONS.join('" | "')}",
   "date": "YYYY-MM-DD",           // 開催日(必須。開始日のみ。不明な場合は分かる範囲で最も確からしい日)
   "deadline": "YYYY-MM-DD" | null, // エントリー締切(無ければnull)
@@ -142,6 +164,7 @@ const SYSTEM_PROMPT = `あなたはストリートダンスのイベント情報
 
 分類のルール:
 - genre は上記の列挙値の中から最も近いものを選ぶこと。判断できない場合は genre="all" とする。
+- genres は開催されるジャンルの配列。イベント名や本文に FREESTYLE / ALL STYLE / オールスタイル / オールジャンル / 全ジャンル 等の表記がある場合のみ ["all"] とする。複数ジャンルの部門を併催する大会(例: POPPING部門とLOCKING部門を同時開催)は、開催される各ジャンルをすべて列挙する。単一ジャンルの大会は要素1つ。ジャンルが読み取れない場合は ["all"]。
 - region は、まず本文・会場名から開催都道府県(国内)または国・都市(海外)を読み取り、上の対応表に従って変換すること。対応表に無い都道府県名・都市名でも、会場名や市区町村名(例:横浜→神奈川→kanagawa、札幌市→北海道→hokkaido、京都市→京都→kyoto、ブルックリン→ニューヨーク→newyork)から推測できる場合は変換すること。判断できない場合のみ online/other を使う。
 - ヨーロッパの国が上の対応表(フランス/ドイツ/オランダ/ベルギー/イギリス/イタリア/スペイン/ポーランド/スイス/ロシア)に含まれる場合は、必ずその国キー(または首都開催なら首都キー)を使うこと。対応表に無いヨーロッパの国(例: スウェーデン、ポルトガル等)は eu を使う。
 - 読み取った都道府県名・市区町村名・国名・都市名は description の中に残すこと(ブロックへ丸めた場合でも情報が失われないようにするため)。
@@ -213,10 +236,13 @@ export async function extractEventFromText(
         ? `https://www.instagram.com/${igHandle}/`
         : undefined;
 
+  const genres = normalizeGenres(parsed.genres, parsed.genre);
+
   return {
     title,
     type: normalizeType(parsed.type),
-    genre: normalizeGenre(parsed.genre),
+    genre: genres[0],
+    genres,
     region: normalizeRegion(parsed.region),
     date,
     deadline,

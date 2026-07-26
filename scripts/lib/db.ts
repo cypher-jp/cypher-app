@@ -65,6 +65,26 @@ async function ensureContentHashProbe(db: SupabaseClient): Promise<boolean> {
 }
 
 /**
+ * events.genres 列が存在するかどうかのキャッシュ(content_hashと同じ後方互換パターン)。
+ * migration(008_genres.sql)未適用の環境でもエラーにせず動く。
+ */
+let genresColumnAvailable: boolean | null = null;
+
+/** genres列の有無を1回だけ確認する(以後はキャッシュを使う) */
+async function ensureGenresProbe(db: SupabaseClient): Promise<boolean> {
+  if (genresColumnAvailable !== null) return genresColumnAvailable;
+  const { error } = await db.from("events").select("genres").limit(1);
+  genresColumnAvailable = !error;
+  if (error) {
+    console.warn(
+      "[db] events.genres 列が見つかりません。複数ジャンルは保存されません(genre単一のみ)。" +
+        "supabase/migrations/008_genres.sql を Supabase の SQL Editor で実行すると有効になります。",
+    );
+  }
+  return genresColumnAvailable;
+}
+
+/**
  * 指定した source_url の既存行から status と content_hash を取得する。
  * content_hash列が無い環境(migration未適用)でも動くようフォールバックする(その場合 contentHash は常にnull)。
  * scrape.ts が「変更なしイベントはClaude呼び出しをスキップする」判定に使う。
@@ -146,6 +166,7 @@ export async function backfillContentHashes(
 function toRow(
   record: ScrapedEventRecord,
   hasHashColumn: boolean,
+  hasGenresColumn: boolean,
 ): Record<string, unknown> {
   const row: Record<string, unknown> = {
     title: record.title,
@@ -171,6 +192,9 @@ function toRow(
   if (hasHashColumn && record.contentHash) {
     row.content_hash = record.contentHash;
   }
+  if (hasGenresColumn && record.genres && record.genres.length > 0) {
+    row.genres = record.genres;
+  }
   return row;
 }
 
@@ -193,6 +217,7 @@ export async function upsertScrapedEvents(
 
   const db = getServiceClient();
   const hasHashColumn = await ensureContentHashProbe(db);
+  const hasGenresColumn = await ensureGenresProbe(db);
   const urls = records.map((r) => r.sourceUrl);
 
   const { data: existingRows, error: selectError } = await db
@@ -214,7 +239,7 @@ export async function upsertScrapedEvents(
       if (!existing) {
         const { error } = await db
           .from("events")
-          .insert({ ...toRow(record, hasHashColumn), status: "pending" });
+          .insert({ ...toRow(record, hasHashColumn, hasGenresColumn), status: "pending" });
         if (error) throw new Error(error.message);
         summary.inserted++;
         console.log(`  [db] insert(pending): ${record.title}`);
@@ -226,7 +251,7 @@ export async function upsertScrapedEvents(
       } else {
         const { error } = await db
           .from("events")
-          .update(toRow(record, hasHashColumn))
+          .update(toRow(record, hasHashColumn, hasGenresColumn))
           .eq("id", existing.id);
         if (error) throw new Error(error.message);
         summary.updated++;
