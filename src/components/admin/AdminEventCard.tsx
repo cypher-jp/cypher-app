@@ -1,5 +1,9 @@
 import Link from "next/link";
-import { approveEventAction, rejectEventAction } from "@/app/admin/actions";
+import {
+  approveEventAction,
+  rejectEventAction,
+  toggleEntryClosedAction,
+} from "@/app/admin/actions";
 import {
   ADMIN_EVENT_TYPE_LABEL,
   ADMIN_GENRE_LABEL,
@@ -31,6 +35,9 @@ export default function AdminEventCard({ event }: { event: DanceEvent }) {
           </span>
           <span className="chip-outline">{ADMIN_GENRE_LABEL[event.genre]}</span>
           <span className="chip-outline">{ADMIN_REGION_LABEL[event.region]}</span>
+          {event.entryClosed && (
+            <span className="chip bg-ink/60 text-paper">受付終了</span>
+          )}
         </div>
         <h3 className="display mt-2 line-clamp-2 text-lg font-black leading-tight">
           {event.title}
@@ -61,6 +68,13 @@ export default function AdminEventCard({ event }: { event: DanceEvent }) {
               </button>
             </form>
           )}
+          <form
+            action={toggleEntryClosedAction.bind(null, event.id, !event.entryClosed)}
+          >
+            <button type="submit" className="btn-ghost text-xs">
+              {event.entryClosed ? "締切を解除" : "締め切りました"}
+            </button>
+          </form>
         </div>
       </div>
     </div>
