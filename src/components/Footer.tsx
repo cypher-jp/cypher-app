@@ -29,6 +29,9 @@ export default async function Footer() {
             <Link href="/archive" className="hover:text-paper">
               {tNav("archive")}
             </Link>
+            <Link href="/privacy" className="hover:text-paper">
+              {t("privacy")}
+            </Link>
           </div>
         </div>
       </div>
