@@ -31,7 +31,7 @@ import {
   backfillContentHashes,
 } from "./lib/db";
 import type { EventSource, ScrapedEventRecord } from "./lib/types";
-
+ 
 /** 収集対象の情報源。新しいサイトは scripts/sources/ に追加してここに並べる */
 const SOURCES: EventSource[] = [
   etstage,
@@ -48,22 +48,22 @@ const SOURCES: EventSource[] = [
   choomza,
   ...japanSingleSources,
 ];
-
+ 
 /** SCRAPE_FORCE_REFRESH=1 のときは変更なしスキップを行わず全件Claude抽出する */
 const FORCE_REFRESH = process.env.SCRAPE_FORCE_REFRESH === "1";
-
+ 
 /** ページ本文(rawText)のSHA-256(hex)。既存DBに保存済みハッシュと一致すれば「内容変更なし」と判定する */
 function hashRawText(rawText: string): string {
   return createHash("sha256").update(rawText).digest("hex");
 }
-
+ 
 /** DB接続に必要な環境変数が揃っているか(--dry-runかつ未設定の場合は既存ハッシュ照会をスキップする) */
 function hasDbCredentials(): boolean {
   return Boolean(
     process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY,
   );
 }
-
+ 
 async function collectFromSource(
   source: EventSource,
   dryRun: boolean,
@@ -72,11 +72,11 @@ async function collectFromSource(
     console.log(`[${source.name}] enabled=false のためスキップ`);
     return [];
   }
-
+ 
   console.log(`[${source.name}] 収集開始`);
   const pages = await source.fetchRawPages();
   console.log(`[${source.name}] ${pages.length} ページを取得。抽出を開始`);
-
+ 
   // 既存DBの source_url → (status, content_hash) を先に取得しておく。
   // 取得できない(認証情報なし/DBエラー)場合は空マップのまま扱い、従来どおり全件抽出する。
   let existingHashes = new Map<
@@ -96,7 +96,7 @@ async function collectFromSource(
       );
     }
   }
-
+ 
   const records: ScrapedEventRecord[] = [];
   // 既存行はあるがcontent_hash未登録(null)だったもの。Claude抽出はスキップしつつ、
   // 今回計算した指紋だけを後でDBに登録(UPDATE)する対象として集める。
@@ -106,7 +106,7 @@ async function collectFromSource(
   for (const page of pages) {
     const contentHash = hashRawText(page.rawText);
     const existing = existingHashes.get(page.sourceUrl);
-
+ 
     if (!FORCE_REFRESH && existing) {
       if (existing.contentHash) {
         if (existing.contentHash === contentHash) {
@@ -124,7 +124,7 @@ async function collectFromSource(
         continue;
       }
     }
-
+ 
     try {
       const extracted = await extractEventFromText(page.rawText);
       if (!extracted) {
@@ -149,7 +149,7 @@ async function collectFromSource(
       );
     }
   }
-
+ 
   // toBackfillに集めた行は、DBに既存行はあるがcontent_hashが未登録だったもの。
   // ここで初めてcontent_hashだけをUPDATEする(--dry-run時はDBに一切書き込まないため実行しない)。
   let backfilledCount = 0;
@@ -162,7 +162,7 @@ async function collectFromSource(
       );
     }
   }
-
+ 
   const totalSkipped = skippedMatchCount + skippedNullCount;
   if (pages.length > 0) {
     const registeredNote = dryRun
@@ -174,40 +174,59 @@ async function collectFromSource(
       }件を抽出`,
     );
   }
-
+ 
   return records;
 }
-
+ 
 async function main(): Promise<void> {
   const dryRun = process.argv.includes("--dry-run");
   console.log(
     `WorldCypher scraper 開始 (${new Date().toISOString()})${dryRun ? " [dry-run]" : ""}`,
   );
-
+ 
+  // ソースごとに「収集 → 即DB保存」する。
+  // 以前は全ソース収集後に最後へまとめてupsertしていたが、ソース数の増加(22ソース)により
+  // GitHub Actionsのタイムアウトで途中終了した場合に全成果が失われる事故が起きたため、
+  // ソース単位で確定保存する方式に変更した(途中で切れても完了分は保存され、
+  // 保存済みページは次回content_hashスキップされるため、実行のたびに前進する)。
   const all: ScrapedEventRecord[] = [];
+  let inserted = 0;
+  let updated = 0;
+  let skippedPublished = 0;
+  let errors = 0;
   for (const source of SOURCES) {
     const records = await collectFromSource(source, dryRun);
     all.push(...records);
+ 
+    if (!dryRun && records.length > 0) {
+      const summary = await upsertScrapedEvents(records);
+      inserted += summary.inserted;
+      updated += summary.updated;
+      skippedPublished += summary.skippedPublished;
+      errors += summary.errors;
+      console.log(
+        `[${source.name}] 保存: 新規=${summary.inserted} 更新=${summary.updated} published保護=${summary.skippedPublished} エラー=${summary.errors}`,
+      );
+    }
   }
-
+ 
   console.log(`合計 ${all.length} 件を抽出`);
-
+ 
   if (dryRun) {
     console.log(JSON.stringify(all, null, 2));
     console.log(`--dry-run のためDBへは書き込みませんでした (${all.length}件)`);
     return;
   }
-
-  const summary = await upsertScrapedEvents(all);
+ 
   console.log(
-    `完了: 新規=${summary.inserted} 更新=${summary.updated} published保護=${summary.skippedPublished} エラー=${summary.errors}`,
+    `完了: 新規=${inserted} 更新=${updated} published保護=${skippedPublished} エラー=${errors}`,
   );
-
-  if (summary.errors > 0) {
+ 
+  if (errors > 0) {
     process.exitCode = 1;
   }
 }
-
+ 
 main().catch((err) => {
   console.error("scraper 失敗:", err instanceof Error ? err.message : err);
   process.exit(1);
