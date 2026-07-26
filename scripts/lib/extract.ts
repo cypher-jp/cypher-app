@@ -76,7 +76,7 @@ const SYSTEM_PROMPT = `あなたはストリートダンスのイベント情報
   "ig_url": string | null         // Instagramの投稿またはプロフィールのURL(無ければnull)
 }
 
-都道府県 → region 対応表(主要12都道府県は個別、それ以外は地方ブロックでまとめる):
+都道府県 → region 対応表(主要13都道府県は個別、それ以外は地方ブロックでまとめる):
 - hokkaido: 北海道
 - miyagi: 宮城
 - tohoku: 青森 岩手 秋田 山形 福島 (宮城を除く東北)
@@ -84,7 +84,8 @@ const SYSTEM_PROMPT = `あなたはストリートダンスのイベント情報
 - kanagawa: 神奈川
 - chiba: 千葉
 - saitama: 埼玉
-- kanto: 茨城 栃木 群馬 (東京・神奈川・千葉・埼玉を除く関東)
+- ibaraki: 茨城
+- kanto: 栃木 群馬 (東京・神奈川・千葉・埼玉・茨城を除く関東)
 - niigata: 新潟
 - hokuriku: 富山 石川 福井 山梨 長野 (新潟を除く北陸・甲信越)
 - aichi: 愛知
@@ -109,7 +110,8 @@ const SYSTEM_PROMPT = `あなたはストリートダンスのイベント情報
 - shanghai: 上海
 - beijing: 北京
 - chengdu: 成都
-- asia: 上記以外のアジア(中国のそれ以外の都市、東南アジア、香港等すべて含む)
+- china: 中国本土のそれ以外の都市
+- asia: 上記以外のアジア(東南アジア、香港・マカオ等を含む)
 - newyork: ニューヨーク
 - losangeles: ロサンゼルス
 - us: アメリカのそれ以外の都市
