@@ -9,7 +9,7 @@ import { getLocalizedDescription } from "@/lib/eventI18n";
 import { isPastEvent } from "@/lib/eventDate";
 import InstagramEmbed from "@/components/InstagramEmbed";
 import { routing } from "@/i18n/routing";
-import { buildEventTypeLabels, buildGenreLabels, buildRegionLabels } from "@/types/event";
+import { buildEventTypeLabels, buildGenreLabels, buildRegionLabels, getEventGenres } from "@/types/event";
 
 export const revalidate = 300;
 
@@ -153,7 +153,11 @@ export default async function EventDetailPage({ params }: PageProps) {
             <span className="chip bg-ink text-paper">
               {typeLabels[event.type]}
             </span>
-            <span className="chip-outline">{genreLabels[event.genre]}</span>
+            {getEventGenres(event).map((g) => (
+              <span key={g} className="chip-outline">
+                {genreLabels[g]}
+              </span>
+            ))}
             <span className="chip-outline">{regionLabels[event.region]}</span>
           </div>
 
