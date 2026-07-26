@@ -13,7 +13,7 @@ import {
   uploadFlyer,
   type EventInput,
 } from "@/lib/admin/events";
-import type { EventStatus } from "@/types/event";
+import { GENRES, type EventStatus, type Genre } from "@/types/event";
 import { routing } from "@/i18n/routing";
  
 function revalidatePublicPaths(eventId?: string) {
@@ -114,6 +114,7 @@ interface ParsedForm {
   title: string;
   type: string;
   genre: string;
+  genres: Genre[];
   region: string;
   date: string;
   deadline: string | null;
@@ -130,7 +131,18 @@ interface ParsedForm {
 function parseEventForm(formData: FormData): ParsedForm {
   const title = String(formData.get("title") ?? "").trim();
   const type = String(formData.get("type") ?? "battle");
-  const genre = String(formData.get("genre") ?? "all");
+  // ジャンル(複数選択チェックボックス)。1つも選ばれていなければ["all"]。
+  // 先頭を従来のgenre(単一・代表ジャンル)として保存し互換を保つ。
+  const genresRaw = formData.getAll("genres").map((v) => String(v));
+  const genres = genresRaw.filter((g): g is Genre =>
+    (GENRES as string[]).includes(g),
+  );
+  const normalizedGenres: Genre[] = genres.includes("all")
+    ? ["all"]
+    : genres.length > 0
+      ? genres
+      : ["all"];
+  const genre = normalizedGenres[0];
   const region = String(formData.get("region") ?? "other");
   const date = String(formData.get("date") ?? "").trim();
   const deadlineRaw = String(formData.get("deadline") ?? "").trim();
@@ -154,6 +166,7 @@ function parseEventForm(formData: FormData): ParsedForm {
     title,
     type,
     genre,
+    genres: normalizedGenres,
     region,
     date,
     deadline: deadlineRaw || null,
@@ -193,6 +206,7 @@ export async function createEventAction(formData: FormData): Promise<void> {
     title: parsed.title,
     type: parsed.type,
     genre: parsed.genre,
+    genres: parsed.genres,
     region: parsed.region,
     date: parsed.date,
     deadline: parsed.deadline,
@@ -246,6 +260,7 @@ export async function updateEventAction(
     title: parsed.title,
     type: parsed.type,
     genre: parsed.genre,
+    genres: parsed.genres,
     region: parsed.region,
     date: parsed.date,
     deadline: parsed.deadline,
@@ -269,4 +284,3 @@ export async function updateEventAction(
   revalidatePath(`/admin/events/${id}/edit`);
   redirect(`/admin?tab=${input.status}`);
 }
- 
