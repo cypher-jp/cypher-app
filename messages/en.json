@@ -73,7 +73,8 @@
   "footer": {
     "tagline": "Street dance battle info — dates, venues, and entry deadlines in one place.",
     "copyright": "© {year} WORLD Cypher.",
-    "contact": "Event submissions → @world_cypher"
+    "contact": "Event submissions → @world_cypher",
+    "privacy": "Privacy Policy"
   },
   "locale": {
     "label": "Language",
@@ -110,6 +111,7 @@
       "kanagawa": "Kanagawa",
       "chiba": "Chiba",
       "saitama": "Saitama",
+      "ibaraki": "Ibaraki",
       "kanto": "Kanto (Other)",
       "niigata": "Niigata",
       "hokuriku": "Hokuriku-Koshinetsu (Other)",
@@ -132,6 +134,7 @@
       "shanghai": "Shanghai",
       "beijing": "Beijing",
       "chengdu": "Chengdu",
+      "china": "China (Other)",
       "asia": "Asia (Other)",
       "newyork": "New York",
       "losangeles": "Los Angeles",
@@ -159,5 +162,25 @@
       "eu": "Europe (Other)",
       "other": "Other"
     }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "intro": "WORLD Cypher. (\"this site\") is a listing service for street dance event information. This page describes how we handle information on this site.",
+    "s1t": "Information We Collect",
+    "s1b": "This site has no user registration and does not collect your name or contact details. For stable operation, access logs (IP address, browser type, etc.) may be recorded by our hosting provider.",
+    "s2t": "Cookies",
+    "s2b": "We may use cookies only as needed for site functionality, such as remembering your language. We do not use advertising cookies.",
+    "s3t": "Third-Party Services",
+    "s3b": "This site uses official Instagram embeds, hosting (Vercel), and a database (Supabase). Embedded content may set its own cookies. Please review each service's privacy policy for details.",
+    "s4t": "Listed Information",
+    "s4b": "Event information is published based on publicly available announcements (official sites, social media, etc.) with links to the source. Organizers and rights holders may contact us to request corrections or removal, which we will handle promptly.",
+    "s5t": "Affiliate Links",
+    "s5b": "This site may participate in affiliate programs in the future, in which case we may earn a commission from purchases made through links.",
+    "s6t": "Disclaimer",
+    "s6b": "While we strive for accuracy, we do not guarantee the information listed. Always check official sources before entering events or purchasing tickets.",
+    "s7t": "Changes to This Policy",
+    "s7b": "This policy may be revised as needed. Important changes will be announced on this page.",
+    "contact": "Contact: please DM our official Instagram (@world_cypher).",
+    "updated": "Effective date: July 26, 2026"
   }
 }

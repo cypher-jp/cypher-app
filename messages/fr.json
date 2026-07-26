@@ -73,7 +73,8 @@
   "footer": {
     "tagline": "Site d'informations sur les battles de street dance. Dates, lieux et délais d'inscription, en un clin d'œil.",
     "copyright": "© {year} WORLD Cypher.",
-    "contact": "Pour soumettre un événement → @world_cypher"
+    "contact": "Pour soumettre un événement → @world_cypher",
+    "privacy": "Politique de confidentialité"
   },
   "locale": {
     "label": "Langue",
@@ -110,6 +111,7 @@
       "kanagawa": "Kanagawa",
       "chiba": "Chiba",
       "saitama": "Saitama",
+      "ibaraki": "Ibaraki",
       "kanto": "Kanto (Autre)",
       "niigata": "Niigata",
       "hokuriku": "Hokuriku-Koshinetsu (Autre)",
@@ -132,6 +134,7 @@
       "shanghai": "Shanghai",
       "beijing": "Pékin",
       "chengdu": "Chengdu",
+      "china": "Chine (Autre)",
       "asia": "Asie (Autre)",
       "newyork": "New York",
       "losangeles": "Los Angeles",
@@ -159,5 +162,25 @@
       "eu": "Europe (Autre)",
       "other": "Autre"
     }
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "intro": "WORLD Cypher. (« ce site ») est un service d'information sur les événements de street dance. Cette page décrit le traitement des informations sur ce site.",
+    "s1t": "Informations collectées",
+    "s1b": "Ce site ne propose pas d'inscription et ne collecte ni nom ni coordonnées. Pour assurer un fonctionnement stable, des journaux d'accès (adresse IP, type de navigateur, etc.) peuvent être enregistrés par notre hébergeur.",
+    "s2t": "Cookies",
+    "s2b": "Nous n'utilisons des cookies que dans la mesure nécessaire au fonctionnement du site (par exemple pour mémoriser la langue). Aucun cookie publicitaire n'est utilisé.",
+    "s3t": "Services tiers",
+    "s3b": "Ce site utilise les intégrations officielles d'Instagram, l'hébergement (Vercel) et une base de données (Supabase). Les contenus intégrés peuvent déposer leurs propres cookies. Veuillez consulter la politique de confidentialité de chaque service.",
+    "s4t": "Informations publiées",
+    "s4b": "Les informations sur les événements sont publiées à partir d'annonces publiques (sites officiels, réseaux sociaux, etc.) avec un lien vers la source. Les organisateurs et ayants droit peuvent nous contacter pour toute correction ou suppression, que nous traiterons rapidement.",
+    "s5t": "Liens d'affiliation",
+    "s5b": "Ce site pourra à l'avenir participer à des programmes d'affiliation ; le cas échéant, nous pourrons percevoir une commission sur les achats effectués via ces liens.",
+    "s6t": "Avertissement",
+    "s6b": "Nous nous efforçons d'assurer l'exactitude des informations, sans toutefois la garantir. Vérifiez toujours les informations officielles avant de vous inscrire ou d'acheter des billets.",
+    "s7t": "Modifications de cette politique",
+    "s7b": "Cette politique peut être révisée si nécessaire. Les changements importants seront annoncés sur cette page.",
+    "contact": "Contact : envoyez un DM à notre Instagram officiel (@world_cypher).",
+    "updated": "Date d'entrée en vigueur : 26 juillet 2026"
   }
 }
