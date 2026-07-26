@@ -34,6 +34,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       alternates: { languages: localeAlternates("/calendar") },
     });
     entries.push({
+      url: `${SITE_URL}/${locale}/privacy`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.3,
+      alternates: { languages: localeAlternates("/privacy") },
+    });
+    entries.push({
       url: `${SITE_URL}/${locale}/archive`,
       lastModified,
       changeFrequency: "daily",
