@@ -48,7 +48,10 @@
   },
   "grid": {
     "noMatchTitle": "NO MATCH",
-    "noMatchBody": "Élargissez vos filtres, il y a peut-être plus d'événements à découvrir."
+    "noMatchBody": "Élargissez vos filtres, il y a peut-être plus d'événements à découvrir.",
+    "sort": "Trier",
+    "sortDate": "Par date",
+    "sortDeadline": "Par date limite"
   },
   "calendar": {
     "eyebrow": "MONTHLY VIEW",

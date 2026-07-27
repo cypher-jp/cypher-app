@@ -48,7 +48,10 @@
   },
   "grid": {
     "noMatchTitle": "NO MATCH",
-    "noMatchBody": "조건을 완화하면 더 많은 이벤트를 찾을 수 있어요. 필터를 초기화해보세요."
+    "noMatchBody": "조건을 완화하면 더 많은 이벤트를 찾을 수 있어요. 필터를 초기화해보세요.",
+    "sort": "정렬",
+    "sortDate": "개최일이 가까운 순",
+    "sortDeadline": "마감이 가까운 순"
   },
   "calendar": {
     "eyebrow": "MONTHLY VIEW",

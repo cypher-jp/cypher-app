@@ -5,6 +5,7 @@ import { bulkApproveEventsAction } from "@/app/admin/actions";
 import BulkEditToolbar from "@/components/admin/BulkEditToolbar";
 import AdminEventGroupCard from "@/components/admin/AdminEventGroupCard";
 import type { PendingEventGroup } from "@/lib/admin/dedupe";
+import { sortEvents, type EventSortKey } from "@/lib/sortEvents";
 
 interface Props {
   groups: PendingEventGroup[];
@@ -16,6 +17,17 @@ interface Props {
 export default function PendingEventsBoard({ groups }: Props) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isPending, startTransition] = useTransition();
+  // default = 登録が新しい順(サーバーの取得順)。代表イベントの値で並び替える。
+  const [sort, setSort] = useState<EventSortKey>("default");
+  const sortedGroups = useMemo(() => {
+    if (sort === "default") return groups;
+    const order = new Map(
+      sortEvents(groups.map((g) => g.primary), sort).map((e, i) => [e.id, i]),
+    );
+    return [...groups].sort(
+      (a, b) => (order.get(a.primary.id) ?? 0) - (order.get(b.primary.id) ?? 0),
+    );
+  }, [groups, sort]);
 
   const allIds = useMemo(() => groups.map((g) => g.primary.id), [groups]);
   const allSelected =
@@ -69,6 +81,15 @@ export default function PendingEventsBoard({ groups }: Props) {
             ? "承認しています..."
             : `選択した${selectedIds.size}件を承認`}
         </button>
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value as EventSortKey)}
+          className="ml-auto rounded-full border border-ink/15 bg-paper px-3 py-1.5 text-xs"
+        >
+          <option value="default">登録が新しい順</option>
+          <option value="date">開催日が近い順</option>
+          <option value="deadline">締切が近い順</option>
+        </select>
       </div>
 
       {selectedIds.size > 0 && (
@@ -81,7 +102,7 @@ export default function PendingEventsBoard({ groups }: Props) {
       )}
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {groups.map((group) => (
+        {sortedGroups.map((group) => (
           <AdminEventGroupCard
             key={group.key}
             group={group}

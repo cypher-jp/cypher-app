@@ -48,7 +48,10 @@
   },
   "grid": {
     "noMatchTitle": "NO MATCH",
-    "noMatchBody": "Try loosening your filters — there might be more out there."
+    "noMatchBody": "Try loosening your filters — there might be more out there.",
+    "sort": "Sort",
+    "sortDate": "By event date",
+    "sortDeadline": "By entry deadline"
   },
   "calendar": {
     "eyebrow": "MONTHLY VIEW",

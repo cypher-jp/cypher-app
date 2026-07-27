@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import AdminEventCard from "@/components/admin/AdminEventCard";
 import BulkEditToolbar from "@/components/admin/BulkEditToolbar";
+import { sortEvents, type EventSortKey } from "@/lib/sortEvents";
 import type { DanceEvent } from "@/types/event";
 
 interface Props {
@@ -15,6 +16,9 @@ interface Props {
  */
 export default function AdminEventsBoard({ events }: Props) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  // default = 登録が新しい順(サーバーの取得順)
+  const [sort, setSort] = useState<EventSortKey>("default");
+  const sorted = useMemo(() => sortEvents(events, sort), [events, sort]);
 
   const allIds = useMemo(() => events.map((e) => e.id), [events]);
   const allSelected =
@@ -47,6 +51,15 @@ export default function AdminEventsBoard({ events }: Props) {
         <span className="text-xs text-ink/60">
           {selectedIds.size}件選択中 / 全{allIds.length}件
         </span>
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value as EventSortKey)}
+          className="ml-auto rounded-full border border-ink/15 bg-paper px-3 py-1.5 text-xs"
+        >
+          <option value="default">登録が新しい順</option>
+          <option value="date">開催日が近い順</option>
+          <option value="deadline">締切が近い順</option>
+        </select>
       </div>
 
       {selectedIds.size > 0 && (
@@ -57,7 +70,7 @@ export default function AdminEventsBoard({ events }: Props) {
       )}
 
       <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {events.map((event) => (
+        {sorted.map((event) => (
           <div key={event.id} className="relative">
             <label className="absolute left-3 top-3 z-10 flex cursor-pointer items-center gap-1.5 rounded-full bg-paper/90 px-3 py-1.5 text-xs font-bold shadow-card">
               <input

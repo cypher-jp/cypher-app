@@ -43,7 +43,10 @@
   },
   "grid": {
     "noMatchTitle": "NO MATCH",
-    "noMatchBody": "条件を緩めると見つかるかも。フィルタをリセットしてみて。"
+    "noMatchBody": "条件を緩めると見つかるかも。フィルタをリセットしてみて。",
+    "sort": "並び替え",
+    "sortDate": "開催日が近い順",
+    "sortDeadline": "締切が近い順"
   },
   "pagination": {
     "prev": "前へ",

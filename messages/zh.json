@@ -48,7 +48,10 @@
   },
   "grid": {
     "noMatchTitle": "NO MATCH",
-    "noMatchBody": "放宽筛选条件也许能找到更多活动，试试重置筛选吧。"
+    "noMatchBody": "放宽筛选条件也许能找到更多活动，试试重置筛选吧。",
+    "sort": "排序",
+    "sortDate": "按举办日期",
+    "sortDeadline": "按报名截止"
   },
   "calendar": {
     "eyebrow": "MONTHLY VIEW",
