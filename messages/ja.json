@@ -92,6 +92,7 @@
   "labels": {
     "eventType": {
       "battle": "BATTLE",
+      "contest": "CONTEST",
       "showcase": "SHOWCASE",
       "workshop": "WORKSHOP",
       "audition": "AUDITION",

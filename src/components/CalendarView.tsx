@@ -10,6 +10,7 @@ import { EVENT_TYPES } from "@/types/event";
 
 const TYPE_DOT: Record<DanceEvent["type"], string> = {
   battle: "bg-cypher-red",
+  contest: "bg-cypher-purple",
   showcase: "bg-cypher-navy",
   workshop: "bg-cypher-green",
   audition: "bg-ink",

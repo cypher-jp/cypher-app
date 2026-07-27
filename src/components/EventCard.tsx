@@ -6,6 +6,7 @@ import { getEventGenres, type DanceEvent } from "@/types/event";
 
 const TYPE_ACCENT: Record<DanceEvent["type"], string> = {
   battle: "bg-cypher-red text-paper",
+  contest: "bg-cypher-purple text-paper",
   showcase: "bg-cypher-navy text-paper",
   workshop: "bg-cypher-green text-paper",
   audition: "bg-ink text-paper",

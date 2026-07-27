@@ -1,6 +1,8 @@
 
 export type EventType =
   | "battle"
+  // contest = 事前審査/作品披露・採点型のコンテスト大会(バトル形式ではないもの)
+  | "contest"
   | "showcase"
   | "workshop"
   | "audition"
@@ -127,6 +129,7 @@ export interface DanceEvent {
  
 export const EVENT_TYPES: EventType[] = [
   "battle",
+  "contest",
   "showcase",
   "workshop",
   "audition",
@@ -329,6 +332,7 @@ export function buildEventTypeLabels(
 ): Record<EventType, string> {
   return {
     battle: t("battle"),
+    contest: t("contest"),
     showcase: t("showcase"),
     workshop: t("workshop"),
     audition: t("audition"),

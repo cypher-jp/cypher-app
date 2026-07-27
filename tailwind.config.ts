@@ -15,6 +15,7 @@ const config: Config = {
           navy: "#1D3557",
           green: "#2A9D8F",
           yellow: "#F4D35E",
+          purple: "#8E5BA6",
         },
       },
       fontFamily: {

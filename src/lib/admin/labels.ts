@@ -3,6 +3,7 @@ import type { EventType, Genre, Region, EventStatus } from "@/types/event";
 // 管理画面は日本語のみ(i18nルーティング対象外)なので、固定の日本語ラベルを使う。
 export const ADMIN_EVENT_TYPE_LABEL: Record<EventType, string> = {
   battle: "BATTLE",
+  contest: "CONTEST",
   showcase: "SHOWCASE",
   workshop: "WORKSHOP",
   audition: "AUDITION",
