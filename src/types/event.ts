@@ -51,6 +51,7 @@ export type Region =
   | "chugoku"
   | "shikoku"
   | "kyushu"
+  | "okinawa"
   // 国内以外
   | "online"
   // 海外は主要都市を個別キー、それ以外は国・大陸単位の「その他」ブロックでまとめる
@@ -69,6 +70,10 @@ export type Region =
   | "newyork"
   | "losangeles"
   | "us"
+  | "mexico"
+  | "brazil"
+  | "southamerica"
+  | "middleeast"
   // ヨーロッパは「国＋首都」の2階層。国キーは首都以外の開催地または国名までしか
   // 分からない場合に使い、首都開催と判明している場合は首都キーを使う。
   // 対応国リストに無いヨーロッパの国は eu（ヨーロッパその他）に丸める。
@@ -172,6 +177,7 @@ export const REGIONS: Region[] = [
   "shikoku",
   "fukuoka",
   "kyushu",
+  "okinawa",
   "online",
   "seoul",
   "busan",
@@ -187,6 +193,9 @@ export const REGIONS: Region[] = [
   "newyork",
   "losangeles",
   "us",
+  "mexico",
+  "brazil",
+  "southamerica",
   // ヨーロッパ: 「国→その首都」の並びが隣接するようにする
   "france",
   "paris",
@@ -209,6 +218,7 @@ export const REGIONS: Region[] = [
   "russia",
   "moscow",
   "eu",
+  "middleeast",
   "other",
 ];
  
@@ -236,6 +246,7 @@ export const DOMESTIC_REGIONS: Region[] = [
   "shikoku",
   "fukuoka",
   "kyushu",
+  "okinawa",
 ];
  
 export const OVERSEAS_REGIONS: Region[] = [
@@ -253,6 +264,9 @@ export const OVERSEAS_REGIONS: Region[] = [
   "newyork",
   "losangeles",
   "us",
+  "mexico",
+  "brazil",
+  "southamerica",
   "france",
   "paris",
   "germany",
@@ -274,6 +288,7 @@ export const OVERSEAS_REGIONS: Region[] = [
   "russia",
   "moscow",
   "eu",
+  "middleeast",
   "other",
 ];
  
@@ -382,6 +397,7 @@ export function buildRegionLabels(
     shikoku: t("shikoku"),
     fukuoka: t("fukuoka"),
     kyushu: t("kyushu"),
+    okinawa: t("okinawa"),
     online: t("online"),
     seoul: t("seoul"),
     busan: t("busan"),
@@ -397,6 +413,9 @@ export function buildRegionLabels(
     newyork: t("newyork"),
     losangeles: t("losangeles"),
     us: t("us"),
+    mexico: t("mexico"),
+    brazil: t("brazil"),
+    southamerica: t("southamerica"),
     france: t("france"),
     paris: t("paris"),
     germany: t("germany"),
@@ -418,6 +437,7 @@ export function buildRegionLabels(
     russia: t("russia"),
     moscow: t("moscow"),
     eu: t("eu"),
+    middleeast: t("middleeast"),
     other: t("other"),
   };
 }

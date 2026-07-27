@@ -131,7 +131,8 @@
       "chugoku": "中国地区（其他）",
       "shikoku": "四国",
       "fukuoka": "福冈",
-      "kyushu": "九州・冲绳（其他）",
+      "kyushu": "九州（其他）",
+      "okinawa": "冲绳",
       "online": "线上",
       "seoul": "首尔",
       "busan": "釜山",
@@ -147,6 +148,9 @@
       "newyork": "纽约",
       "losangeles": "洛杉矶",
       "us": "美国（其他）",
+      "mexico": "墨西哥",
+      "brazil": "巴西",
+      "southamerica": "南美（其他）",
       "france": "法国",
       "paris": "巴黎",
       "germany": "德国",
@@ -168,6 +172,7 @@
       "russia": "俄罗斯",
       "moscow": "莫斯科",
       "eu": "欧洲（其他）",
+      "middleeast": "中东",
       "other": "其他"
     }
   },

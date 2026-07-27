@@ -44,7 +44,8 @@ export const ADMIN_REGION_LABEL: Record<Region, string> = {
   chugoku: "中国地方（その他）",
   shikoku: "四国",
   fukuoka: "福岡",
-  kyushu: "九州・沖縄（その他）",
+  kyushu: "九州（その他）",
+  okinawa: "沖縄",
   online: "オンライン",
   seoul: "ソウル",
   busan: "釜山",
@@ -60,6 +61,9 @@ export const ADMIN_REGION_LABEL: Record<Region, string> = {
   newyork: "ニューヨーク",
   losangeles: "ロサンゼルス",
   us: "アメリカ（その他）",
+  mexico: "メキシコ",
+  brazil: "ブラジル",
+  southamerica: "南米（その他）",
   france: "フランス",
   paris: "パリ",
   germany: "ドイツ",
@@ -81,6 +85,7 @@ export const ADMIN_REGION_LABEL: Record<Region, string> = {
   russia: "ロシア",
   moscow: "モスクワ",
   eu: "ヨーロッパ（その他）",
+  middleeast: "中東",
   other: "その他",
 };
 

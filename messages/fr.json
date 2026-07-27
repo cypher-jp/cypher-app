@@ -131,7 +131,8 @@
       "chugoku": "Chugoku (Autre)",
       "shikoku": "Shikoku",
       "fukuoka": "Fukuoka",
-      "kyushu": "Kyushu-Okinawa (Autre)",
+      "kyushu": "Kyushu (Autre)",
+      "okinawa": "Okinawa",
       "online": "En ligne",
       "seoul": "Séoul",
       "busan": "Busan",
@@ -147,6 +148,9 @@
       "newyork": "New York",
       "losangeles": "Los Angeles",
       "us": "États-Unis (Autre)",
+      "mexico": "Mexique",
+      "brazil": "Brésil",
+      "southamerica": "Amérique du Sud (Autre)",
       "france": "France",
       "paris": "Paris",
       "germany": "Allemagne",
@@ -168,6 +172,7 @@
       "russia": "Russie",
       "moscow": "Moscou",
       "eu": "Europe (Autre)",
+      "middleeast": "Moyen-Orient",
       "other": "Autre"
     }
   },
