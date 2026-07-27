@@ -13,7 +13,13 @@ import {
   uploadFlyer,
   type EventInput,
 } from "@/lib/admin/events";
-import { GENRES, type EventStatus, type Genre } from "@/types/event";
+import {
+  EVENT_TYPES,
+  GENRES,
+  type EventStatus,
+  type EventType,
+  type Genre,
+} from "@/types/event";
 import { routing } from "@/i18n/routing";
  
 function revalidatePublicPaths(eventId?: string) {
@@ -128,6 +134,29 @@ export async function bulkUpdateGenresAction(
     .in("id", uniqueIds);
   if (error) {
     console.warn("[admin] bulkUpdateGenresAction failed:", error.message);
+  }
+
+  revalidatePublicPaths();
+  revalidatePath("/admin");
+}
+
+/**
+ * 一括種別変更。チェックした複数イベントの type をまとめて置き換える。
+ */
+export async function bulkUpdateTypeAction(
+  ids: string[],
+  type: EventType,
+): Promise<void> {
+  const uniqueIds = Array.from(new Set(ids)).filter(Boolean);
+  if (uniqueIds.length === 0 || !EVENT_TYPES.includes(type)) return;
+
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase
+    .from("events")
+    .update({ type })
+    .in("id", uniqueIds);
+  if (error) {
+    console.warn("[admin] bulkUpdateTypeAction failed:", error.message);
   }
 
   revalidatePublicPaths();

@@ -192,7 +192,7 @@ async function main(): Promise<void> {
   const all: ScrapedEventRecord[] = [];
   let inserted = 0;
   let updated = 0;
-  let skippedPublished = 0;
+  let updatedPublished = 0;
   let errors = 0;
   for (const source of SOURCES) {
     const records = await collectFromSource(source, dryRun);
@@ -202,10 +202,10 @@ async function main(): Promise<void> {
       const summary = await upsertScrapedEvents(records);
       inserted += summary.inserted;
       updated += summary.updated;
-      skippedPublished += summary.skippedPublished;
+      updatedPublished += summary.updatedPublished;
       errors += summary.errors;
       console.log(
-        `[${source.name}] 保存: 新規=${summary.inserted} 更新=${summary.updated} published保護=${summary.skippedPublished} エラー=${summary.errors}`,
+        `[${source.name}] 保存: 新規=${summary.inserted} 更新=${summary.updated} 公開中の自動更新=${summary.updatedPublished} エラー=${summary.errors}`,
       );
     }
   }
@@ -219,7 +219,7 @@ async function main(): Promise<void> {
   }
  
   console.log(
-    `完了: 新規=${inserted} 更新=${updated} published保護=${skippedPublished} エラー=${errors}`,
+    `完了: 新規=${inserted} 更新=${updated} 公開中の自動更新=${updatedPublished} エラー=${errors}`,
   );
  
   if (errors > 0) {

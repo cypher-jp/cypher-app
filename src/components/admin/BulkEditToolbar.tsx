@@ -4,9 +4,10 @@ import { useRef, useState, useTransition } from "react";
 import {
   bulkSetFlyerAction,
   bulkUpdateGenresAction,
+  bulkUpdateTypeAction,
 } from "@/app/admin/actions";
-import { ADMIN_GENRE_LABEL } from "@/lib/admin/labels";
-import { GENRES, type Genre } from "@/types/event";
+import { ADMIN_EVENT_TYPE_LABEL, ADMIN_GENRE_LABEL } from "@/lib/admin/labels";
+import { EVENT_TYPES, GENRES, type EventType, type Genre } from "@/types/event";
 
 interface Props {
   selectedIds: string[];
@@ -23,6 +24,7 @@ interface Props {
 export default function BulkEditToolbar({ selectedIds, onDone }: Props) {
   const [isPending, startTransition] = useTransition();
   const [genres, setGenres] = useState<Genre[]>([]);
+  const [type, setType] = useState<EventType | "">("");
   const [message, setMessage] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -42,6 +44,17 @@ export default function BulkEditToolbar({ selectedIds, onDone }: Props) {
       await bulkUpdateGenresAction(selectedIds, genres);
       setMessage(`${count}件のジャンルを変更しました`);
       setGenres([]);
+      onDone();
+    });
+  }
+
+  function applyType() {
+    if (disabled || !type) return;
+    setMessage(null);
+    startTransition(async () => {
+      await bulkUpdateTypeAction(selectedIds, type as EventType);
+      setMessage(`${count}件の種別を変更しました`);
+      setType("");
       onDone();
     });
   }
@@ -84,6 +97,29 @@ export default function BulkEditToolbar({ selectedIds, onDone }: Props) {
           className="btn-primary text-xs disabled:cursor-not-allowed disabled:opacity-40"
         >
           {isPending ? "適用中..." : `選択${count}件をこのジャンルにする`}
+        </button>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value as EventType | "")}
+          className="rounded-full border border-ink/15 bg-paper px-3 py-1.5 text-xs"
+        >
+          <option value="">種別を選ぶ...</option>
+          {EVENT_TYPES.map((v) => (
+            <option key={v} value={v}>
+              {ADMIN_EVENT_TYPE_LABEL[v]}
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          onClick={applyType}
+          disabled={disabled || !type}
+          className="btn-primary text-xs disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {isPending ? "適用中..." : `選択${count}件をこの種別にする`}
         </button>
       </div>
 

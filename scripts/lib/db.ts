@@ -26,7 +26,8 @@ export function getServiceClient(): SupabaseClient {
 export interface UpsertSummary {
   inserted: number;
   updated: number;
-  skippedPublished: number;
+  /** published行への「事実情報のみ」自動更新の件数 */
+  updatedPublished: number;
   errors: number;
 }
 
@@ -34,6 +35,7 @@ interface ExistingRow {
   id: string;
   status: string;
   source_url: string;
+  flyer_url: string | null;
 }
 
 /** fetchExistingContentHashes() の戻り値の1件分 */
@@ -199,10 +201,44 @@ function toRow(
 }
 
 /**
+ * published行向けの「事実情報のみ」の部分更新行を作る。
+ * 情報解禁・締切延長などをサイトへ自動反映するための更新で、
+ * オーナーが管理画面で手直しした可能性のあるフィールド
+ * (title/type/genre/genres/region/フライヤー/ig系/status/entry_closed)には触れない。
+ * フライヤーだけは「未設定の場合のみ」補完する。
+ */
+function toPublishedFactRow(
+  record: ScrapedEventRecord,
+  existing: ExistingRow,
+  hasHashColumn: boolean,
+): Record<string, unknown> {
+  const row: Record<string, unknown> = {
+    date: record.date,
+    deadline: record.deadline ?? null,
+    venue: record.venue,
+    description: record.description,
+    entry_url: record.entryUrl ?? null,
+    description_i18n:
+      record.descriptionI18n && Object.keys(record.descriptionI18n).length > 0
+        ? record.descriptionI18n
+        : null,
+    updated_at: new Date().toISOString(),
+  };
+  if (!existing.flyer_url && record.flyerUrl) {
+    row.flyer_url = record.flyerUrl;
+  }
+  if (hasHashColumn && record.contentHash) {
+    row.content_hash = record.contentHash;
+  }
+  return row;
+}
+
+/**
  * source_url をキーに events へ upsert する。
  * - 新規: status='pending' で insert(管理画面で承認されるまで非公開)
- * - 既存 pending/draft: 内容を更新
- * - 既存 published: 上書きしない(ログのみ)
+ * - 既存 pending/draft: 内容を全面更新
+ * - 既存 published: 事実情報(開催日/締切/会場/説明/エントリーURL)のみ自動更新
+ *   (情報解禁されたイベントの詳細を自動で追従させるため。手動編集項目は保護)
  */
 export async function upsertScrapedEvents(
   records: ScrapedEventRecord[],
@@ -210,7 +246,7 @@ export async function upsertScrapedEvents(
   const summary: UpsertSummary = {
     inserted: 0,
     updated: 0,
-    skippedPublished: 0,
+    updatedPublished: 0,
     errors: 0,
   };
   if (records.length === 0) return summary;
@@ -222,7 +258,7 @@ export async function upsertScrapedEvents(
 
   const { data: existingRows, error: selectError } = await db
     .from("events")
-    .select("id,status,source_url")
+    .select("id,status,source_url,flyer_url")
     .in("source_url", urls);
 
   if (selectError) {
@@ -244,9 +280,14 @@ export async function upsertScrapedEvents(
         summary.inserted++;
         console.log(`  [db] insert(pending): ${record.title}`);
       } else if (existing.status === "published") {
-        summary.skippedPublished++;
+        const { error } = await db
+          .from("events")
+          .update(toPublishedFactRow(record, existing, hasHashColumn))
+          .eq("id", existing.id);
+        if (error) throw new Error(error.message);
+        summary.updatedPublished++;
         console.log(
-          `  [db] skip(published保護): ${record.title} (${record.sourceUrl})`,
+          `  [db] update(published/事実情報のみ): ${record.title}`,
         );
       } else {
         const { error } = await db

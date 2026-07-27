@@ -9,6 +9,7 @@ import {
   DOMESTIC_REGIONS,
   EVENT_TYPES,
   GENRES,
+  OVERSEAS_AREA_GROUPS,
   OVERSEAS_REGIONS,
   type EventType,
   type Genre,
@@ -67,8 +68,6 @@ export default function FilterBar({ value, onChange, resultCount }: Props) {
     value.regionScope !== "any" ||
     value.regions.length > 0 ||
     value.query.trim() !== "";
-
-  const regionList = regionTab === "domestic" ? DOMESTIC_REGIONS : OVERSEAS_REGIONS;
 
   // 反対側タブで選択済みのエリア数(タブに件数表示して「見えない選択」を防ぐ)
   const domesticSelected = value.regions.filter((r) =>
@@ -190,19 +189,45 @@ export default function FilterBar({ value, onChange, resultCount }: Props) {
             </button>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {regionList.map((r) => (
-            <Chip
-              key={r}
-              active={value.regions.includes(r)}
-              onClick={() =>
-                onChange({ ...value, regions: toggle(value.regions, r) })
-              }
-            >
-              {regionLabels[r]}
-            </Chip>
-          ))}
-        </div>
+        {regionTab === "domestic" ? (
+          <div className="flex flex-wrap gap-2">
+            {DOMESTIC_REGIONS.map((r) => (
+              <Chip
+                key={r}
+                active={value.regions.includes(r)}
+                onClick={() =>
+                  onChange({ ...value, regions: toggle(value.regions, r) })
+                }
+              >
+                {regionLabels[r]}
+              </Chip>
+            ))}
+          </div>
+        ) : (
+          // 海外は国数が多いため、地域グループごとに小見出しを付けて見やすくする
+          <div className="flex flex-col gap-3">
+            {OVERSEAS_AREA_GROUPS.map((group) => (
+              <div key={group.labelKey}>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-ink/40">
+                  {t(group.labelKey)}
+                </div>
+                <div className="mt-1.5 flex flex-wrap gap-2">
+                  {group.regions.map((r) => (
+                    <Chip
+                      key={r}
+                      active={value.regions.includes(r)}
+                      onClick={() =>
+                        onChange({ ...value, regions: toggle(value.regions, r) })
+                      }
+                    >
+                      {regionLabels[r]}
+                    </Chip>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-ink/10 pt-4">

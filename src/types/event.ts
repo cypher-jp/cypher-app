@@ -66,14 +66,26 @@ export type Region =
   | "chengdu"
   | "china"
   | "hongkong"
+  | "vietnam"
+  | "thailand"
+  | "indonesia"
+  | "philippines"
+  | "malaysia"
+  | "singapore"
+  | "india"
   | "asia"
+  | "australia"
+  | "newzealand"
   | "newyork"
   | "losangeles"
   | "us"
+  | "canada"
   | "mexico"
   | "brazil"
   | "southamerica"
   | "middleeast"
+  | "morocco"
+  | "africa"
   // ヨーロッパは「国＋首都」の2階層。国キーは首都以外の開催地または国名までしか
   // 分からない場合に使い、首都開催と判明している場合は首都キーを使う。
   // 対応国リストに無いヨーロッパの国は eu（ヨーロッパその他）に丸める。
@@ -98,6 +110,16 @@ export type Region =
   | "zurich"
   | "russia"
   | "moscow"
+  | "greece"
+  | "portugal"
+  | "sweden"
+  | "denmark"
+  | "norway"
+  | "finland"
+  | "austria"
+  | "czechia"
+  | "hungary"
+  | "ukraine"
   | "eu"
   | "other";
  
@@ -189,10 +211,20 @@ export const REGIONS: Region[] = [
   "chengdu",
   "china",
   "hongkong",
+  "vietnam",
+  "thailand",
+  "indonesia",
+  "philippines",
+  "malaysia",
+  "singapore",
+  "india",
   "asia",
+  "australia",
+  "newzealand",
   "newyork",
   "losangeles",
   "us",
+  "canada",
   "mexico",
   "brazil",
   "southamerica",
@@ -217,8 +249,20 @@ export const REGIONS: Region[] = [
   "zurich",
   "russia",
   "moscow",
+  "greece",
+  "portugal",
+  "sweden",
+  "denmark",
+  "norway",
+  "finland",
+  "austria",
+  "czechia",
+  "hungary",
+  "ukraine",
   "eu",
   "middleeast",
+  "morocco",
+  "africa",
   "other",
 ];
  
@@ -249,48 +293,52 @@ export const DOMESTIC_REGIONS: Region[] = [
   "okinawa",
 ];
  
-export const OVERSEAS_REGIONS: Region[] = [
-  "seoul",
-  "busan",
-  "korea",
-  "taipei",
-  "taiwan",
-  "shanghai",
-  "beijing",
-  "chengdu",
-  "china",
-  "hongkong",
-  "asia",
-  "newyork",
-  "losangeles",
-  "us",
-  "mexico",
-  "brazil",
-  "southamerica",
-  "france",
-  "paris",
-  "germany",
-  "berlin",
-  "netherlands",
-  "amsterdam",
-  "belgium",
-  "brussels",
-  "uk",
-  "london",
-  "italy",
-  "rome",
-  "spain",
-  "madrid",
-  "poland",
-  "warsaw",
-  "switzerland",
-  "zurich",
-  "russia",
-  "moscow",
-  "eu",
-  "middleeast",
-  "other",
+// 海外は国数が多く1枚のチップ羅列では見づらいため、表示は地域グループごとにまとめる。
+// labelKey は messages の filters.<labelKey> の小見出しラベルに対応する。
+export const OVERSEAS_AREA_GROUPS: {
+  labelKey:
+    | "areaAsia"
+    | "areaOceania"
+    | "areaAmericas"
+    | "areaEurope"
+    | "areaMiddleEastAfrica";
+  regions: Region[];
+}[] = [
+  {
+    labelKey: "areaAsia",
+    regions: [
+      "seoul", "busan", "korea", "taipei", "taiwan", "shanghai", "beijing",
+      "chengdu", "china", "hongkong", "vietnam", "thailand", "indonesia",
+      "philippines", "malaysia", "singapore", "india", "asia",
+    ],
+  },
+  { labelKey: "areaOceania", regions: ["australia", "newzealand"] },
+  {
+    labelKey: "areaAmericas",
+    regions: [
+      "newyork", "losangeles", "us", "canada", "mexico", "brazil",
+      "southamerica",
+    ],
+  },
+  {
+    labelKey: "areaEurope",
+    regions: [
+      "france", "paris", "germany", "berlin", "netherlands", "amsterdam",
+      "belgium", "brussels", "uk", "london", "italy", "rome", "spain",
+      "madrid", "poland", "warsaw", "switzerland", "zurich", "russia",
+      "moscow", "greece", "portugal", "sweden", "denmark", "norway",
+      "finland", "austria", "czechia", "hungary", "ukraine", "eu",
+    ],
+  },
+  {
+    labelKey: "areaMiddleEastAfrica",
+    regions: ["middleeast", "morocco", "africa", "other"],
+  },
 ];
+
+export const OVERSEAS_REGIONS: Region[] = OVERSEAS_AREA_GROUPS.flatMap(
+  (g) => g.regions,
+);
  
 // ヨーロッパの「国キー → [国キー, 首都キー]」対応。
 // フィルタで国を選んだ時に、国キー本体に加えて対応する首都キーの行もヒットさせるために使う。
@@ -409,10 +457,20 @@ export function buildRegionLabels(
     chengdu: t("chengdu"),
     china: t("china"),
     hongkong: t("hongkong"),
+    vietnam: t("vietnam"),
+    thailand: t("thailand"),
+    indonesia: t("indonesia"),
+    philippines: t("philippines"),
+    malaysia: t("malaysia"),
+    singapore: t("singapore"),
+    india: t("india"),
     asia: t("asia"),
+    australia: t("australia"),
+    newzealand: t("newzealand"),
     newyork: t("newyork"),
     losangeles: t("losangeles"),
     us: t("us"),
+    canada: t("canada"),
     mexico: t("mexico"),
     brazil: t("brazil"),
     southamerica: t("southamerica"),
@@ -436,8 +494,20 @@ export function buildRegionLabels(
     zurich: t("zurich"),
     russia: t("russia"),
     moscow: t("moscow"),
+    greece: t("greece"),
+    portugal: t("portugal"),
+    sweden: t("sweden"),
+    denmark: t("denmark"),
+    norway: t("norway"),
+    finland: t("finland"),
+    austria: t("austria"),
+    czechia: t("czechia"),
+    hungary: t("hungary"),
+    ukraine: t("ukraine"),
     eu: t("eu"),
     middleeast: t("middleeast"),
+    morocco: t("morocco"),
+    africa: t("africa"),
     other: t("other"),
   };
 }
