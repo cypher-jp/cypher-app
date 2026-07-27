@@ -1,6 +1,6 @@
 import Link from "next/link";
 import AdminTabs from "@/components/admin/AdminTabs";
-import AdminEventCard from "@/components/admin/AdminEventCard";
+import AdminEventsBoard from "@/components/admin/AdminEventsBoard";
 import PendingEventsBoard from "@/components/admin/PendingEventsBoard";
 import { fetchAdminEvents, fetchAdminEventCounts } from "@/lib/admin/events";
 import { groupPendingEvents } from "@/lib/admin/dedupe";
@@ -86,11 +86,7 @@ export default async function AdminHomePage({ searchParams }: Props) {
         ) : tab === "pending" ? (
           <PendingEventsBoard groups={pendingGroups} />
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {events.map((event) => (
-              <AdminEventCard key={event.id} event={event} />
-            ))}
-          </div>
+          <AdminEventsBoard events={events} />
         )}
       </div>
     </div>

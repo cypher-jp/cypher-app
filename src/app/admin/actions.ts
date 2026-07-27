@@ -108,6 +108,70 @@ export async function rejectEventAction(id: string): Promise<void> {
 }
  
 /**
+ * 一括ジャンル変更。チェックした複数イベントの genres をまとめて置き換える。
+ * genre(単一・代表)も先頭ジャンルで揃える。1回のUPDATEで済ませる。
+ */
+export async function bulkUpdateGenresAction(
+  ids: string[],
+  genres: Genre[],
+): Promise<void> {
+  const uniqueIds = Array.from(new Set(ids)).filter(Boolean);
+  const validGenres = genres.filter((g): g is Genre =>
+    (GENRES as string[]).includes(g),
+  );
+  if (uniqueIds.length === 0 || validGenres.length === 0) return;
+
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase
+    .from("events")
+    .update({ genres: validGenres, genre: validGenres[0] })
+    .in("id", uniqueIds);
+  if (error) {
+    console.warn("[admin] bulkUpdateGenresAction failed:", error.message);
+  }
+
+  revalidatePublicPaths();
+  revalidatePath("/admin");
+}
+
+/**
+ * 一括画像設定。1枚アップロードして、チェックした複数イベントの
+ * フライヤーにまとめて設定する(同一イベントの重複行などに便利)。
+ */
+export async function bulkSetFlyerAction(
+  ids: string[],
+  formData: FormData,
+): Promise<void> {
+  const uniqueIds = Array.from(new Set(ids)).filter(Boolean);
+  const entry = formData.get("flyer");
+  const file = entry instanceof File && entry.size > 0 ? entry : null;
+  if (uniqueIds.length === 0 || !file) return;
+
+  const supabase = createSupabaseServerClient();
+  let flyerUrl: string;
+  try {
+    flyerUrl = await uploadFlyer(supabase, file);
+  } catch (e) {
+    console.warn(
+      "[admin] bulkSetFlyerAction upload failed:",
+      e instanceof Error ? e.message : e,
+    );
+    return;
+  }
+
+  const { error } = await supabase
+    .from("events")
+    .update({ flyer_url: flyerUrl })
+    .in("id", uniqueIds);
+  if (error) {
+    console.warn("[admin] bulkSetFlyerAction update failed:", error.message);
+  }
+
+  revalidatePublicPaths();
+  revalidatePath("/admin");
+}
+
+/**
  * 一括承認。承認待ち一覧でチェックした複数件をまとめて承認する。
  * 1件承認(approveEventAction)のロジックをそのまま順番に呼び出すだけなので、
  * 重複候補の自動却下も1件ずつのときと同じように働く。

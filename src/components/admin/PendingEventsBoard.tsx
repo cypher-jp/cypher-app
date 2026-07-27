@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { bulkApproveEventsAction } from "@/app/admin/actions";
+import BulkEditToolbar from "@/components/admin/BulkEditToolbar";
 import AdminEventGroupCard from "@/components/admin/AdminEventGroupCard";
 import type { PendingEventGroup } from "@/lib/admin/dedupe";
 
@@ -69,6 +70,15 @@ export default function PendingEventsBoard({ groups }: Props) {
             : `選択した${selectedIds.size}件を承認`}
         </button>
       </div>
+
+      {selectedIds.size > 0 && (
+        <div className="mb-6">
+          <BulkEditToolbar
+            selectedIds={Array.from(selectedIds)}
+            onDone={() => setSelectedIds(new Set())}
+          />
+        </div>
+      )}
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {groups.map((group) => (
