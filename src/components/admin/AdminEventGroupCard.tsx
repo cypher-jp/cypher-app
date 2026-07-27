@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { approveEventAction, rejectEventAction } from "@/app/admin/actions";
+import SubmitButton from "@/components/admin/SubmitButton";
 import {
   ADMIN_EVENT_TYPE_LABEL,
   ADMIN_GENRE_LABEL,
@@ -81,9 +82,7 @@ export default function AdminEventGroupCard({
 
         <div className="mt-4 flex flex-wrap gap-2">
           <form action={approveEventAction.bind(null, primary.id)}>
-            <button type="submit" className="btn-primary text-xs">
-              承認
-            </button>
+            <SubmitButton label="承認" pendingLabel="承認中..." />
           </form>
           <Link
             href={`/admin/events/${primary.id}/edit`}
@@ -92,9 +91,7 @@ export default function AdminEventGroupCard({
             編集
           </Link>
           <form action={rejectEventAction.bind(null, primary.id)}>
-            <button type="submit" className="btn-ghost text-xs">
-              却下
-            </button>
+            <SubmitButton label="却下" pendingLabel="却下中..." variant="ghost" />
           </form>
         </div>
 
@@ -128,9 +125,11 @@ export default function AdminEventGroupCard({
                   )}
                   <div className="mt-2 flex flex-wrap gap-2">
                     <form action={approveEventAction.bind(null, other.id)}>
-                      <button type="submit" className="btn-ghost text-xs">
-                        この候補を代表にして承認
-                      </button>
+                      <SubmitButton
+                        label="この候補を代表にして承認"
+                        pendingLabel="承認中..."
+                        variant="ghost"
+                      />
                     </form>
                     <Link
                       href={`/admin/events/${other.id}/edit`}

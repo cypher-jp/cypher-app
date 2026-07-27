@@ -56,14 +56,23 @@ export async function signOutAction(): Promise<void> {
  */
 export async function approveEventAction(id: string): Promise<void> {
   const supabase = createSupabaseServerClient();
-  const event = await fetchAdminEventById(id);
- 
-  await updateEventStatus(supabase, id, "published");
+  // 体感速度のため、本体の取得と公開を並行実行してDB往復を減らす
+  const [event] = await Promise.all([
+    fetchAdminEventById(id),
+    updateEventStatus(supabase, id, "published"),
+  ]);
  
   if (event) {
     const duplicateIds = await findDuplicatePendingEventIds(supabase, event);
-    for (const duplicateId of duplicateIds) {
-      await updateEventStatus(supabase, duplicateId, "draft");
+    if (duplicateIds.length > 0) {
+      // 1件ずつではなく1回のUPDATEでまとめて却下(重複が多いほど効く)
+      const { error } = await supabase
+        .from("events")
+        .update({ status: "draft" })
+        .in("id", duplicateIds);
+      if (error) {
+        console.warn("[admin] 重複候補の一括却下に失敗:", error.message);
+      }
     }
   }
  

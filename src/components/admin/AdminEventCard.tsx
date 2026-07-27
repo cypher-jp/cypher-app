@@ -4,6 +4,7 @@ import {
   rejectEventAction,
   toggleEntryClosedAction,
 } from "@/app/admin/actions";
+import SubmitButton from "@/components/admin/SubmitButton";
 import {
   ADMIN_EVENT_TYPE_LABEL,
   ADMIN_GENRE_LABEL,
@@ -54,9 +55,7 @@ export default function AdminEventCard({ event }: { event: DanceEvent }) {
         <div className="mt-4 flex flex-wrap gap-2">
           {event.status !== "published" && (
             <form action={approveEventAction.bind(null, event.id)}>
-              <button type="submit" className="btn-primary text-xs">
-                承認
-              </button>
+              <SubmitButton label="承認" pendingLabel="承認中..." />
             </form>
           )}
           <Link
@@ -67,17 +66,17 @@ export default function AdminEventCard({ event }: { event: DanceEvent }) {
           </Link>
           {event.status !== "draft" && (
             <form action={rejectEventAction.bind(null, event.id)}>
-              <button type="submit" className="btn-ghost text-xs">
-                却下
-              </button>
+              <SubmitButton label="却下" pendingLabel="却下中..." variant="ghost" />
             </form>
           )}
           <form
             action={toggleEntryClosedAction.bind(null, event.id, !event.entryClosed)}
           >
-            <button type="submit" className="btn-ghost text-xs">
-              {event.entryClosed ? "締切を解除" : "締め切りました"}
-            </button>
+            <SubmitButton
+              label={event.entryClosed ? "締切を解除" : "締め切りました"}
+              pendingLabel="更新中..."
+              variant="ghost"
+            />
           </form>
         </div>
       </div>
