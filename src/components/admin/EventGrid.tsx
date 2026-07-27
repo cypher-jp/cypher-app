@@ -6,7 +6,8 @@ import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import EventCard from "@/components/EventCard";
 import FilterBar, { DEFAULT_FILTER, type FilterState } from "@/components/FilterBar";
-import { matchesRegionFilter, type DanceEvent, type EventType } from "@/types/event";
+import { filterEvents } from "@/lib/filterEvents";
+import type { DanceEvent, EventType } from "@/types/event";
 
 interface Props {
   events: DanceEvent[];
@@ -40,19 +41,7 @@ export default function EventGrid({ events, initialType = "battle" }: Props) {
     [pathname, router, searchParams],
   );
 
-  const filtered = useMemo(() => {
-    const q = filter.query.trim().toLowerCase();
-    return events.filter((e) => {
-      if (filter.type !== "any" && e.type !== filter.type) return false;
-      if (filter.genre !== "any" && e.genre !== filter.genre) return false;
-      if (!matchesRegionFilter(e.region, filter.region)) return false;
-      if (q) {
-        const haystack = `${e.title} ${e.venue} ${e.description}`.toLowerCase();
-        if (!haystack.includes(q)) return false;
-      }
-      return true;
-    });
-  }, [events, filter]);
+  const filtered = useMemo(() => filterEvents(events, filter), [events, filter]);
 
   return (
     <div className="flex flex-col gap-8">

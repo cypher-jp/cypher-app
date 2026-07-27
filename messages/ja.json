@@ -106,6 +106,7 @@
       "waacking": "Waacking",
       "krump": "Krump",
       "jazz": "Jazz",
+      "freestyle": "Freestyle",
       "all": "ALL STYLE"
     },
     "region": {
@@ -140,6 +141,7 @@
       "beijing": "北京",
       "chengdu": "成都",
       "china": "中国（その他）",
+      "hongkong": "香港",
       "asia": "アジア（その他）",
       "newyork": "ニューヨーク",
       "losangeles": "ロサンゼルス",
@@ -190,7 +192,6 @@
   },
   "articles": {
     "listTitle": "ARTICLES",
-    "listLead": "バトルの歩き方、ギア、シーンの動きをまとめ読み。",
     "empty": "記事は準備中です。",
     "backToList": "記事一覧",
     "relatedEvents": "関連イベント",

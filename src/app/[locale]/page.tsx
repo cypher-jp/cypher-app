@@ -21,6 +21,7 @@ export default async function HomePage({ params, searchParams }: HomePageProps) 
   // 開催日(JST基準)が今日以降のイベントのみ。過去のイベントは/archiveへ自動で移る。
   const events = await fetchUpcomingEvents();
   const tHome = await getTranslations("home");
+  const tArticles = await getTranslations("articles");
 
   // URLクエリ ?type=... があればそれを初期フィルタに、無ければ battle をデフォルトに。
   const rawType = searchParams.type;
@@ -33,7 +34,7 @@ export default async function HomePage({ params, searchParams }: HomePageProps) 
 
   const weekendBattles = getWeekendBattles(events);
   const upcomingDeadlines = getUpcomingDeadlines(events, 7);
-  // 最新記事(公開済み3件)。0件のうちはセクションごと非表示になるので、記事が無くても見た目は変わらない
+  // 最新記事(公開済み3件)。0件でもメディア風のセクション自体は常時表示し、記事一覧へ誘導する
   const latestArticles = await fetchPublishedArticles(3);
 
   return (
@@ -53,26 +54,36 @@ export default async function HomePage({ params, searchParams }: HomePageProps) 
         <EventGrid events={events} initialType={initialType} />
       </div>
 
-      {latestArticles.length > 0 && (
-        <section className="mt-14">
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="display text-xl font-black uppercase tracking-tight">
+      {/* メディア(記事)セクション: 0件でも常時表示して記事コーナーの存在を見せる */}
+      <section className="mt-14 overflow-hidden rounded-3xl bg-ink p-8 text-paper md:p-10">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div className="text-xs font-bold uppercase tracking-[0.3em] text-cypher-yellow">
+              MEDIA
+            </div>
+            <h2 className="display mt-1 text-2xl font-black uppercase tracking-tight md:text-3xl">
               {tHome("latestArticles")}
             </h2>
-            <Link
-              href="/articles"
-              className="text-sm font-bold text-cypher-red hover:underline"
-            >
-              {tHome("viewAllArticles")} →
-            </Link>
           </div>
-          <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <Link
+            href="/articles"
+            className="text-sm font-bold text-cypher-red hover:underline"
+          >
+            {tHome("viewAllArticles")} →
+          </Link>
+        </div>
+        {latestArticles.length > 0 ? (
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {latestArticles.map((article) => (
               <ArticleCard key={article.id} article={article} />
             ))}
           </div>
-        </section>
-      )}
+        ) : (
+          <p className="mt-6 rounded-2xl border border-dashed border-paper/25 p-8 text-center text-sm text-paper/60">
+            {tArticles("empty")}
+          </p>
+        )}
+      </section>
     </div>
   );
 }

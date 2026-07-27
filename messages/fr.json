@@ -106,6 +106,7 @@
       "waacking": "Waacking",
       "krump": "Krump",
       "jazz": "Jazz",
+      "freestyle": "Freestyle",
       "all": "Tous styles"
     },
     "region": {
@@ -140,6 +141,7 @@
       "beijing": "Pékin",
       "chengdu": "Chengdu",
       "china": "Chine (Autre)",
+      "hongkong": "Hong Kong",
       "asia": "Asie (Autre)",
       "newyork": "New York",
       "losangeles": "Los Angeles",
@@ -190,7 +192,6 @@
   },
   "articles": {
     "listTitle": "ARTICLES",
-    "listLead": "Guides, équipement et histoires de la scène street dance.",
     "empty": "Articles à venir.",
     "backToList": "Tous les articles",
     "relatedEvents": "Événements liés",

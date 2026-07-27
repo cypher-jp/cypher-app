@@ -25,7 +25,6 @@ export default async function ArticlesPage({ params }: Props) {
       <h1 className="display text-4xl font-black uppercase tracking-tight">
         {t("listTitle")}
       </h1>
-      <p className="mt-2 text-ink/60">{t("listLead")}</p>
 
       <div className="mt-8">
         {articles.length === 0 ? (

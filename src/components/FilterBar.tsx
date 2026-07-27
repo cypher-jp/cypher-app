@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   buildEventTypeLabels,
@@ -15,28 +15,28 @@ import {
   type Region,
 } from "@/types/event";
 
+// ジャンル・エリアは複数選択(空配列=絞り込みなし)。
+// regionScope は国内/海外タブ自体によるフィルタ。エリアチップが選択されている場合はチップ優先。
 export interface FilterState {
   type: EventType | "any";
-  genre: Genre | "any";
-  region: Region | "any";
+  genres: Genre[];
+  regionScope: "any" | "domestic" | "overseas";
+  regions: Region[];
   query: string;
 }
 
 export const DEFAULT_FILTER: FilterState = {
   type: "any",
-  genre: "any",
-  region: "any",
+  genres: [],
+  regionScope: "any",
+  regions: [],
   query: "",
 };
 
 type RegionTab = "domestic" | "overseas";
 
-function isOverseasRegion(region: Region | "any"): boolean {
-  return (OVERSEAS_REGIONS as readonly string[]).includes(region);
-}
-
-function isDomesticRegion(region: Region | "any"): boolean {
-  return (DOMESTIC_REGIONS as readonly string[]).includes(region);
+function toggle<T>(list: T[], item: T): T[] {
+  return list.includes(item) ? list.filter((v) => v !== item) : [...list, item];
 }
 
 interface Props {
@@ -55,28 +55,38 @@ export default function FilterBar({ value, onChange, resultCount }: Props) {
   const genreLabels = buildGenreLabels((k) => tGenre(k));
   const regionLabels = buildRegionLabels((k) => tRegion(k));
 
-  // どちらのタブを開くか。海外エリアが選択された状態ならそちらを開いておく。
+  // 表示するチップ一覧のタブ。タブを押すと同時に regionScope(フィルタ)も切り替わる。
   const [regionTab, setRegionTab] = useState<RegionTab>(
-    isOverseasRegion(value.region) ? "overseas" : "domestic",
+    value.regionScope === "overseas" ? "overseas" : "domestic",
   );
-
-  // URL経由などフィルタが外部から変わった時も、選択中のエリアが見えるタブに追従させる。
-  useEffect(() => {
-    if (isOverseasRegion(value.region)) {
-      setRegionTab("overseas");
-    } else if (isDomesticRegion(value.region)) {
-      setRegionTab("domestic");
-    }
-  }, [value.region]);
 
   const reset = () => onChange(DEFAULT_FILTER);
   const hasActive =
     value.type !== "any" ||
-    value.genre !== "any" ||
-    value.region !== "any" ||
+    value.genres.length > 0 ||
+    value.regionScope !== "any" ||
+    value.regions.length > 0 ||
     value.query.trim() !== "";
 
   const regionList = regionTab === "domestic" ? DOMESTIC_REGIONS : OVERSEAS_REGIONS;
+
+  // 反対側タブで選択済みのエリア数(タブに件数表示して「見えない選択」を防ぐ)
+  const domesticSelected = value.regions.filter((r) =>
+    (DOMESTIC_REGIONS as readonly Region[]).includes(r),
+  ).length;
+  const overseasSelected = value.regions.filter((r) =>
+    (OVERSEAS_REGIONS as readonly Region[]).includes(r),
+  ).length;
+
+  // タブ押下: 表示リストを切り替えつつ、スコープフィルタも設定。
+  // すでにそのスコープが有効な状態でもう一度押すと解除(any)する。
+  const handleTab = (tab: RegionTab) => {
+    setRegionTab(tab);
+    onChange({
+      ...value,
+      regionScope: value.regionScope === tab ? "any" : tab,
+    });
+  };
 
   return (
     <div className="rounded-2xl border border-ink/10 bg-paper p-5 shadow-card">
@@ -110,16 +120,16 @@ export default function FilterBar({ value, onChange, resultCount }: Props) {
         </span>
         <div className="flex flex-wrap gap-2">
           <Chip
-            active={value.genre === "any"}
-            onClick={() => onChange({ ...value, genre: "any" })}
+            active={value.genres.length === 0}
+            onClick={() => onChange({ ...value, genres: [] })}
           >
             {t("all")}
           </Chip>
           {GENRES.map((g) => (
             <Chip
               key={g}
-              active={value.genre === g}
-              onClick={() => onChange({ ...value, genre: g })}
+              active={value.genres.includes(g)}
+              onClick={() => onChange({ ...value, genres: toggle(value.genres, g) })}
             >
               {genreLabels[g]}
             </Chip>
@@ -133,14 +143,16 @@ export default function FilterBar({ value, onChange, resultCount }: Props) {
         </span>
         <div className="flex flex-wrap items-center gap-2">
           <Chip
-            active={value.region === "any"}
-            onClick={() => onChange({ ...value, region: "any" })}
+            active={value.regions.length === 0 && value.regionScope === "any"}
+            onClick={() => onChange({ ...value, regions: [], regionScope: "any" })}
           >
             {t("all")}
           </Chip>
           <Chip
-            active={value.region === "online"}
-            onClick={() => onChange({ ...value, region: "online" })}
+            active={value.regions.includes("online")}
+            onClick={() =>
+              onChange({ ...value, regions: toggle(value.regions, "online") })
+            }
           >
             {regionLabels.online}
           </Chip>
@@ -148,25 +160,33 @@ export default function FilterBar({ value, onChange, resultCount }: Props) {
           <div className="inline-flex rounded-full border border-ink/15 p-0.5 text-xs font-bold uppercase tracking-wider">
             <button
               type="button"
-              onClick={() => setRegionTab("domestic")}
+              aria-pressed={value.regionScope === "domestic"}
+              onClick={() => handleTab("domestic")}
               className={
-                regionTab === "domestic"
+                value.regionScope === "domestic"
                   ? "rounded-full bg-ink px-3 py-1 text-paper"
-                  : "rounded-full px-3 py-1 text-ink/60 hover:text-ink"
+                  : regionTab === "domestic"
+                    ? "rounded-full px-3 py-1 text-ink underline underline-offset-4"
+                    : "rounded-full px-3 py-1 text-ink/60 hover:text-ink"
               }
             >
               {t("domestic")}
+              {domesticSelected > 0 ? ` (${domesticSelected})` : ""}
             </button>
             <button
               type="button"
-              onClick={() => setRegionTab("overseas")}
+              aria-pressed={value.regionScope === "overseas"}
+              onClick={() => handleTab("overseas")}
               className={
-                regionTab === "overseas"
+                value.regionScope === "overseas"
                   ? "rounded-full bg-ink px-3 py-1 text-paper"
-                  : "rounded-full px-3 py-1 text-ink/60 hover:text-ink"
+                  : regionTab === "overseas"
+                    ? "rounded-full px-3 py-1 text-ink underline underline-offset-4"
+                    : "rounded-full px-3 py-1 text-ink/60 hover:text-ink"
               }
             >
               {t("overseas")}
+              {overseasSelected > 0 ? ` (${overseasSelected})` : ""}
             </button>
           </div>
         </div>
@@ -174,8 +194,10 @@ export default function FilterBar({ value, onChange, resultCount }: Props) {
           {regionList.map((r) => (
             <Chip
               key={r}
-              active={value.region === r}
-              onClick={() => onChange({ ...value, region: r })}
+              active={value.regions.includes(r)}
+              onClick={() =>
+                onChange({ ...value, regions: toggle(value.regions, r) })
+              }
             >
               {regionLabels[r]}
             </Chip>

@@ -137,11 +137,8 @@ function parseEventForm(formData: FormData): ParsedForm {
   const genres = genresRaw.filter((g): g is Genre =>
     (GENRES as string[]).includes(g),
   );
-  const normalizedGenres: Genre[] = genres.includes("all")
-    ? ["all"]
-    : genres.length > 0
-      ? genres
-      : ["all"];
+  // freestyle/all も通常のジャンルとして扱う(旧仕様の「all選択時は["all"]に丸める」は廃止)。
+  const normalizedGenres: Genre[] = genres.length > 0 ? genres : ["all"];
   const genre = normalizedGenres[0];
   const region = String(formData.get("region") ?? "other");
   const date = String(formData.get("date") ?? "").trim();

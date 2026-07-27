@@ -106,6 +106,7 @@
       "waacking": "왁킹",
       "krump": "크럼프",
       "jazz": "재즈",
+      "freestyle": "Freestyle",
       "all": "전 장르"
     },
     "region": {
@@ -140,6 +141,7 @@
       "beijing": "베이징",
       "chengdu": "청두",
       "china": "중국(기타)",
+      "hongkong": "홍콩",
       "asia": "아시아(기타)",
       "newyork": "뉴욕",
       "losangeles": "로스앤젤레스",
@@ -190,7 +192,6 @@
   },
   "articles": {
     "listTitle": "ARTICLES",
-    "listLead": "스트리트 댄스 신의 가이드, 기어, 스토리.",
     "empty": "아티클 준비 중입니다.",
     "backToList": "아티클 목록",
     "relatedEvents": "관련 이벤트",

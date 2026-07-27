@@ -18,6 +18,7 @@ export const ADMIN_GENRE_LABEL: Record<Genre, string> = {
   waacking: "Waacking",
   krump: "Krump",
   jazz: "Jazz",
+  freestyle: "Freestyle",
   all: "ALL STYLE",
 };
 
@@ -53,6 +54,7 @@ export const ADMIN_REGION_LABEL: Record<Region, string> = {
   beijing: "北京",
   chengdu: "成都",
   china: "中国（その他）",
+  hongkong: "香港",
   asia: "アジア（その他）",
   newyork: "ニューヨーク",
   losangeles: "ロサンゼルス",

@@ -15,6 +15,10 @@ export type Genre =
   | "waacking"
   | "krump"
   | "jazz"
+  // freestyle = 「FREESTYLE / フリースタイルバトル」表記のジャンル不問バトル。
+  // all = 「ALL STYLE / オールスタイル」と明記された大会のみ。フィルタではどちらも厳密一致
+  // (旧仕様の「allはどのジャンルで絞ってもヒット」は廃止)。
+  | "freestyle"
   | "all";
  
 // ダンスシーンが盛んな主要13都道府県は個別キー、それ以外は地方ブロックでまとめる方式。
@@ -58,6 +62,7 @@ export type Region =
   | "beijing"
   | "chengdu"
   | "china"
+  | "hongkong"
   | "asia"
   | "newyork"
   | "losangeles"
@@ -137,6 +142,7 @@ export const GENRES: Genre[] = [
   "waacking",
   "krump",
   "jazz",
+  "freestyle",
   "all",
 ];
  
@@ -173,6 +179,7 @@ export const REGIONS: Region[] = [
   "beijing",
   "chengdu",
   "china",
+  "hongkong",
   "asia",
   "newyork",
   "losangeles",
@@ -238,6 +245,7 @@ export const OVERSEAS_REGIONS: Region[] = [
   "beijing",
   "chengdu",
   "china",
+  "hongkong",
   "asia",
   "newyork",
   "losangeles",
@@ -303,7 +311,7 @@ export const EVENT_STATUSES: EventStatus[] = ["pending", "published", "draft"];
 /**
  * イベントの開催ジャンル一覧を返す。
  * genres(複数ジャンル)が設定されていればそれを、無い旧データは genre(単一)を1要素配列で返す。
- * "all" は「FREESTYLE / ALL STYLE と明記された大会」を意味し、フィルタではどのジャンルにもヒットする。
+ * "freestyle" は FREESTYLE 表記、"all" は ALL STYLE 明記の大会。どちらもフィルタでは厳密一致。
  */
 export function getEventGenres(
   event: Pick<DanceEvent, "genre" | "genres">,
@@ -340,6 +348,7 @@ export function buildGenreLabels(
     waacking: t("waacking"),
     krump: t("krump"),
     jazz: t("jazz"),
+    freestyle: t("freestyle"),
     all: t("all"),
   };
 }
@@ -379,6 +388,7 @@ export function buildRegionLabels(
     beijing: t("beijing"),
     chengdu: t("chengdu"),
     china: t("china"),
+    hongkong: t("hongkong"),
     asia: t("asia"),
     newyork: t("newyork"),
     losangeles: t("losangeles"),

@@ -106,6 +106,7 @@
       "waacking": "甩手舞",
       "krump": "克鲁普",
       "jazz": "爵士",
+      "freestyle": "Freestyle",
       "all": "全风格"
     },
     "region": {
@@ -140,6 +141,7 @@
       "beijing": "北京",
       "chengdu": "成都",
       "china": "中国（其他）",
+      "hongkong": "香港",
       "asia": "亚洲（其他）",
       "newyork": "纽约",
       "losangeles": "洛杉矶",
@@ -190,7 +192,6 @@
   },
   "articles": {
     "listTitle": "ARTICLES",
-    "listLead": "街舞圈的指南、装备与故事。",
     "empty": "文章即将上线。",
     "backToList": "文章列表",
     "relatedEvents": "相关活动",

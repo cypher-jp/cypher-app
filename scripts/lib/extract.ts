@@ -36,12 +36,14 @@ function normalizeGenre(value: unknown): Genre {
     const lower = value.toLowerCase().trim();
     if ((GENRES as string[]).includes(lower)) return lower as Genre;
   }
-  return "all";
+  // "all"(ALL STYLE)は明記された大会のみに使うため、不明時はジャンル不問のfreestyleへ寄せる
+  return "freestyle";
 }
 
 /**
- * genres(配列)の正規化。未知の値は捨て、"all"が含まれる場合は["all"]に丸める
- * (「FREESTYLE表記の大会」の意味を保つため個別ジャンルと併記させない)。
+ * genres(配列)の正規化。未知の値は捨てて重複を除く。
+ * "freestyle"(FREESTYLE表記) と "all"(ALL STYLE明記) も通常のジャンルとして扱い、
+ * 部門制の大会では個別ジャンルと併記できる(旧仕様の["all"]への丸めは廃止)。
  * 空になった場合は旧形式のgenre(単一)からフォールバックする。
  */
 function normalizeGenres(value: unknown, fallback: unknown): Genre[] {
@@ -56,7 +58,6 @@ function normalizeGenres(value: unknown, fallback: unknown): Genre[] {
       }
     }
   }
-  if (result.includes("all")) return ["all"];
   if (result.length > 0) return result;
   return [normalizeGenre(fallback)];
 }
@@ -133,7 +134,8 @@ const SYSTEM_PROMPT = `あなたはストリートダンスのイベント情報
 - beijing: 北京
 - chengdu: 成都
 - china: 中国本土のそれ以外の都市
-- asia: 上記以外のアジア(東南アジア、香港・マカオ等を含む)
+- hongkong: 香港
+- asia: 上記以外のアジア(東南アジア、マカオ等を含む)
 - newyork: ニューヨーク
 - losangeles: ロサンゼルス
 - us: アメリカのそれ以外の都市
@@ -163,8 +165,12 @@ const SYSTEM_PROMPT = `あなたはストリートダンスのイベント情報
 - eu: 上記の国リストに無いヨーロッパの国(例: ベルギー・イギリス等を除くその他の国)
 
 分類のルール:
-- genre は上記の列挙値の中から最も近いものを選ぶこと。判断できない場合は genre="all" とする。
-- genres は開催されるジャンルの配列。イベント名や本文に FREESTYLE / ALL STYLE / オールスタイル / オールジャンル / 全ジャンル 等の表記がある場合のみ ["all"] とする。複数ジャンルの部門を併催する大会(例: POPPING部門とLOCKING部門を同時開催)は、開催される各ジャンルをすべて列挙する。単一ジャンルの大会は要素1つ。ジャンルが読み取れない場合は ["all"]。
+- genre は上記の列挙値の中から最も近いものを選ぶこと。
+- genres は開催されるジャンルの配列。"freestyle" と "all" は別物として厳密に使い分けること:
+  - "all" は、イベント名や本文に ALL STYLE / オールスタイル / オールジャンル / 全ジャンル と明記されている大会のみ。
+  - "freestyle" は、FREESTYLE / フリースタイル(バトル) と表記されている、ジャンル不問のバトル。
+  - 複数ジャンルの部門を併催する大会(例: POPPING 1on1部門とFREESTYLE部門を同時開催)は、開催される各ジャンルをすべて列挙する(この例では ["popping", "freestyle"])。
+  - 単一ジャンルの大会は要素1つ。ジャンルがどうしても読み取れない場合は ["freestyle"]。
 - region は、まず本文・会場名から開催都道府県(国内)または国・都市(海外)を読み取り、上の対応表に従って変換すること。対応表に無い都道府県名・都市名でも、会場名や市区町村名(例:横浜→神奈川→kanagawa、札幌市→北海道→hokkaido、京都市→京都→kyoto、ブルックリン→ニューヨーク→newyork)から推測できる場合は変換すること。判断できない場合のみ online/other を使う。
 - ヨーロッパの国が上の対応表(フランス/ドイツ/オランダ/ベルギー/イギリス/イタリア/スペイン/ポーランド/スイス/ロシア)に含まれる場合は、必ずその国キー(または首都開催なら首都キー)を使うこと。対応表に無いヨーロッパの国(例: スウェーデン、ポルトガル等)は eu を使う。
 - 読み取った都道府県名・市区町村名・国名・都市名は description の中に残すこと(ブロックへ丸めた場合でも情報が失われないようにするため)。

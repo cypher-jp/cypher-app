@@ -103,7 +103,7 @@ export default function EventForm({ action, defaultValues, submitLabel }: Props)
             ))}
           </select>
         </Field>
-        <Field label="ジャンル(複数選択可。FREESTYLE/ALL STYLE表記の大会のみ「ALL STYLE」)">
+        <Field label="ジャンル(複数選択可。FREESTYLE表記→「Freestyle」、ALL STYLE明記→「ALL STYLE」)">
           <div className="flex flex-wrap gap-x-4 gap-y-2 pt-1">
             {GENRES.map((v) => (
               <label key={v} className="flex items-center gap-1.5 text-sm">
