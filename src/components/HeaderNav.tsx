@@ -51,6 +51,9 @@ export default function HeaderNav() {
         <Link href="/archive" className={linkClass}>
           {t("archive")}
         </Link>
+        <Link href="/articles" className={linkClass}>
+          {t("articles")}
+        </Link>
         <a
           href="https://www.instagram.com/world_cypher/"
           target="_blank"
@@ -100,6 +103,9 @@ export default function HeaderNav() {
             </Link>
             <Link href="/archive" onClick={close} className={`${linkClass} text-left`}>
               {t("archive")}
+            </Link>
+            <Link href="/articles" onClick={close} className={`${linkClass} text-left`}>
+              {t("articles")}
             </Link>
             <a
               href="https://www.instagram.com/world_cypher/"

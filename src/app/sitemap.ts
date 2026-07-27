@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { fetchEvents } from "@/lib/supabase";
+import { fetchPublishedArticles } from "@/lib/articles";
 import { SITE_URL } from "@/lib/site";
 import { routing } from "@/i18n/routing";
 
@@ -14,6 +15,7 @@ function localeAlternates(pathSuffix: string): Record<string, string> {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // fetchEvents は status = published のイベントのみ返す（src/lib/supabase.ts参照）。
   const events = await fetchEvents();
+  const articles = await fetchPublishedArticles();
   const lastModified = new Date();
 
   const entries: MetadataRoute.Sitemap = [];
@@ -47,6 +49,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
       alternates: { languages: localeAlternates("/archive") },
     });
+    entries.push({
+      url: `${SITE_URL}/${locale}/articles`,
+      lastModified,
+      changeFrequency: "daily",
+      priority: 0.6,
+      alternates: { languages: localeAlternates("/articles") },
+    });
+    for (const article of articles) {
+      entries.push({
+        url: `${SITE_URL}/${locale}/articles/${article.slug}`,
+        lastModified,
+        changeFrequency: "weekly",
+        priority: 0.7,
+        alternates: { languages: localeAlternates(`/articles/${article.slug}`) },
+      });
+    }
     for (const event of events) {
       entries.push({
         url: `${SITE_URL}/${locale}/events/${event.id}`,

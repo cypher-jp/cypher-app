@@ -3,7 +3,10 @@
     "events": "Events",
     "calendar": "Calendar",
     "archive": "Archive",
-    "submit": "Soumettre"
+    "submit": "Soumettre",
+    "articles": "Articles",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu"
   },
   "hero": {
     "eyebrow": "STREET DANCE BATTLE INFO, ONE PLACE",
@@ -17,7 +20,9 @@
   },
   "home": {
     "weekendBattles": "Battles ce week-end",
-    "upcomingDeadlines": "Inscription sous 7 jours"
+    "upcomingDeadlines": "Inscription sous 7 jours",
+    "latestArticles": "Derniers articles",
+    "viewAllArticles": "Voir tous les articles"
   },
   "filters": {
     "type": "TYPE",
@@ -182,5 +187,19 @@
     "s7b": "Cette politique peut être révisée si nécessaire. Les changements importants seront annoncés sur cette page.",
     "contact": "Contact : envoyez un DM à notre Instagram officiel (@world_cypher).",
     "updated": "Date d'entrée en vigueur : 26 juillet 2026"
+  },
+  "articles": {
+    "listTitle": "ARTICLES",
+    "listLead": "Guides, équipement et histoires de la scène street dance.",
+    "empty": "Articles à venir.",
+    "backToList": "Tous les articles",
+    "relatedEvents": "Événements liés",
+    "relatedArticles": "Articles liés",
+    "type": {
+      "howto": "Guide",
+      "preview": "Aperçu",
+      "gear": "Équipement",
+      "report": "Reportage"
+    }
   }
 }

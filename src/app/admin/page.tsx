@@ -38,9 +38,14 @@ export default async function AdminHomePage({ searchParams }: Props) {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="display text-3xl font-black">EVENTS</h1>
-        <Link href="/admin/new" className="btn-primary text-sm">
-          + 新規登録
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/admin/articles" className="btn-ghost text-sm">
+            記事管理
+          </Link>
+          <Link href="/admin/new" className="btn-primary text-sm">
+            + 新規登録
+          </Link>
+        </div>
       </div>
 
       <div className="mt-6">

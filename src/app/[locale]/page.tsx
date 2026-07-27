@@ -3,6 +3,9 @@ import { setRequestLocale } from "next-intl/server";
 import EventGrid from "@/components/EventGrid";
 import FeaturedSection from "@/components/FeaturedSection";
 import { fetchUpcomingEvents } from "@/lib/supabase";
+import { fetchPublishedArticles } from "@/lib/articles";
+import ArticleCard from "@/components/ArticleCard";
+import { Link } from "@/i18n/navigation";
 import { getUpcomingDeadlines, getWeekendBattles } from "@/lib/featured";
 import { EVENT_TYPES, type EventType } from "@/types/event";
 
@@ -30,6 +33,8 @@ export default async function HomePage({ params, searchParams }: HomePageProps) 
 
   const weekendBattles = getWeekendBattles(events);
   const upcomingDeadlines = getUpcomingDeadlines(events, 7);
+  // 最新記事(公開済み3件)。0件のうちはセクションごと非表示になるので、記事が無くても見た目は変わらない
+  const latestArticles = await fetchPublishedArticles(3);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
@@ -47,6 +52,27 @@ export default async function HomePage({ params, searchParams }: HomePageProps) 
       <div className="mt-10">
         <EventGrid events={events} initialType={initialType} />
       </div>
+
+      {latestArticles.length > 0 && (
+        <section className="mt-14">
+          <div className="flex items-end justify-between gap-4">
+            <h2 className="display text-xl font-black uppercase tracking-tight">
+              {tHome("latestArticles")}
+            </h2>
+            <Link
+              href="/articles"
+              className="text-sm font-bold text-cypher-red hover:underline"
+            >
+              {tHome("viewAllArticles")} →
+            </Link>
+          </div>
+          <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {latestArticles.map((article) => (
+              <ArticleCard key={article.id} article={article} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

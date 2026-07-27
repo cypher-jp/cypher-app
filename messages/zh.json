@@ -3,7 +3,10 @@
     "events": "Events",
     "calendar": "Calendar",
     "archive": "Archive",
-    "submit": "投稿活动"
+    "submit": "投稿活动",
+    "articles": "Articles",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单"
   },
   "hero": {
     "eyebrow": "STREET DANCE BATTLE INFO, ONE PLACE",
@@ -17,7 +20,9 @@
   },
   "home": {
     "weekendBattles": "本周末的Battle",
-    "upcomingDeadlines": "报名截止7天内"
+    "upcomingDeadlines": "报名截止7天内",
+    "latestArticles": "最新文章",
+    "viewAllArticles": "查看全部文章"
   },
   "filters": {
     "type": "类型 / TYPE",
@@ -182,5 +187,19 @@
     "s7b": "本政策可能根据需要进行修订，重要变更将在本页公布。",
     "contact": "联系方式：请通过官方Instagram（@world_cypher）私信联系。",
     "updated": "制定日期：2026年7月26日"
+  },
+  "articles": {
+    "listTitle": "ARTICLES",
+    "listLead": "街舞圈的指南、装备与故事。",
+    "empty": "文章即将上线。",
+    "backToList": "文章列表",
+    "relatedEvents": "相关活动",
+    "relatedArticles": "相关文章",
+    "type": {
+      "howto": "教程",
+      "preview": "预告",
+      "gear": "装备",
+      "report": "报道"
+    }
   }
 }

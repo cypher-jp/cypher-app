@@ -8,6 +8,8 @@ import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { getLocalizedDescription } from "@/lib/eventI18n";
 import { isPastEvent } from "@/lib/eventDate";
 import InstagramEmbed from "@/components/InstagramEmbed";
+import ArticleCard from "@/components/ArticleCard";
+import { fetchArticlesForEvent } from "@/lib/articles";
 import { routing } from "@/i18n/routing";
 import { buildEventTypeLabels, buildGenreLabels, buildRegionLabels, getEventGenres } from "@/types/event";
 
@@ -68,6 +70,9 @@ export default async function EventDetailPage({ params }: PageProps) {
   const typeLabels = buildEventTypeLabels((k) => tType(k));
   const genreLabels = buildGenreLabels((k) => tGenre(k));
   const regionLabels = buildRegionLabels((k) => tRegion(k));
+  const tArticles = await getTranslations("articles");
+  // このイベントを関連に持つ公開記事(0件なら枠ごと非表示)
+  const relatedArticles = await fetchArticlesForEvent(event.id);
 
   // 過去イベントも直接URLでは開ける(SEO資産として残す)。表示上だけ終了扱いにする。
   const eventEnded = isPastEvent(event.date);
@@ -229,6 +234,19 @@ export default async function EventDetailPage({ params }: PageProps) {
           )}
         </div>
       </article>
+
+      {relatedArticles.length > 0 && (
+        <section className="mx-auto mt-10 max-w-4xl">
+          <h2 className="display text-xl font-black uppercase tracking-tight">
+            {tArticles("relatedArticles")}
+          </h2>
+          <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedArticles.map((article) => (
+              <ArticleCard key={article.id} article={article} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -3,7 +3,10 @@
     "events": "Events",
     "calendar": "Calendar",
     "archive": "Archive",
-    "submit": "掲載依頼"
+    "submit": "掲載依頼",
+    "articles": "Articles",
+    "openMenu": "メニューを開く",
+    "closeMenu": "メニューを閉じる"
   },
   "hero": {
     "eyebrow": "STREET DANCE BATTLE INFO, ONE PLACE",
@@ -17,7 +20,9 @@
   },
   "home": {
     "weekendBattles": "今週末のバトル",
-    "upcomingDeadlines": "締切まで7日以内"
+    "upcomingDeadlines": "締切まで7日以内",
+    "latestArticles": "最新記事",
+    "viewAllArticles": "記事をすべて見る"
   },
   "filters": {
     "type": "種別 / TYPE",
@@ -182,5 +187,19 @@
     "s7b": "本ポリシーは必要に応じて改定されることがあります。重要な変更は本ページでお知らせします。",
     "contact": "お問い合わせ: 公式Instagram（@world_cypher）のDMまでお願いします。",
     "updated": "制定日: 2026年7月26日"
+  },
+  "articles": {
+    "listTitle": "ARTICLES",
+    "listLead": "バトルの歩き方、ギア、シーンの動きをまとめ読み。",
+    "empty": "記事は準備中です。",
+    "backToList": "記事一覧",
+    "relatedEvents": "関連イベント",
+    "relatedArticles": "関連記事",
+    "type": {
+      "howto": "ハウツー",
+      "preview": "プレビュー",
+      "gear": "ギア",
+      "report": "レポート"
+    }
   }
 }
