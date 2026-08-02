@@ -4,17 +4,20 @@ import { useMemo, useState, useTransition } from "react";
 import { bulkApproveEventsAction } from "@/app/admin/actions";
 import BulkEditToolbar from "@/components/admin/BulkEditToolbar";
 import AdminEventGroupCard from "@/components/admin/AdminEventGroupCard";
-import type { PendingEventGroup } from "@/lib/admin/dedupe";
+import { buildDedupeKey, type PendingEventGroup } from "@/lib/admin/dedupe";
 import { sortEvents, type EventSortKey } from "@/lib/sortEvents";
 
 interface Props {
   groups: PendingEventGroup[];
+  /** 公開済みイベントの重複判定キー(開催日::正規化タイトル)一覧 */
+  publishedKeys: string[];
 }
 
 // 承認待ちタブ本体。重複候補をまとめたカードを並べ、チェックボックスでの
 // 一括承認をここで管理する(サーバーコンポーネントではチェック状態を持てないため
 // クライアントコンポーネントに分離)。
-export default function PendingEventsBoard({ groups }: Props) {
+export default function PendingEventsBoard({ groups, publishedKeys }: Props) {
+  const publishedKeySet = useMemo(() => new Set(publishedKeys), [publishedKeys]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isPending, startTransition] = useTransition();
   // default = 登録が新しい順(サーバーの取得順)。代表イベントの値で並び替える。
@@ -108,6 +111,7 @@ export default function PendingEventsBoard({ groups }: Props) {
             group={group}
             selected={selectedIds.has(group.primary.id)}
             onToggleSelect={() => toggleOne(group.primary.id)}
+            publishedDuplicate={publishedKeySet.has(buildDedupeKey(group.primary))}
           />
         ))}
       </div>

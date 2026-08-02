@@ -54,6 +54,9 @@ export default function HeaderNav() {
         <Link href="/articles" className={linkClass}>
           {t("articles")}
         </Link>
+        <Link href="/contact" className={linkClass}>
+          {t("contact")}
+        </Link>
         <Link href="/contact" className={submitClass}>
           {t("submit")}
         </Link>
@@ -101,6 +104,9 @@ export default function HeaderNav() {
             </Link>
             <Link href="/articles" onClick={close} className={`${linkClass} text-left`}>
               {t("articles")}
+            </Link>
+            <Link href="/contact" onClick={close} className={`${linkClass} text-left`}>
+              {t("contact")}
             </Link>
             <Link
               href="/contact"

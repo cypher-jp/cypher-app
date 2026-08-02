@@ -14,6 +14,8 @@ interface Props {
   group: PendingEventGroup;
   selected: boolean;
   onToggleSelect: () => void;
+  /** 既に公開済みの同じイベント(開催日+タイトル一致)が存在する場合true */
+  publishedDuplicate: boolean;
 }
 
 // 承認待ち一覧の1カード。重複候補(others)がある場合は代表(primary)をメインに表示し、
@@ -23,6 +25,7 @@ export default function AdminEventGroupCard({
   group,
   selected,
   onToggleSelect,
+  publishedDuplicate,
 }: Props) {
   const { primary, others } = group;
   const hasDuplicates = others.length > 0;
@@ -43,9 +46,11 @@ export default function AdminEventGroupCard({
           />
           選択
         </label>
-        {hasDuplicates && (
+        {(hasDuplicates || publishedDuplicate) && (
           <span className="absolute right-3 top-3 z-10 rounded-full bg-cypher-red px-3 py-1 text-xs font-bold text-paper">
-            重複候補あり({others.length + 1}件)
+            {publishedDuplicate
+              ? "公開済みと重複"
+              : `重複候補あり(${others.length + 1}件)`}
           </span>
         )}
         {primary.flyerUrl ? (
@@ -73,6 +78,13 @@ export default function AdminEventGroupCard({
           {primary.title}
         </h3>
         <div className="mt-1 text-sm text-ink/70">{primary.date}</div>
+        {publishedDuplicate && (
+          <div className="mt-2 rounded-lg border border-cypher-red/30 bg-cypher-red/10 px-3 py-2 text-xs text-cypher-red">
+            同じ開催日・タイトルのイベントが既に公開されています。このまま承認すると
+            公開ページに2枚並ぶため、内容を見比べて重複なら「却下」してください
+            (新情報があれば公開中の方を編集で反映)。
+          </div>
+        )}
         {primary.venue && (
           <div className="mt-0.5 text-xs text-ink/50">{primary.venue}</div>
         )}

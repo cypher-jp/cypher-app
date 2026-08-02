@@ -3,7 +3,7 @@ import AdminTabs from "@/components/admin/AdminTabs";
 import AdminEventsBoard from "@/components/admin/AdminEventsBoard";
 import PendingEventsBoard from "@/components/admin/PendingEventsBoard";
 import { fetchAdminEvents, fetchAdminEventCounts } from "@/lib/admin/events";
-import { groupPendingEvents } from "@/lib/admin/dedupe";
+import { buildDedupeKey, groupPendingEvents } from "@/lib/admin/dedupe";
 import { ADMIN_GENRE_LABEL } from "@/lib/admin/labels";
 import { GENRES, type EventStatus, type Genre } from "@/types/event";
 
@@ -30,6 +30,14 @@ export default async function AdminHomePage({ searchParams }: Props) {
   // 承認待ちタブのみ、同一イベントらしき行をまとめて表示する
   // (公開中/却下タブは個別管理のままでよいため対象外)。
   const pendingGroups = tab === "pending" ? groupPendingEvents(events) : [];
+
+  // 「既に公開済みの同じイベント」検知用。承認すると公開ページに2枚並んでしまうため、
+  // 承認待ちカードに警告を出してオーナーが却下を判断できるようにする
+  // (例: インスタ手動登録で公開済み + 後からスクレイパーが同イベントを別URLで拾ったケース)。
+  const publishedKeys: string[] =
+    tab === "pending"
+      ? (await fetchAdminEvents("published")).map((e) => buildDedupeKey(e))
+      : [];
   const duplicateGroupCount = pendingGroups.filter(
     (g) => g.others.length > 0,
   ).length;
@@ -87,7 +95,7 @@ export default async function AdminHomePage({ searchParams }: Props) {
             該当するイベントはありません。
           </div>
         ) : tab === "pending" ? (
-          <PendingEventsBoard groups={pendingGroups} />
+          <PendingEventsBoard groups={pendingGroups} publishedKeys={publishedKeys} />
         ) : (
           <AdminEventsBoard events={events} />
         )}
