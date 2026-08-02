@@ -4,7 +4,9 @@ import {
   rejectEventAction,
   toggleEntryClosedAction,
 } from "@/app/admin/actions";
+import ShareStoryButton from "@/components/admin/ShareStoryButton";
 import SubmitButton from "@/components/admin/SubmitButton";
+import { SITE_URL } from "@/lib/site";
 import {
   ADMIN_EVENT_TYPE_LABEL,
   ADMIN_GENRE_LABEL,
@@ -68,6 +70,13 @@ export default function AdminEventCard({ event }: { event: DanceEvent }) {
             <form action={rejectEventAction.bind(null, event.id)}>
               <SubmitButton label="却下" pendingLabel="却下中..." variant="ghost" />
             </form>
+          )}
+          {event.status === "published" && event.flyerUrl && (
+            <ShareStoryButton
+              flyerUrl={event.flyerUrl}
+              eventUrl={`${SITE_URL}/ja/events/${event.id}`}
+              title={event.title}
+            />
           )}
           <form
             action={toggleEntryClosedAction.bind(null, event.id, !event.entryClosed)}
