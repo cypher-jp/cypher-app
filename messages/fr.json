@@ -86,7 +86,7 @@
   "footer": {
     "tagline": "Site d'informations sur les battles de street dance. Dates, lieux et délais d'inscription, en un clin d'œil.",
     "copyright": "© {year} WORLD Cypher.",
-    "contact": "Pour soumettre un événement → @world_cypher",
+    "contact": "Contact",
     "privacy": "Politique de confidentialité"
   },
   "locale": {
@@ -238,5 +238,22 @@
       "gear": "Équipement",
       "report": "Reportage"
     }
+  },
+  "contact": {
+    "title": "CONTACT",
+    "lead": "Demandes de publication d'événements, corrections et autres questions. Réponse sous 2-3 jours en général.",
+    "categoryLabel": "Type de demande",
+    "category": {
+      "listing": "Publier mon événement",
+      "correction": "Corriger une info",
+      "other": "Autre"
+    },
+    "name": "Nom",
+    "email": "E-mail",
+    "message": "Message",
+    "submit": "Envoyer",
+    "sending": "Envoi...",
+    "sent": "Envoyé ! Nous vous répondrons bientôt.",
+    "error": "Échec de l'envoi. Vérifiez votre e-mail et votre message, puis réessayez."
   }
 }

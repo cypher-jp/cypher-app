@@ -54,14 +54,9 @@ export default function HeaderNav() {
         <Link href="/articles" className={linkClass}>
           {t("articles")}
         </Link>
-        <a
-          href="https://www.instagram.com/world_cypher/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={submitClass}
-        >
+        <Link href="/contact" className={submitClass}>
           {t("submit")}
-        </a>
+        </Link>
         <LocaleSwitcher />
       </nav>
 
@@ -107,15 +102,13 @@ export default function HeaderNav() {
             <Link href="/articles" onClick={close} className={`${linkClass} text-left`}>
               {t("articles")}
             </Link>
-            <a
-              href="https://www.instagram.com/world_cypher/"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/contact"
               onClick={close}
               className={`${submitClass} text-left`}
             >
               {t("submit")}
-            </a>
+            </Link>
           </nav>
           <div className="mt-3 border-t border-ink/10 pt-3">
             <LocaleSwitcher />

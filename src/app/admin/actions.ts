@@ -30,6 +30,22 @@ function revalidatePublicPaths(eventId?: string) {
   }
 }
  
+/** お問い合わせの既読/未読トグル(管理画面) */
+export async function markContactReadAction(
+  id: string,
+  read: boolean,
+): Promise<void> {
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase
+    .from("contacts")
+    .update({ read })
+    .eq("id", id);
+  if (error) {
+    console.warn("[admin] markContactReadAction failed:", error.message);
+  }
+  revalidatePath("/admin/contacts");
+}
+ 
 export async function signInAction(formData: FormData): Promise<void> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");

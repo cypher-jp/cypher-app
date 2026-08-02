@@ -42,6 +42,9 @@ export default async function AdminHomePage({ searchParams }: Props) {
           <Link href="/admin/articles" className="btn-ghost text-sm">
             記事管理
           </Link>
+          <Link href="/admin/contacts" className="btn-ghost text-sm">
+            お問い合わせ
+          </Link>
           <Link href="/admin/new" className="btn-primary text-sm">
             + 新規登録
           </Link>

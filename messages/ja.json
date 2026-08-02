@@ -86,7 +86,7 @@
   "footer": {
     "tagline": "ストリートダンスバトル情報サイト。開催日・会場・エントリー締切まで、必要な情報だけ。",
     "copyright": "© {year} WORLD Cypher.",
-    "contact": "イベント掲載のお問い合わせ → @world_cypher",
+    "contact": "お問い合わせ",
     "privacy": "プライバシーポリシー"
   },
   "locale": {
@@ -238,5 +238,22 @@
       "gear": "ギア",
       "report": "レポート"
     }
+  },
+  "contact": {
+    "title": "CONTACT",
+    "lead": "イベントの掲載依頼、掲載情報の訂正、その他のご連絡はこちらから。通常2〜3日以内に返信します。",
+    "categoryLabel": "お問い合わせの種類",
+    "category": {
+      "listing": "イベント掲載のご依頼",
+      "correction": "掲載情報の訂正",
+      "other": "その他"
+    },
+    "name": "お名前",
+    "email": "メールアドレス",
+    "message": "内容",
+    "submit": "送信する",
+    "sending": "送信中...",
+    "sent": "送信しました。内容を確認してご連絡します!",
+    "error": "送信に失敗しました。メールアドレスと内容を確認して、もう一度お試しください。"
   }
 }

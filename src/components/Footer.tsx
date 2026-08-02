@@ -18,13 +18,16 @@ export default async function Footer() {
           </div>
           <div className="flex flex-col gap-1 text-xs text-paper/60 md:items-end">
             <span>{t("copyright", { year: new Date().getFullYear() })}</span>
+            <Link href="/contact" className="hover:text-paper">
+              {t("contact")}
+            </Link>
             <a
               href="https://www.instagram.com/world_cypher/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-paper"
             >
-              {t("contact")}
+              Instagram
             </a>
             <Link href="/archive" className="hover:text-paper">
               {tNav("archive")}

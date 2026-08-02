@@ -86,7 +86,7 @@
   "footer": {
     "tagline": "街舞battle信息网站。日期、场地、报名截止一目了然。",
     "copyright": "© {year} WORLD Cypher.",
-    "contact": "活动投稿咨询 → @world_cypher",
+    "contact": "联系我们",
     "privacy": "隐私政策"
   },
   "locale": {
@@ -238,5 +238,22 @@
       "gear": "装备",
       "report": "报道"
     }
+  },
+  "contact": {
+    "title": "CONTACT",
+    "lead": "活动刊登申请、信息更正及其他咨询请从这里联系。通常2-3天内回复。",
+    "categoryLabel": "咨询类型",
+    "category": {
+      "listing": "活动刊登申请",
+      "correction": "更正活动信息",
+      "other": "其他"
+    },
+    "name": "姓名",
+    "email": "邮箱",
+    "message": "内容",
+    "submit": "发送",
+    "sending": "发送中...",
+    "sent": "已发送。确认后会与您联系!",
+    "error": "发送失败。请检查邮箱和内容后重试。"
   }
 }

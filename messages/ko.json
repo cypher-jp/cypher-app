@@ -86,7 +86,7 @@
   "footer": {
     "tagline": "스트리트 댄스 배틀 정보 사이트. 날짜・장소・신청 마감일까지 한눈에.",
     "copyright": "© {year} WORLD Cypher.",
-    "contact": "이벤트 등록 문의 → @world_cypher",
+    "contact": "문의하기",
     "privacy": "개인정보 처리방침"
   },
   "locale": {
@@ -238,5 +238,22 @@
       "gear": "기어",
       "report": "리포트"
     }
+  },
+  "contact": {
+    "title": "CONTACT",
+    "lead": "이벤트 게재 요청, 정보 수정, 기타 문의는 이곳으로. 보통 2~3일 이내에 답변드립니다.",
+    "categoryLabel": "문의 종류",
+    "category": {
+      "listing": "이벤트 게재 요청",
+      "correction": "게재 정보 수정",
+      "other": "기타"
+    },
+    "name": "이름",
+    "email": "이메일",
+    "message": "내용",
+    "submit": "보내기",
+    "sending": "전송 중...",
+    "sent": "전송되었습니다. 확인 후 연락드리겠습니다!",
+    "error": "전송에 실패했습니다. 이메일과 내용을 확인하고 다시 시도해 주세요."
   }
 }

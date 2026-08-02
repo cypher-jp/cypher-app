@@ -86,7 +86,7 @@
   "footer": {
     "tagline": "Street dance battle info — dates, venues, and entry deadlines in one place.",
     "copyright": "© {year} WORLD Cypher.",
-    "contact": "Event submissions → @world_cypher",
+    "contact": "Contact",
     "privacy": "Privacy Policy"
   },
   "locale": {
@@ -238,5 +238,22 @@
       "gear": "Gear",
       "report": "Report"
     }
+  },
+  "contact": {
+    "title": "CONTACT",
+    "lead": "Event listing requests, corrections, and any other inquiries. We usually reply within 2-3 days.",
+    "categoryLabel": "Inquiry type",
+    "category": {
+      "listing": "List my event",
+      "correction": "Correct event info",
+      "other": "Other"
+    },
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "submit": "Send",
+    "sending": "Sending...",
+    "sent": "Sent! We'll get back to you soon.",
+    "error": "Failed to send. Please check your email and message, then try again."
   }
 }
