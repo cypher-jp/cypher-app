@@ -152,6 +152,8 @@ export interface DanceEvent {
   entryClosed?: boolean;
   status?: EventStatus;
   source?: string;          // どこから取得したか
+  /** DB上の最終更新日時(ISO)。詳細ページの「情報最終確認日」表示に使う */
+  updatedAt?: string;
 }
  
 export const EVENT_TYPES: EventType[] = [
