@@ -60,6 +60,7 @@
     "subtitle": "Browse events by month. Badges show the number of events. Click to view details.",
     "prev": "← Prev",
     "next": "Next →",
+    "monthCount": "This month: {count} (all upcoming: {total})",
     "more": "+{count} more"
   },
   "archive": {
