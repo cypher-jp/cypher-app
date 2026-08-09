@@ -60,6 +60,7 @@
     "subtitle": "월별로 이벤트를 확인하세요. 날짜의 뱃지는 이벤트 수입니다. 클릭하면 상세 정보로 이동합니다.",
     "prev": "← 이전",
     "next": "다음 →",
+    "monthCount": "이번 달: {count}건 (전체 예정: {total}건)",
     "more": "외 {count}건"
   },
   "archive": {
