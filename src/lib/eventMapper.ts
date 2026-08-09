@@ -48,5 +48,6 @@ export function rowToEvent(row: Record<string, unknown>): DanceEvent {
     entryClosed: row.entry_closed === true,
     status: (row.status as DanceEvent["status"]) ?? "published",
     source: row.source ? String(row.source) : undefined,
+    updatedAt: row.updated_at ? String(row.updated_at) : undefined,
   };
 }
