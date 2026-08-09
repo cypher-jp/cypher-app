@@ -93,6 +93,15 @@ export default async function EventDetailPage({ params }: PageProps) {
 
   const localizedDescription = getLocalizedDescription(event, params.locale);
 
+  // CTA用リンク: IGは投稿URL優先、無ければプロフィール。会場はGoogleマップ検索へ。
+  const igUrl =
+    event.igPostUrl ??
+    (event.igHandle ? `https://instagram.com/${event.igHandle}` : null);
+  const mapsUrl =
+    event.region !== "online" && event.venue
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue)}`
+      : null;
+
   const eventUrl = `${SITE_URL}/${params.locale}/events/${event.id}`;
   // region が online の回はオンライン開催として出す(会場情報が実在しないため)。
   const isOnlineEvent = event.region === "online";
@@ -197,13 +206,13 @@ export default async function EventDetailPage({ params }: PageProps) {
 
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             <Cell label={t("date")} value={dateText} accent />
-            {deadlineText && (
-              <Cell
-                label={t("deadline")}
-                value={deadlineText}
-                accent={!deadlinePassed}
-              />
-            )}
+            {/* 締切情報が無い回も空欄にせず「情報未確認」を明示する(表示不具合と誤認させない) */}
+            <Cell
+              label={t("deadline")}
+              value={deadlineText ?? t("deadlineUnknown")}
+              accent={!!deadlineText && !deadlinePassed}
+              muted={!deadlineText}
+            />
             <Cell label={t("venue")} value={event.venue} />
           </div>
 
@@ -216,8 +225,10 @@ export default async function EventDetailPage({ params }: PageProps) {
             </p>
           </div>
 
+          {/* CTA: エントリーだけを主役(赤)にし、IG・地図は補助ボタンで役割を明示する。
+              エントリーURLが無い回はIGリンクをエントリー風に見せず「Instagramで確認」と表示 */}
           <div className="mt-10 flex flex-wrap gap-3">
-            {event.entryUrl ? (
+            {event.entryUrl && (
               <a
                 href={event.entryUrl}
                 target="_blank"
@@ -226,25 +237,27 @@ export default async function EventDetailPage({ params }: PageProps) {
               >
                 {t("entryCta")}
               </a>
-            ) : event.igPostUrl ? (
+            )}
+            {igUrl && (
               <a
-                href={event.igPostUrl}
+                href={igUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary"
+                className="btn-ghost"
               >
-                {t("igCta")}
+                {t("igCheckCta")}
               </a>
-            ) : event.igHandle ? (
+            )}
+            {mapsUrl && (
               <a
-                href={`https://instagram.com/${event.igHandle}`}
+                href={mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary"
+                className="btn-ghost"
               >
-                @{event.igHandle}
+                {t("mapCta")}
               </a>
-            ) : null}
+            )}
           </div>
 
           {event.igPostUrl && (
@@ -257,6 +270,17 @@ export default async function EventDetailPage({ params }: PageProps) {
               </div>
             </div>
           )}
+
+          {/* 情報の出どころと鮮度を明示する(主催者・ユーザー双方への信頼性表示) */}
+          <div className="mt-10 border-t border-ink/10 pt-6 text-xs text-ink/50">
+            {t("sourceLabel")}: {sourceName(event.source)}
+            {event.updatedAt && (
+              <>
+                {" ・ "}
+                {t("lastChecked")}: {formatDateOnly(event.updatedAt, params.locale)}
+              </>
+            )}
+          </div>
         </div>
       </article>
 
@@ -280,10 +304,12 @@ function Cell({
   label,
   value,
   accent,
+  muted,
 }: {
   label: string;
   value: string;
   accent?: boolean;
+  muted?: boolean;
 }) {
   return (
     <div>
@@ -292,13 +318,46 @@ function Cell({
       </div>
       <div
         className={`display mt-1 font-black ${
-          accent ? "text-cypher-red text-3xl" : "text-2xl"
+          muted
+            ? "text-xl text-ink/40"
+            : accent
+              ? "text-cypher-red text-3xl"
+              : "text-2xl"
         }`}
       >
         {value}
       </div>
     </div>
   );
+}
+
+// 取得元キー → 表示名。未知の取得元はそのまま出し、手動登録・不明は運営名義にする。
+const SOURCE_NAMES: Record<string, string> = {
+  instagram: "Instagram",
+  manual: "WORLD Cypher.",
+  and8: "and8.dance",
+  "breaking-calendar": "Breaking Calendar",
+  etstage: "e-tstage",
+  choomza: "CHOOMZA",
+  "dance-alive": "DANCE ALIVE",
+  "dance-delight": "DANCE DELIGHT",
+  "hip-hop-international": "Hip Hop International",
+  "notorious-ibe": "The Notorious IBE",
+};
+
+function sourceName(source?: string): string {
+  if (!source) return "WORLD Cypher.";
+  return SOURCE_NAMES[source] ?? source;
+}
+
+function formatDateOnly(iso: string, locale: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  return new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(d);
 }
 
 function formatDate(iso: string, locale: string): string {
