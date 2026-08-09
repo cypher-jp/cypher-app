@@ -8,6 +8,7 @@ import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { getLocalizedDescription } from "@/lib/eventI18n";
 import { isPastEvent } from "@/lib/eventDate";
 import InstagramEmbed from "@/components/InstagramEmbed";
+import TrackedLink from "@/components/TrackedLink";
 import ArticleCard from "@/components/ArticleCard";
 import { fetchArticlesForEvent } from "@/lib/articles";
 import { routing } from "@/i18n/routing";
@@ -229,34 +230,37 @@ export default async function EventDetailPage({ params }: PageProps) {
               エントリーURLが無い回はIGリンクをエントリー風に見せず「Instagramで確認」と表示 */}
           <div className="mt-10 flex flex-wrap gap-3">
             {event.entryUrl && (
-              <a
+              <TrackedLink
                 href={event.entryUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                kind="entry"
+                eventId={event.id}
+                locale={params.locale}
                 className="btn-primary"
               >
                 {t("entryCta")}
-              </a>
+              </TrackedLink>
             )}
             {igUrl && (
-              <a
+              <TrackedLink
                 href={igUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                kind="instagram"
+                eventId={event.id}
+                locale={params.locale}
                 className="btn-ghost"
               >
                 {t("igCheckCta")}
-              </a>
+              </TrackedLink>
             )}
             {mapsUrl && (
-              <a
+              <TrackedLink
                 href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                kind="map"
+                eventId={event.id}
+                locale={params.locale}
                 className="btn-ghost"
               >
                 {t("mapCta")}
-              </a>
+              </TrackedLink>
             )}
           </div>
 
