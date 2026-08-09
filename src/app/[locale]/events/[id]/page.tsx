@@ -94,20 +94,45 @@ export default async function EventDetailPage({ params }: PageProps) {
   const localizedDescription = getLocalizedDescription(event, params.locale);
 
   const eventUrl = `${SITE_URL}/${params.locale}/events/${event.id}`;
+  // region が online の回はオンライン開催として出す(会場情報が実在しないため)。
+  const isOnlineEvent = event.region === "online";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Event",
     name: event.title,
     startDate: event.date,
-    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    // 当サイトのデータは開催日を1日しか持たないため、終了日は開催日と同じ扱いにする。
+    endDate: event.date,
+    eventAttendanceMode: isOnlineEvent
+      ? "https://schema.org/OnlineEventAttendanceMode"
+      : "https://schema.org/OfflineEventAttendanceMode",
     eventStatus: "https://schema.org/EventScheduled",
-    location: {
-      "@type": "Place",
-      name: event.venue,
-      address: event.venue,
-    },
+    location: isOnlineEvent
+      ? {
+          "@type": "VirtualLocation",
+          url: event.entryUrl ?? eventUrl,
+        }
+      : {
+          "@type": "Place",
+          name: event.venue,
+          address: event.venue,
+        },
     ...(event.flyerUrl ? { image: [event.flyerUrl] } : {}),
     description: localizedDescription,
+    // エントリー先が分かる回のみ offers を出す。参加費は当サイトで保持していないため
+    // price/priceCurrency は付けない(推測値を書くと実際の料金と食い違うため)。
+    ...(event.entryUrl
+      ? {
+          offers: {
+            "@type": "Offer",
+            url: event.entryUrl,
+            availability: deadlinePassed
+              ? "https://schema.org/SoldOut"
+              : "https://schema.org/InStock",
+            ...(event.deadline ? { validThrough: event.deadline } : {}),
+          },
+        }
+      : {}),
     organizer: {
       "@type": "Organization",
       name: SITE_NAME,
