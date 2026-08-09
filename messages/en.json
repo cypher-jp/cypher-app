@@ -260,6 +260,9 @@
     "message": "Message",
     "submit": "Send",
     "sending": "Sending...",
+    "consentBefore": "By submitting, you agree to our ",
+    "consentLink": "Privacy Policy",
+    "consentAfter": ".",
     "sent": "Sent! We'll get back to you soon.",
     "error": "Failed to send. Please check your email and message, then try again."
   }
