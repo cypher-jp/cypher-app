@@ -212,6 +212,14 @@ export async function bulkSetFlyerAction(
     console.warn("[admin] bulkSetFlyerAction update failed:", error.message);
   }
 
+  // 画像を貼った各イベントの詳細ページも即時更新する。
+  // (従来はトップ・カレンダーのみ更新で、詳細ページだけキャッシュ切れまで
+  //  古い画像が残っていた = 「画像の反映に10分かかる」問題の原因)
+  for (const eventId of uniqueIds) {
+    for (const locale of routing.locales) {
+      revalidatePath(`/${locale}/events/${eventId}`);
+    }
+  }
   revalidatePublicPaths();
   revalidatePath("/admin");
 }
