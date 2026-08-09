@@ -60,6 +60,7 @@
     "subtitle": "Parcourez les événements par mois. Le badge indique le nombre d'événements. Cliquez pour voir le détail.",
     "prev": "← Préc.",
     "next": "Suiv. →",
+    "monthCount": "Ce mois-ci : {count} (à venir au total : {total})",
     "more": "+{count} de plus"
   },
   "archive": {
