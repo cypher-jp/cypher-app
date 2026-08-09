@@ -60,6 +60,7 @@
     "subtitle": "按月查看活动。日期上的数字为活动数量，点击可查看详情。",
     "prev": "← 上个月",
     "next": "下个月 →",
+    "monthCount": "本月: {count}场（今后共 {total} 场）",
     "more": "还有{count}项"
   },
   "archive": {
