@@ -6,7 +6,7 @@ import { fetchUpcomingEvents } from "@/lib/supabase";
 import { fetchPublishedArticles } from "@/lib/articles";
 import ArticleCard from "@/components/ArticleCard";
 import { Link } from "@/i18n/navigation";
-import { getUpcomingDeadlines, getWeekendBattles } from "@/lib/featured";
+import { getWeekendBattles } from "@/lib/featured";
 import { EVENT_TYPES, type EventType } from "@/types/event";
 
 export const revalidate = 300; // 5分キャッシュ
@@ -33,7 +33,6 @@ export default async function HomePage({ params, searchParams }: HomePageProps) 
         : "battle";
 
   const weekendBattles = getWeekendBattles(events);
-  const upcomingDeadlines = getUpcomingDeadlines(events, 7);
   // 最新記事(公開済み3件)。0件でもメディア風のセクション自体は常時表示し、記事一覧へ誘導する
   const latestArticles = await fetchPublishedArticles(3);
 
@@ -44,10 +43,6 @@ export default async function HomePage({ params, searchParams }: HomePageProps) 
         <FeaturedSection
           title={tHome("weekendBattles")}
           events={weekendBattles}
-        />
-        <FeaturedSection
-          title={tHome("upcomingDeadlines")}
-          events={upcomingDeadlines}
         />
       </div>
       <div className="mt-10">
