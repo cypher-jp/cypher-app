@@ -260,6 +260,9 @@
     "message": "Message",
     "submit": "Envoyer",
     "sending": "Envoi...",
+    "consentBefore": "En envoyant ce formulaire, vous acceptez notre ",
+    "consentLink": "Politique de confidentialité",
+    "consentAfter": ".",
     "sent": "Envoyé ! Nous vous répondrons bientôt.",
     "error": "Échec de l'envoi. Vérifiez votre e-mail et votre message, puis réessayez."
   }
