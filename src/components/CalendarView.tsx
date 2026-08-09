@@ -48,6 +48,21 @@ export default function CalendarView({ events }: Props) {
   }, [filtered]);
 
   const cells = useMemo(() => buildMonthCells(cursor), [cursor]);
+  // 表示中の月のイベント数。「合計210件と出るのに盤面には今月分しか無い」混乱を防ぐため、
+  // 月の件数と今後合計を並記する。
+  const monthCount = useMemo(() => {
+    let n = 0;
+    for (const e of filtered) {
+      const d = new Date(e.date);
+      if (
+        d.getFullYear() === cursor.getFullYear() &&
+        d.getMonth() === cursor.getMonth()
+      ) {
+        n += 1;
+      }
+    }
+    return n;
+  }, [filtered, cursor]);
   const monthLabel = new Intl.DateTimeFormat(locale, {
     month: "long",
     year: "numeric",
@@ -71,8 +86,13 @@ export default function CalendarView({ events }: Props) {
       <FilterBar value={filter} onChange={setFilter} resultCount={filtered.length} />
       <div className="rounded-2xl border border-ink/10 bg-paper p-5 shadow-card md:p-8">
         <div className="flex items-center justify-between">
-          <div className="display text-2xl font-black md:text-3xl">
-            {monthLabel}
+          <div>
+            <div className="display text-2xl font-black md:text-3xl">
+              {monthLabel}
+            </div>
+            <div className="mt-1 text-xs font-bold text-ink/50">
+              {t("monthCount", { count: monthCount, total: filtered.length })}
+            </div>
           </div>
           <div className="flex gap-2">
             <button onClick={prev} className="btn-ghost">
