@@ -60,6 +60,7 @@
     "subtitle": "月別でイベントを見る。日付セルのバッジは件数。クリックで詳細へ。",
     "prev": "← Prev",
     "next": "Next →",
+    "monthCount": "この月: {count}件（今後合計: {total}件）",
     "more": "他{count}件"
   },
   "archive": {
