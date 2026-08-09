@@ -260,6 +260,9 @@
     "message": "内容",
     "submit": "发送",
     "sending": "发送中...",
+    "consentBefore": "提交即表示您同意我们的",
+    "consentLink": "隐私政策",
+    "consentAfter": "。",
     "sent": "已发送。确认后会与您联系!",
     "error": "发送失败。请检查邮箱和内容后重试。"
   }
