@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import SubmitButton from "@/components/admin/SubmitButton";
 import { submitContactAction } from "@/app/[locale]/contact/actions";
 import { CONTACT_CATEGORIES } from "@/lib/contact";
@@ -96,6 +97,15 @@ export default async function ContactPage({ params, searchParams }: Props) {
             className="rounded-xl border border-ink/15 bg-paper px-4 py-2.5 text-sm focus:border-ink focus:outline-none"
           />
         </div>
+
+        {/* 個人情報の扱いの明示: 送信=ポリシー同意とみなす方式(チェックボックス不要で手間を増やさない) */}
+        <p className="text-xs text-ink/50">
+          {t("consentBefore")}
+          <Link href="/privacy" className="underline hover:text-ink">
+            {t("consentLink")}
+          </Link>
+          {t("consentAfter")}
+        </p>
 
         <div className="flex justify-end">
           <SubmitButton label={t("submit")} pendingLabel={t("sending")} />
