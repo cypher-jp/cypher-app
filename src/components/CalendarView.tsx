@@ -35,14 +35,23 @@ export default function CalendarView({ events }: Props) {
   const [filter, setFilter] = useState<FilterState>(DEFAULT_FILTER);
   const filtered = useMemo(() => filterEvents(events, filter), [events, filter]);
 
+  // 複数日開催(endDate持ち)は期間中の全日に載せる。初日はタイトル入りチップ、
+  // 2日目以降は「継続中」の横帯として表示する(isStartで判別)。
   const eventsByDay = useMemo(() => {
-    const map = new Map<string, DanceEvent[]>();
+    const map = new Map<string, { event: DanceEvent; isStart: boolean }[]>();
     for (const e of filtered) {
-      const d = new Date(e.date);
-      const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-      const arr = map.get(key) ?? [];
-      arr.push(e);
-      map.set(key, arr);
+      const start = new Date(e.date);
+      const end = e.endDate ? new Date(e.endDate) : start;
+      const d = new Date(start);
+      let guard = 0;
+      while (d <= end && guard < 62) {
+        const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+        const arr = map.get(key) ?? [];
+        arr.push({ event: e, isStart: guard === 0 });
+        map.set(key, arr);
+        d.setDate(d.getDate() + 1);
+        guard += 1;
+      }
     }
     return map;
   }, [filtered]);
@@ -51,13 +60,14 @@ export default function CalendarView({ events }: Props) {
   // 表示中の月のイベント数。「合計210件と出るのに盤面には今月分しか無い」混乱を防ぐため、
   // 月の件数と今後合計を並記する。
   const monthCount = useMemo(() => {
+    const monthStart = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+    const monthEnd = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0);
     let n = 0;
     for (const e of filtered) {
-      const d = new Date(e.date);
-      if (
-        d.getFullYear() === cursor.getFullYear() &&
-        d.getMonth() === cursor.getMonth()
-      ) {
+      const start = new Date(e.date);
+      const end = e.endDate ? new Date(e.endDate) : start;
+      // 期間がこの月と1日でも重なれば「この月のイベント」として数える
+      if (start <= monthEnd && end >= monthStart) {
         n += 1;
       }
     }
@@ -141,20 +151,30 @@ export default function CalendarView({ events }: Props) {
                       {cell.getDate()}
                     </div>
                     <div className="mt-1 flex flex-col gap-0.5">
-                      {dayEvents.slice(0, 3).map((e) => (
-                        <Link
-                          key={e.id}
-                          href={`/events/${e.id}`}
-                          className="group flex items-center gap-1.5 rounded px-1 py-0.5 text-[10px] hover:bg-ink hover:text-paper"
-                        >
-                          <span
-                            className={`h-1.5 w-1.5 shrink-0 rounded-full ${TYPE_DOT[e.type]}`}
+                      {dayEvents.slice(0, 3).map(({ event: e, isStart }) =>
+                        isStart ? (
+                          <Link
+                            key={e.id}
+                            href={`/events/${e.id}`}
+                            className="group flex items-center gap-1.5 rounded px-1 py-0.5 text-[10px] hover:bg-ink hover:text-paper"
+                          >
+                            <span
+                              className={`h-1.5 w-1.5 shrink-0 rounded-full ${TYPE_DOT[e.type]}`}
+                            />
+                            <span className="truncate font-bold">
+                              {e.title}
+                            </span>
+                          </Link>
+                        ) : (
+                          // 複数日開催の継続日: 期間が横に繋がって見える帯として表示
+                          <Link
+                            key={e.id}
+                            href={`/events/${e.id}`}
+                            title={e.title}
+                            className={`-mx-2 block h-1.5 ${TYPE_DOT[e.type]} opacity-50 hover:opacity-100`}
                           />
-                          <span className="truncate font-bold">
-                            {e.title}
-                          </span>
-                        </Link>
-                      ))}
+                        ),
+                      )}
                       {dayEvents.length > 3 && (
                         <span className="px-1 text-[10px] text-ink/50">
                           {t("more", { count: dayEvents.length - 3 })}
