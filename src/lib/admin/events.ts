@@ -66,6 +66,7 @@ export interface EventInput {
   genres: string[];
   region: string;
   date: string;
+  endDate: string | null;
   deadline: string | null;
   venue: string;
   description: string;
@@ -90,6 +91,7 @@ export async function insertEvent(
       genres: input.genres,
       region: input.region,
       date: input.date,
+      end_date: input.endDate,
       deadline: input.deadline,
       venue: input.venue,
       description: input.description,
@@ -124,6 +126,7 @@ export async function updateEvent(
       genres: input.genres,
       region: input.region,
       date: input.date,
+      end_date: input.endDate,
       deadline: input.deadline,
       venue: input.venue,
       description: input.description,
