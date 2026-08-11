@@ -26,22 +26,25 @@ export function isUpcomingEvent(dateIso: string, now: Date = new Date()): boolea
     return dateIso >= getTodayIsoJst(now);
 }
 
-/** 開催予定(今日開催を含む)のイベントだけを残す。日付の昇順は呼び出し側の並びを維持する。 */
-export function filterUpcomingEvents<T extends { date: string }>(
+/**
+ * 開催予定(今日開催・開催中を含む)のイベントだけを残す。日付の昇順は呼び出し側の並びを維持する。
+ * 複数日開催(endDate持ち)は最終日を過ぎるまで「開催中」として残す。
+ */
+export function filterUpcomingEvents<T extends { date: string; endDate?: string }>(
     events: T[],
     now: Date = new Date(),
   ): T[] {
     const today = getTodayIsoJst(now);
-    return events.filter((e) => e.date >= today);
+    return events.filter((e) => (e.endDate ?? e.date) >= today);
 }
 
-/** 終了済みのイベントだけを、開催日が新しい順(降順)で返す */
-export function filterPastEventsDesc<T extends { date: string }>(
+/** 終了済みのイベントだけを、開催日が新しい順(降順)で返す。複数日開催は最終日基準で判定する。 */
+export function filterPastEventsDesc<T extends { date: string; endDate?: string }>(
     events: T[],
     now: Date = new Date(),
   ): T[] {
     const today = getTodayIsoJst(now);
     return events
-      .filter((e) => e.date < today)
+      .filter((e) => (e.endDate ?? e.date) < today)
       .sort((a, b) => b.date.localeCompare(a.date));
 }
