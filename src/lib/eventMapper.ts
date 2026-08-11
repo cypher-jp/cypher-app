@@ -37,6 +37,7 @@ export function rowToEvent(row: Record<string, unknown>): DanceEvent {
     genres: parseGenres(row.genres),
     region: (row.region as DanceEvent["region"]) ?? "other",
     date: String(row.date ?? ""),
+    endDate: row.end_date ? String(row.end_date) : undefined,
     deadline: row.deadline ? String(row.deadline) : undefined,
     venue: String(row.venue ?? ""),
     description: String(row.description ?? ""),
