@@ -243,6 +243,7 @@ interface ParsedForm {
   genres: Genre[];
   region: string;
   date: string;
+  endDate: string | null;
   deadline: string | null;
   venue: string;
   description: string;
@@ -268,6 +269,9 @@ function parseEventForm(formData: FormData): ParsedForm {
   const genre = normalizedGenres[0];
   const region = String(formData.get("region") ?? "other");
   const date = String(formData.get("date") ?? "").trim();
+  // 終了日: 開催日より後の日付のみ有効。同日・過去日は単日イベント扱い(null)にする。
+  const endDateRaw = String(formData.get("endDate") ?? "").trim();
+  const endDate = endDateRaw && endDateRaw > date ? endDateRaw : null;
   const deadlineRaw = String(formData.get("deadline") ?? "").trim();
   const venue = String(formData.get("venue") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
@@ -292,6 +296,7 @@ function parseEventForm(formData: FormData): ParsedForm {
     genres: normalizedGenres,
     region,
     date,
+    endDate,
     deadline: deadlineRaw || null,
     venue,
     description,
@@ -332,6 +337,7 @@ export async function createEventAction(formData: FormData): Promise<void> {
     genres: parsed.genres,
     region: parsed.region,
     date: parsed.date,
+    endDate: parsed.endDate,
     deadline: parsed.deadline,
     venue: parsed.venue,
     description: parsed.description,
@@ -386,6 +392,7 @@ export async function updateEventAction(
     genres: parsed.genres,
     region: parsed.region,
     date: parsed.date,
+    endDate: parsed.endDate,
     deadline: parsed.deadline,
     venue: parsed.venue,
     description: parsed.description,
