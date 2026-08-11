@@ -34,6 +34,7 @@ export interface EventFormValues {
   genres: Genre[];
   region: Region;
   date: string;
+  endDate: string;
   deadline: string;
   venue: string;
   description: string;
@@ -138,13 +139,21 @@ export default function EventForm({ action, defaultValues, submitLabel }: Props)
         </Field>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         <Field label="開催日 *">
           <input
             type="date"
             name="date"
             required
             defaultValue={defaultValues?.date}
+            className="input"
+          />
+        </Field>
+        <Field label="終了日(複数日開催のみ)">
+          <input
+            type="date"
+            name="endDate"
+            defaultValue={defaultValues?.endDate}
             className="input"
           />
         </Field>
