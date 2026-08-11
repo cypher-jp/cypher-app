@@ -138,7 +138,9 @@ export interface DanceEvent {
   /** 開催ジャンル一覧(部門制の大会は複数)。未設定の旧データは genre(単一)へフォールバック(getEventGenres参照) */
   genres?: Genre[];
   region: Region;
-  date: string;             // ISO yyyy-mm-dd
+  date: string;             // ISO yyyy-mm-dd (開催日・複数日開催の場合は初日)
+  /** 複数日開催の最終日(ISO yyyy-mm-dd)。単日イベントは未設定 */
+  endDate?: string;
   deadline?: string;        // 申し込み締切
   venue: string;
   description: string;
