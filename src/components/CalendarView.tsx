@@ -35,6 +35,9 @@ export default function CalendarView({ events }: Props) {
   const [filter, setFilter] = useState<FilterState>(DEFAULT_FILTER);
   const filtered = useMemo(() => filterEvents(events, filter), [events, filter]);
 
+  // スマホ: セルにはイベント名を並べず件数のみ表示し、日付タップで下に一覧を出す
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+
   // 複数日開催(endDate持ち)は期間中の全日に載せる。初日はタイトル入りチップ、
   // 2日目以降は「継続中」の横帯として表示する(isStartで判別)。
   const eventsByDay = useMemo(() => {
@@ -150,7 +153,26 @@ export default function CalendarView({ events }: Props) {
                     >
                       {cell.getDate()}
                     </div>
-                    <div className="mt-1 flex flex-col gap-0.5">
+                    {/* スマホ: 件数バッジのみ(タップで下に一覧表示) */}
+                    {dayEvents.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedDay(selectedDay === key ? null : key)
+                        }
+                        className={`mt-1 flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-bold md:hidden ${
+                          selectedDay === key
+                            ? "bg-ink text-paper"
+                            : "bg-ink/5 text-ink/70"
+                        }`}
+                      >
+                        <span
+                          className={`h-1.5 w-1.5 shrink-0 rounded-full ${TYPE_DOT[dayEvents[0].event.type]}`}
+                        />
+                        {dayEvents.length}
+                      </button>
+                    )}
+                    <div className="mt-1 hidden flex-col gap-0.5 md:flex">
                       {dayEvents.slice(0, 3).map(({ event: e, isStart }) =>
                         isStart ? (
                           <Link
@@ -188,6 +210,29 @@ export default function CalendarView({ events }: Props) {
           })}
         </div>
 
+        {/* スマホ: 選択した日のイベント一覧 */}
+        {selectedDay && (eventsByDay.get(selectedDay) ?? []).length > 0 && (
+          <div className="mt-5 md:hidden">
+            <div className="text-xs font-bold uppercase tracking-widest text-ink/60">
+              {formatDayKey(selectedDay, locale)}
+            </div>
+            <div className="mt-2 flex flex-col gap-1.5">
+              {(eventsByDay.get(selectedDay) ?? []).map(({ event: e }) => (
+                <Link
+                  key={e.id}
+                  href={`/events/${e.id}`}
+                  className="flex items-center gap-2 rounded-xl border border-ink/10 bg-paper px-3 py-2.5 text-sm font-bold hover:bg-ink hover:text-paper"
+                >
+                  <span
+                    className={`h-2 w-2 shrink-0 rounded-full ${TYPE_DOT[e.type]}`}
+                  />
+                  <span className="truncate">{e.title}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="mt-5 flex flex-wrap gap-3 text-[11px]">
           {EVENT_TYPES.map((type) => (
             <div key={type} className="flex items-center gap-1.5">
@@ -201,6 +246,16 @@ export default function CalendarView({ events }: Props) {
       </div>
     </div>
   );
+}
+
+// "年-月(0始まり)-日" のセルキーを、その言語の日付表記へ変換する
+function formatDayKey(key: string, locale: string): string {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Intl.DateTimeFormat(locale, {
+    month: "long",
+    day: "numeric",
+    weekday: "short",
+  }).format(new Date(y, m, d));
 }
 
 // 月初の前埋め + 月の日付配列 を返す（最大6行 × 7列）
