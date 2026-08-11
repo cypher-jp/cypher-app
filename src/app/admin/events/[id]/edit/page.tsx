@@ -33,6 +33,7 @@ export default async function AdminEditEventPage({ params, searchParams }: Props
             genres: event.genres ?? [event.genre],
             region: event.region,
             date: event.date,
+            endDate: event.endDate ?? "",
             deadline: event.deadline ?? "",
             venue: event.venue,
             description: event.description,
