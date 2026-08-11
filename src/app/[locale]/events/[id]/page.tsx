@@ -76,8 +76,11 @@ export default async function EventDetailPage({ params }: PageProps) {
   const relatedArticles = await fetchArticlesForEvent(event.id);
 
   // 過去イベントも直接URLでは開ける(SEO資産として残す)。表示上だけ終了扱いにする。
-  const eventEnded = isPastEvent(event.date);
-  const dateText = formatDate(event.date, params.locale);
+  // 複数日開催(endDate持ち)は最終日を過ぎるまで「終了」にしない。
+  const eventEnded = isPastEvent(event.endDate ?? event.date);
+  const dateText = event.endDate
+    ? `${formatDate(event.date, params.locale)} 〜 ${formatDate(event.endDate, params.locale)}`
+    : formatDate(event.date, params.locale);
   // adminの「締め切りました」フラグ(entryClosed)は締切日と無関係に受付終了として扱う
   const deadlinePassed =
     event.entryClosed === true ||
@@ -111,8 +114,8 @@ export default async function EventDetailPage({ params }: PageProps) {
     "@type": "Event",
     name: event.title,
     startDate: event.date,
-    // 当サイトのデータは開催日を1日しか持たないため、終了日は開催日と同じ扱いにする。
-    endDate: event.date,
+    // 複数日開催は実際の最終日を出す。単日イベントは開催日と同じ扱い。
+    endDate: event.endDate ?? event.date,
     eventAttendanceMode: isOnlineEvent
       ? "https://schema.org/OnlineEventAttendanceMode"
       : "https://schema.org/OfflineEventAttendanceMode",
