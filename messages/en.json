@@ -41,7 +41,16 @@
     "areaOceania": "Oceania",
     "areaAmericas": "Americas",
     "areaEurope": "Europe",
-    "areaMiddleEastAfrica": "Middle East / Africa / Other"
+    "areaMiddleEastAfrica": "Middle East / Africa / Other",
+    "refine": "Refine",
+    "close": "Close",
+    "showResults": "Show {count} results",
+    "areaHokkaidoTohoku": "Hokkaido / Tohoku",
+    "areaKantoGroup": "Kanto",
+    "areaChubu": "Chubu",
+    "areaKansaiGroup": "Kansai",
+    "areaChugokuShikoku": "Chugoku / Shikoku",
+    "areaKyushuOkinawa": "Kyushu / Okinawa"
   },
   "pagination": {
     "prev": "Prev",
