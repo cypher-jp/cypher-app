@@ -41,7 +41,16 @@
     "areaOceania": "大洋洲",
     "areaAmericas": "美洲",
     "areaEurope": "欧洲",
-    "areaMiddleEastAfrica": "中东・非洲・其他"
+    "areaMiddleEastAfrica": "中东・非洲・其他",
+    "refine": "筛选",
+    "close": "关闭",
+    "showResults": "显示 {count} 个结果",
+    "areaHokkaidoTohoku": "北海道·东北",
+    "areaKantoGroup": "关东",
+    "areaChubu": "中部",
+    "areaKansaiGroup": "关西",
+    "areaChugokuShikoku": "中国·四国",
+    "areaKyushuOkinawa": "九州·冲绳"
   },
   "pagination": {
     "prev": "上一页",
