@@ -54,7 +54,7 @@ export default function HeaderNav() {
         <Link href="/contact" className={linkClass}>
           {t("contact")}
         </Link>
-        <Link href="/contact" className={submitClass}>
+        <Link href="/listing" className={submitClass}>
           {t("submit")}
         </Link>
         <LocaleSwitcher />
@@ -103,7 +103,7 @@ export default function HeaderNav() {
               {t("contact")}
             </Link>
             <Link
-              href="/contact"
+              href="/listing"
               onClick={close}
               className={`${submitClass} text-left`}
             >
