@@ -25,6 +25,16 @@ export default function EventCard({ event }: { event: DanceEvent }) {
     .toUpperCase();
   const day = dateObj.getDate();
   const year = dateObj.getFullYear();
+  // 複数日開催: 同月なら「AUG 15-20」、月をまたぐなら「AUG 30 - SEP 2」形式で出す
+  const endObj = event.endDate ? new Date(event.endDate) : null;
+  const endMonth = endObj
+    ? endObj.toLocaleDateString(locale, { month: "short" }).toUpperCase()
+    : null;
+  const dayText = endObj
+    ? endMonth === month && endObj.getFullYear() === year
+      ? `${day}-${endObj.getDate()}`
+      : `${day} - ${endMonth} ${endObj.getDate()}`
+    : `${day}`;
 
   return (
     <Link
@@ -51,7 +61,7 @@ export default function EventCard({ event }: { event: DanceEvent }) {
         </div>
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-ink/90 to-transparent p-4">
           <div className="display text-3xl font-black leading-none text-paper">
-            {month} <span className="text-cypher-red">{day}</span>
+            {month} <span className="text-cypher-red">{dayText}</span>
           </div>
           <div className="text-xs font-bold uppercase tracking-widest text-paper/70">
             {year}
