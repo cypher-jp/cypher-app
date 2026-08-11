@@ -9,6 +9,7 @@ import { getLocalizedDescription } from "@/lib/eventI18n";
 import { isPastEvent } from "@/lib/eventDate";
 import InstagramEmbed from "@/components/InstagramEmbed";
 import TrackedLink from "@/components/TrackedLink";
+import ShareBar from "@/components/ShareBar";
 import ArticleCard from "@/components/ArticleCard";
 import { fetchArticlesForEvent } from "@/lib/articles";
 import { routing } from "@/i18n/routing";
@@ -265,6 +266,19 @@ export default async function EventDetailPage({ params }: PageProps) {
                 {t("mapCta")}
               </TrackedLink>
             )}
+          </div>
+
+          {/* 共有: LINE・X・URLコピー・カレンダー追加(認知獲得の拡散導線) */}
+          <div className="mt-6">
+            <ShareBar
+              eventId={event.id}
+              title={event.title}
+              url={eventUrl}
+              locale={params.locale}
+              date={event.date}
+              endDate={event.endDate}
+              venue={event.venue || undefined}
+            />
           </div>
 
           {event.igPostUrl && (
