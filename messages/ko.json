@@ -41,7 +41,16 @@
     "areaOceania": "오세아니아",
     "areaAmericas": "아메리카",
     "areaEurope": "유럽",
-    "areaMiddleEastAfrica": "중동・아프리카・기타"
+    "areaMiddleEastAfrica": "중동・아프리카・기타",
+    "refine": "상세 필터",
+    "close": "닫기",
+    "showResults": "{count}건 보기",
+    "areaHokkaidoTohoku": "홋카이도·도호쿠",
+    "areaKantoGroup": "간토",
+    "areaChubu": "주부",
+    "areaKansaiGroup": "간사이",
+    "areaChugokuShikoku": "주고쿠·시코쿠",
+    "areaKyushuOkinawa": "규슈·오키나와"
   },
   "pagination": {
     "prev": "이전",
