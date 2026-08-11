@@ -48,12 +48,6 @@ export default function HeaderNav() {
         <Link href="/calendar" className={linkClass}>
           {t("calendar")}
         </Link>
-        <Link href="/archive" className={linkClass}>
-          {t("archive")}
-        </Link>
-        <Link href="/articles" className={linkClass}>
-          {t("articles")}
-        </Link>
         <Link href="/contact" className={linkClass}>
           {t("contact")}
         </Link>
@@ -98,12 +92,6 @@ export default function HeaderNav() {
             </Link>
             <Link href="/calendar" onClick={close} className={`${linkClass} text-left`}>
               {t("calendar")}
-            </Link>
-            <Link href="/archive" onClick={close} className={`${linkClass} text-left`}>
-              {t("archive")}
-            </Link>
-            <Link href="/articles" onClick={close} className={`${linkClass} text-left`}>
-              {t("articles")}
             </Link>
             <Link href="/contact" onClick={close} className={`${linkClass} text-left`}>
               {t("contact")}
