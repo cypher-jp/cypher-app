@@ -423,24 +423,37 @@ export default function ListingPage({ params }: PageProps) {
   const c = COPY[locale];
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-10">
-      {/* ヒーロー */}
-      <section className="overflow-hidden rounded-3xl bg-ink p-10 text-paper md:p-14">
-        <div className="text-xs font-bold uppercase tracking-[0.3em] text-cypher-yellow">
-          {c.eyebrow}
+    <div>
+      {/* ヒーロー: 全幅写真+中央タイトル(サイファーサークルの文字無し部分を使用) */}
+      <section className="relative flex h-[300px] w-full items-center justify-center overflow-hidden bg-ink md:h-[420px]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/listing-hero.jpg"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover opacity-50"
+        />
+        <div className="relative px-6 text-center text-paper">
+          <div className="text-xs font-bold uppercase tracking-[0.4em] text-cypher-yellow">
+            {c.eyebrow}
+          </div>
+          <h1 className="display mt-4 text-4xl font-black leading-tight md:text-6xl">
+            {c.title}
+          </h1>
         </div>
-        <h1 className="display mt-4 text-4xl font-black leading-tight md:text-5xl">
-          {c.title}
-        </h1>
+      </section>
+
+      <div className="mx-auto max-w-4xl px-6 py-14">
+      {/* リード文+料金 */}
+      <section className="text-center">
         {c.lead.map((p) => (
-          <p key={p} className="mt-4 max-w-2xl text-base text-paper/80">
+          <p key={p} className="mx-auto mt-3 max-w-2xl text-base text-ink/80">
             {p}
           </p>
         ))}
-        <div className="mt-8 inline-block rounded-2xl border border-cypher-red bg-cypher-red/15 px-6 py-4">
+        <div className="mt-8 inline-block rounded-2xl border-2 border-cypher-red px-8 py-4">
           <div className="display text-3xl font-black text-cypher-red">{c.priceFree}</div>
         </div>
-        <p className="mt-4 max-w-2xl text-sm text-paper/70">{c.priceNote}</p>
+        <p className="mx-auto mt-4 max-w-2xl text-sm text-ink/60">{c.priceNote}</p>
       </section>
 
       {/* メリット */}
@@ -539,6 +552,7 @@ export default function ListingPage({ params }: PageProps) {
           </Link>
         </div>
       </section>
+      </div>
     </div>
   );
 }
