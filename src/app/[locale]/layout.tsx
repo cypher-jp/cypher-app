@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
@@ -7,6 +8,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SITE_URL } from "@/lib/site";
 import { routing, type AppLocale } from "@/i18n/routing";
+
+// Google Analytics 4 の測定ID(公開情報のためコード直書きで問題ない)
+const GA_MEASUREMENT_ID = "G-Z8HY61FWY9";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -91,6 +95,19 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <body className="min-h-screen flex flex-col">
+        {/* Google Analytics 4: ページ表示後に読み込む(表示速度に影響させない) */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
         <NextIntlClientProvider messages={messages}>
           <Header />
           <main className="flex-1">{children}</main>
