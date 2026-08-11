@@ -52,11 +52,12 @@ export async function fetchUpcomingEvents(): Promise<DanceEvent[]> {
 
   if (!client) return filterUpcomingEvents(MOCK_EVENTS);
 
+  // 複数日開催(end_date持ち)は最終日を過ぎるまで表示に残す
   const { data, error } = await client
       .from("events")
       .select("*")
       .eq("status", "published")
-      .gte("date", today)
+      .or(`date.gte.${today},end_date.gte.${today}`)
       .order("date", { ascending: true });
 
   if (error || !data) {
@@ -76,11 +77,13 @@ export async function fetchPastEvents(): Promise<DanceEvent[]> {
 
   if (!client) return filterPastEventsDesc(MOCK_EVENTS);
 
+  // 複数日開催は最終日を過ぎてからアーカイブへ移す
   const { data, error } = await client
       .from("events")
       .select("*")
       .eq("status", "published")
       .lt("date", today)
+      .or(`end_date.is.null,end_date.lt.${today}`)
       .order("date", { ascending: false });
 
   if (error || !data) {
