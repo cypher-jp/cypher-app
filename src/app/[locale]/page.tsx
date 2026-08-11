@@ -37,10 +37,12 @@ export default async function HomePage({ params, searchParams }: HomePageProps) 
   const latestArticles = await fetchPublishedArticles(3);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-10">
+    <div>
+      {/* ヒーローは画面幅いっぱいに全幅表示(角丸・余白なし) */}
       <Hero />
+      <div className="mx-auto max-w-7xl px-6 py-10">
       {/* 検索(フィルタ付き一覧)をヒーロー直下に置き、探し始めるまでの距離を最短にする */}
-      <div className="mt-10">
+      <div className="mt-2">
         <EventGrid events={events} initialType={initialType} />
       </div>
       {/* 今週末のバトル: 出しすぎると縦に長くなるため最大6件+カレンダーへの導線 */}
@@ -85,6 +87,7 @@ export default async function HomePage({ params, searchParams }: HomePageProps) 
         </div>
       </section>
       )}
+      </div>
     </div>
   );
 }
@@ -93,7 +96,7 @@ async function Hero() {
   const t = await getTranslations("hero");
 
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-ink">
+    <section className="relative overflow-hidden bg-ink">
       {/* 見出しコピーは画像に焼き込み(全言語共通の英語タグライン)。
           SEO・スクリーンリーダー向けに各言語の見出しテキストを不可視で残す */}
       <h1 className="sr-only">
