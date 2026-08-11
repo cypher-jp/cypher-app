@@ -41,7 +41,16 @@
     "areaOceania": "オセアニア",
     "areaAmericas": "南北アメリカ",
     "areaEurope": "ヨーロッパ",
-    "areaMiddleEastAfrica": "中東・アフリカ・その他"
+    "areaMiddleEastAfrica": "中東・アフリカ・その他",
+    "refine": "絞り込み",
+    "close": "閉じる",
+    "showResults": "{count}件を表示",
+    "areaHokkaidoTohoku": "北海道・東北",
+    "areaKantoGroup": "関東",
+    "areaChubu": "中部",
+    "areaKansaiGroup": "関西",
+    "areaChugokuShikoku": "中国・四国",
+    "areaKyushuOkinawa": "九州・沖縄"
   },
   "grid": {
     "noMatchTitle": "NO MATCH",
