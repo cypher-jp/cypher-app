@@ -221,15 +221,6 @@ export default async function EventDetailPage({ params }: PageProps) {
             <Cell label={t("venue")} value={event.venue} />
           </div>
 
-          <div className="mt-10 border-t border-ink/10 pt-8">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-ink/60">
-              {t("about")}
-            </h2>
-            <p className="mt-3 whitespace-pre-line text-base leading-relaxed text-ink/85">
-              {localizedDescription}
-            </p>
-          </div>
-
           {/* CTA: エントリーだけを主役(赤)にし、IG・地図は補助ボタンで役割を明示する。
               エントリーURLが無い回はIGリンクをエントリー風に見せず「Instagramで確認」と表示 */}
           <div className="mt-10 flex flex-wrap gap-3">
@@ -279,6 +270,15 @@ export default async function EventDetailPage({ params }: PageProps) {
               endDate={event.endDate}
               venue={event.venue || undefined}
             />
+          </div>
+
+          <div className="mt-10 border-t border-ink/10 pt-8">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-ink/60">
+              {t("about")}
+            </h2>
+            <p className="mt-3 whitespace-pre-line text-base leading-relaxed text-ink/85">
+              {localizedDescription}
+            </p>
           </div>
 
           {event.igPostUrl && (
