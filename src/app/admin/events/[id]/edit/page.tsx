@@ -44,6 +44,17 @@ export default async function AdminEditEventPage({ params, searchParams }: Props
             source: event.source ?? "",
             flyerUrl: event.flyerUrl ?? "",
             descriptionI18n: event.descriptionI18n,
+            timeInfo: event.timeInfo ?? "",
+            format: event.format ?? "",
+            entryFee: event.entryFee ?? "",
+            audienceFee: event.audienceFee ?? "",
+            entrySlots: event.entrySlots ?? "",
+            entryMethod: event.entryMethod ?? "",
+            judges: event.judges ?? "",
+            djs: event.djs ?? "",
+            mc: event.mc ?? "",
+            prize: event.prize ?? "",
+            organizer: event.organizer ?? "",
           }}
           submitLabel="保存する"
         />
