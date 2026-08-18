@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import {
+  ENTRY_METHODS,
   EVENT_TYPES,
   GENRES,
   REGIONS,
   EVENT_STATUSES,
+  type EntryMethod,
   type EventType,
   type Genre,
   type Region,
@@ -19,6 +21,14 @@ import {
 } from "@/lib/admin/labels";
 import { extractIgHandle } from "@/lib/ig";
 import { I18N_LOCALES, type I18nLocale } from "@/types/event";
+
+const ADMIN_ENTRY_METHOD_LABEL: Record<EntryMethod, string> = {
+  url: "URL(フォーム/サイト)",
+  dm: "InstagramのDM",
+  form: "Googleフォーム等",
+  onsite: "当日受付",
+  other: "その他",
+};
 
 const I18N_LOCALE_LABEL: Record<I18nLocale, string> = {
   en: "英語",
@@ -44,6 +54,18 @@ export interface EventFormValues {
   status: EventStatus;
   source: string;
   flyerUrl: string;
+  // 詳細情報(任意)
+  timeInfo?: string;
+  format?: string;
+  entryFee?: string;
+  audienceFee?: string;
+  entrySlots?: string;
+  entryMethod?: string;
+  judges?: string;
+  djs?: string;
+  mc?: string;
+  prize?: string;
+  organizer?: string;
   // Phase 3: スクレイパー/翻訳バッチが自動生成した訳文。読み取り専用表示のみ(フォームからは編集不可)。
   descriptionI18n?: Partial<Record<I18nLocale, string>>;
 }
@@ -249,6 +271,55 @@ export default function EventForm({ action, defaultValues, submitLabel }: Props)
           className="input"
         />
       </Field>
+
+      {/* 詳細情報: 空欄はサイト上で非表示になる。全て任意 */}
+      <div className="rounded-xl border border-ink/10 p-4">
+        <p className="text-xs font-bold uppercase tracking-wider text-ink/50">
+          詳細情報(任意・空欄は非表示)
+        </p>
+        <div className="mt-3 grid gap-4 md:grid-cols-3">
+          <Field label="時間(OPEN/START)">
+            <input type="text" name="timeInfo" defaultValue={defaultValues?.timeInfo} placeholder="OPEN 12:00 / START 13:00" className="input" />
+          </Field>
+          <Field label="形式">
+            <input type="text" name="format" defaultValue={defaultValues?.format} placeholder="1on1 / 2on2 / crew" className="input" />
+          </Field>
+          <Field label="エントリー枠数">
+            <input type="text" name="entrySlots" defaultValue={defaultValues?.entrySlots} placeholder="32" className="input" />
+          </Field>
+          <Field label="エントリー費">
+            <input type="text" name="entryFee" defaultValue={defaultValues?.entryFee} placeholder="¥2,000" className="input" />
+          </Field>
+          <Field label="観覧料">
+            <input type="text" name="audienceFee" defaultValue={defaultValues?.audienceFee} placeholder="¥1,000 / 無料" className="input" />
+          </Field>
+          <Field label="エントリー方法">
+            <select name="entryMethod" defaultValue={defaultValues?.entryMethod ?? ""} className="input">
+              <option value="">未設定</option>
+              {ENTRY_METHODS.map((v) => (
+                <option key={v} value={v}>
+                  {ADMIN_ENTRY_METHOD_LABEL[v]}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="ジャッジ(カンマ区切り)">
+            <input type="text" name="judges" defaultValue={defaultValues?.judges} className="input" />
+          </Field>
+          <Field label="DJ(カンマ区切り)">
+            <input type="text" name="djs" defaultValue={defaultValues?.djs} className="input" />
+          </Field>
+          <Field label="MC">
+            <input type="text" name="mc" defaultValue={defaultValues?.mc} className="input" />
+          </Field>
+          <Field label="賞金・賞品">
+            <input type="text" name="prize" defaultValue={defaultValues?.prize} placeholder="優勝 ¥100,000" className="input" />
+          </Field>
+          <Field label="主催">
+            <input type="text" name="organizer" defaultValue={defaultValues?.organizer} className="input" />
+          </Field>
+        </div>
+      </div>
 
       <Field label="フライヤー画像">
         <input
