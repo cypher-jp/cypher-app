@@ -76,6 +76,18 @@ export interface EventInput {
   entryUrl: string | null;
   status: EventStatus;
   source: string | null;
+  // 詳細情報(任意)
+  timeInfo: string | null;
+  format: string | null;
+  entryFee: string | null;
+  audienceFee: string | null;
+  entrySlots: string | null;
+  entryMethod: string | null;
+  judges: string | null;
+  djs: string | null;
+  mc: string | null;
+  prize: string | null;
+  organizer: string | null;
 }
 
 export async function insertEvent(
@@ -101,6 +113,17 @@ export async function insertEvent(
       entry_url: input.entryUrl,
       status: input.status,
       source: input.source,
+      time_info: input.timeInfo,
+      format: input.format,
+      entry_fee: input.entryFee,
+      audience_fee: input.audienceFee,
+      entry_slots: input.entrySlots,
+      entry_method: input.entryMethod,
+      judges: input.judges,
+      djs: input.djs,
+      mc: input.mc,
+      prize: input.prize,
+      organizer: input.organizer,
     })
     .select("id")
     .single();
@@ -136,6 +159,17 @@ export async function updateEvent(
       entry_url: input.entryUrl,
       status: input.status,
       source: input.source,
+      time_info: input.timeInfo,
+      format: input.format,
+      entry_fee: input.entryFee,
+      audience_fee: input.audienceFee,
+      entry_slots: input.entrySlots,
+      entry_method: input.entryMethod,
+      judges: input.judges,
+      djs: input.djs,
+      mc: input.mc,
+      prize: input.prize,
+      organizer: input.organizer,
     })
     .eq("id", id);
 
