@@ -253,6 +253,23 @@ interface ParsedForm {
   status: EventStatus;
   source: string | null;
   flyerFile: File | null;
+  timeInfo: string | null;
+  format: string | null;
+  entryFee: string | null;
+  audienceFee: string | null;
+  entrySlots: string | null;
+  entryMethod: string | null;
+  judges: string | null;
+  djs: string | null;
+  mc: string | null;
+  prize: string | null;
+  organizer: string | null;
+}
+
+// 任意テキスト項目: 空欄は null で保存する
+function optField(formData: FormData, key: string): string | null {
+  const v = String(formData.get(key) ?? "").trim();
+  return v || null;
 }
  
 function parseEventForm(formData: FormData): ParsedForm {
@@ -306,9 +323,36 @@ function parseEventForm(formData: FormData): ParsedForm {
     status,
     source: sourceRaw || null,
     flyerFile,
+    timeInfo: optField(formData, "timeInfo"),
+    format: optField(formData, "format"),
+    entryFee: optField(formData, "entryFee"),
+    audienceFee: optField(formData, "audienceFee"),
+    entrySlots: optField(formData, "entrySlots"),
+    entryMethod: optField(formData, "entryMethod"),
+    judges: optField(formData, "judges"),
+    djs: optField(formData, "djs"),
+    mc: optField(formData, "mc"),
+    prize: optField(formData, "prize"),
+    organizer: optField(formData, "organizer"),
   };
 }
  
+function detailFields(parsed: ParsedForm) {
+  return {
+    timeInfo: parsed.timeInfo,
+    format: parsed.format,
+    entryFee: parsed.entryFee,
+    audienceFee: parsed.audienceFee,
+    entrySlots: parsed.entrySlots,
+    entryMethod: parsed.entryMethod,
+    judges: parsed.judges,
+    djs: parsed.djs,
+    mc: parsed.mc,
+    prize: parsed.prize,
+    organizer: parsed.organizer,
+  };
+}
+
 export async function createEventAction(formData: FormData): Promise<void> {
   const parsed = parseEventForm(formData);
  
@@ -347,6 +391,7 @@ export async function createEventAction(formData: FormData): Promise<void> {
     entryUrl: parsed.entryUrl,
     status: parsed.status,
     source: parsed.source ?? "manual",
+    ...detailFields(parsed),
   };
  
   const result = await insertEvent(supabase, input);
@@ -402,6 +447,7 @@ export async function updateEventAction(
     entryUrl: parsed.entryUrl,
     status: parsed.status,
     source: parsed.source,
+    ...detailFields(parsed),
   };
  
   const ok = await updateEvent(supabase, id, input);
