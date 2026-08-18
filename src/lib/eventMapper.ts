@@ -1,4 +1,11 @@
-import { GENRES, I18N_LOCALES, type DanceEvent, type Genre } from "@/types/event";
+import {
+  ENTRY_METHODS,
+  GENRES,
+  I18N_LOCALES,
+  type DanceEvent,
+  type EntryMethod,
+  type Genre,
+} from "@/types/event";
 
 // description_i18n(jsonb) を安全にパースする。想定外の形(null/文字列以外の値等)は無視する。
 function parseDescriptionI18n(value: unknown): DanceEvent["descriptionI18n"] {
@@ -50,5 +57,29 @@ export function rowToEvent(row: Record<string, unknown>): DanceEvent {
     status: (row.status as DanceEvent["status"]) ?? "published",
     source: row.source ? String(row.source) : undefined,
     updatedAt: row.updated_at ? String(row.updated_at) : undefined,
+    timeInfo: optText(row.time_info),
+    format: optText(row.format),
+    entryFee: optText(row.entry_fee),
+    audienceFee: optText(row.audience_fee),
+    entrySlots: optText(row.entry_slots),
+    entryMethod: parseEntryMethod(row.entry_method),
+    judges: optText(row.judges),
+    djs: optText(row.djs),
+    mc: optText(row.mc),
+    prize: optText(row.prize),
+    organizer: optText(row.organizer),
   };
+}
+
+// 空文字/null は undefined に落とす(表示側で「値あり」判定を単純にするため)
+function optText(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const t = value.trim();
+  return t ? t : undefined;
+}
+
+function parseEntryMethod(value: unknown): EntryMethod | undefined {
+  return typeof value === "string" && (ENTRY_METHODS as string[]).includes(value)
+    ? (value as EntryMethod)
+    : undefined;
 }
