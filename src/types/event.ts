@@ -156,7 +156,33 @@ export interface DanceEvent {
   source?: string;          // どこから取得したか
   /** DB上の最終更新日時(ISO)。詳細ページの「情報最終確認日」表示に使う */
   updatedAt?: string;
+  // ---- 詳細情報(任意・自由記述。Instagram取り込みのAI抽出/管理画面で入力) ----
+  /** 開場・開始時刻など(例: OPEN 12:00 / START 13:00) */
+  timeInfo?: string;
+  /** バトル形式(例: 1on1, 2on2, crew, cypher, 7toSmoke) */
+  format?: string;
+  /** エントリー費(例: ¥2,000 / 事前¥1,500 当日¥2,000) */
+  entryFee?: string;
+  /** 観覧料(例: ¥1,000 / 無料) */
+  audienceFee?: string;
+  /** エントリー枠数(例: 32 / 先着64組) */
+  entrySlots?: string;
+  /** エントリー方法 url/dm/form/onsite/other */
+  entryMethod?: EntryMethod;
+  /** ジャッジ(カンマ区切り) */
+  judges?: string;
+  /** DJ(カンマ区切り) */
+  djs?: string;
+  /** MC */
+  mc?: string;
+  /** 賞金・賞品 */
+  prize?: string;
+  /** 主催者・団体名 */
+  organizer?: string;
 }
+
+export type EntryMethod = "url" | "dm" | "form" | "onsite" | "other";
+export const ENTRY_METHODS: EntryMethod[] = ["url", "dm", "form", "onsite", "other"];
  
 export const EVENT_TYPES: EventType[] = [
   "battle",
