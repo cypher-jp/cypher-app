@@ -108,6 +108,33 @@ export default async function EventDetailPage({ params }: PageProps) {
       : null;
 
   const eventUrl = `${SITE_URL}/${params.locale}/events/${event.id}`;
+  // 詳細情報の表示行(値が入っている項目のみ)
+  const entryMethodLabel = event.entryMethod
+    ? t(
+        (
+          {
+            url: "entryMethodUrl",
+            dm: "entryMethodDm",
+            form: "entryMethodForm",
+            onsite: "entryMethodOnsite",
+            other: "entryMethodOther",
+          } as const
+        )[event.entryMethod],
+      )
+    : null;
+  const detailRows: { label: string; value: string }[] = [
+    { label: t("time"), value: event.timeInfo ?? "" },
+    { label: t("format"), value: event.format ?? "" },
+    { label: t("entryFee"), value: event.entryFee ?? "" },
+    { label: t("audienceFee"), value: event.audienceFee ?? "" },
+    { label: t("entrySlots"), value: event.entrySlots ?? "" },
+    { label: t("entryMethod"), value: entryMethodLabel ?? "" },
+    { label: t("judges"), value: event.judges ?? "" },
+    { label: t("djs"), value: event.djs ?? "" },
+    { label: t("mc"), value: event.mc ?? "" },
+    { label: t("prize"), value: event.prize ?? "" },
+    { label: t("organizer"), value: event.organizer ?? "" },
+  ].filter((r) => r.value.trim() !== "");
   // region が online の回はオンライン開催として出す(会場情報が実在しないため)。
   const isOnlineEvent = event.region === "online";
   const jsonLd = {
@@ -271,6 +298,27 @@ export default async function EventDetailPage({ params }: PageProps) {
               venue={event.venue || undefined}
             />
           </div>
+
+          {/* 詳細情報: 値がある項目だけ出す(空欄は非表示)。IG取り込みのAI抽出/管理画面入力が元 */}
+          {detailRows.length > 0 && (
+            <div className="mt-10 border-t border-ink/10 pt-8">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-ink/60">
+                {t("detailsTitle")}
+              </h2>
+              <dl className="mt-4 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+                {detailRows.map((row) => (
+                  <div key={row.label} className="flex flex-col gap-1">
+                    <dt className="text-[11px] font-bold uppercase tracking-widest text-ink/50">
+                      {row.label}
+                    </dt>
+                    <dd className="text-base font-bold leading-snug text-ink">
+                      {row.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
 
           <div className="mt-10 border-t border-ink/10 pt-8">
             <h2 className="text-xs font-bold uppercase tracking-widest text-ink/60">
