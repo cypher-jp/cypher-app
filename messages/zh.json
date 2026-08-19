@@ -136,6 +136,10 @@
     "fr": "Français"
   },
   "labels": {
+    "badge": {
+      "newEvent": "NEW",
+      "updatedEvent": "UPDATED"
+    },
     "eventType": {
       "battle": "BATTLE",
       "contest": "CONTEST",
