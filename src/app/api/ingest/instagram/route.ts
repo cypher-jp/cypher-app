@@ -13,6 +13,7 @@ import { createClient } from "@supabase/supabase-js";
  * 処理: Geminiでフライヤー+本文から構造化抽出 → Storage(flyers)へ画像保存 → events に pending で登録。
  * 環境変数: GEMINI_API_KEY, SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_SUPABASE_URL, INGEST_SECRET, (GEMINI_MODEL)
  */
+// deploy: 2026-08-19 env vars applied
 export const runtime = "nodejs";
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
