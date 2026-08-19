@@ -50,6 +50,9 @@ export default async function AdminHomePage({ searchParams }: Props) {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="display text-3xl font-black">EVENTS</h1>
         <div className="flex gap-2">
+          <Link href="/admin/reels" className="btn-ghost text-sm">
+            Reels
+          </Link>
           <Link href="/admin/articles" className="btn-ghost text-sm">
             記事管理
           </Link>
