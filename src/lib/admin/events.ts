@@ -6,9 +6,20 @@ import type { DanceEvent, EventStatus , Genre } from "@/types/event";
 
 const FLYERS_BUCKET = "flyers";
 
+// 今日(JST)の日付 yyyy-mm-dd。公開中タブで終了済みイベントを除外する基準。
+function todayJst(): string {
+  return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
+// 検索語をPostgRESTのilikeパターン用にエスケープ(%,_,カンマ,括弧は誤動作の元)
+function toIlikePattern(q: string): string {
+  return "%" + q.replace(/[%_,()]/g, " ").trim() + "%";
+}
+
 export async function fetchAdminEvents(
   status: EventStatus,
   genre?: Genre,
+  options?: { q?: string; includePast?: boolean },
 ): Promise<DanceEvent[]> {
   const supabase = createSupabaseServerClient();
   let query = supabase
@@ -18,6 +29,19 @@ export async function fetchAdminEvents(
   // ジャンル絞り込み(公開中タブ含む全タブで有効)。未指定なら全ジャンル。
   // 部門制の大会(genresに複数持つ)も拾えるよう、genres配列に対するcontainsで判定する。
   if (genre) query = query.contains("genres", [genre]);
+  // 公開中タブは終了済み(最終日が昨日以前)を出さない。過去分は公開URLでは残るが管理対象外にする。
+  if (status === "published" && !options?.includePast) {
+    const today = todayJst();
+    query = query.or(`date.gte.${today},end_date.gte.${today}`);
+  }
+  // フリーワード検索(タイトル・会場・主催・説明)。
+  const q = options?.q?.trim();
+  if (q) {
+    const p = toIlikePattern(q);
+    query = query.or(
+      `title.ilike.${p},venue.ilike.${p},organizer.ilike.${p},description.ilike.${p}`,
+    );
+  }
   const { data, error } = await query.order("created_at", { ascending: false });
 
   if (error || !data) {
@@ -33,12 +57,16 @@ export async function fetchAdminEventCounts(): Promise<
 > {
   const supabase = createSupabaseServerClient();
   const statuses: EventStatus[] = ["pending", "published", "draft"];
+  const today = todayJst();
   const counts = await Promise.all(
     statuses.map(async (status) => {
-      const { count } = await supabase
+      let q = supabase
         .from("events")
         .select("id", { count: "exact", head: true })
         .eq("status", status);
+      // 公開中の件数は一覧と同じく「開催中・これから」のみ数える
+      if (status === "published") q = q.or(`date.gte.${today},end_date.gte.${today}`);
+      const { count } = await q;
       return [status, count ?? 0] as const;
     }),
   );
