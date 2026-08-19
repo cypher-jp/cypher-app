@@ -8,7 +8,7 @@ import { ADMIN_GENRE_LABEL } from "@/lib/admin/labels";
 import { GENRES, type EventStatus, type Genre } from "@/types/event";
 
 interface Props {
-  searchParams: { tab?: string; genre?: string };
+  searchParams: { tab?: string; genre?: string; q?: string };
 }
 
 export default async function AdminHomePage({ searchParams }: Props) {
@@ -22,8 +22,11 @@ export default async function AdminHomePage({ searchParams }: Props) {
     ? (searchParams.genre as Genre)
     : undefined;
 
+  // フリーワード検索(タイトル/会場/主催/説明)。空なら絞り込みなし。
+  const q = (searchParams.q ?? "").trim().slice(0, 100);
+
   const [events, counts] = await Promise.all([
-    fetchAdminEvents(tab, genre),
+    fetchAdminEvents(tab, genre, { q }),
     fetchAdminEventCounts(),
   ]);
 
@@ -63,10 +66,34 @@ export default async function AdminHomePage({ searchParams }: Props) {
         <AdminTabs current={tab} counts={counts} />
       </div>
 
+      {/* フリーワード検索(タブ・ジャンルは維持) */}
+      <form action="/admin" method="get" className="mt-4 flex gap-2">
+        <input type="hidden" name="tab" value={tab} />
+        {genre && <input type="hidden" name="genre" value={genre} />}
+        <input
+          type="search"
+          name="q"
+          defaultValue={q}
+          placeholder="タイトル・会場・主催で検索"
+          className="input max-w-md"
+        />
+        <button type="submit" className="btn-ghost text-sm">
+          検索
+        </button>
+        {q && (
+          <Link
+            href={`/admin?tab=${tab}${genre ? `&genre=${genre}` : ""}`}
+            className="btn-ghost text-sm"
+          >
+            クリア
+          </Link>
+        )}
+      </form>
+
       {/* ジャンル絞り込みチップ(公開中タブ含む全タブで有効) */}
       <div className="mt-4 flex flex-wrap gap-1.5">
         <Link
-          href={`/admin?tab=${tab}`}
+          href={`/admin?tab=${tab}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
           className={genre === undefined ? "chip bg-ink text-paper" : "chip-outline"}
         >
           全ジャンル
@@ -74,7 +101,7 @@ export default async function AdminHomePage({ searchParams }: Props) {
         {GENRES.map((g) => (
           <Link
             key={g}
-            href={`/admin?tab=${tab}&genre=${g}`}
+            href={`/admin?tab=${tab}&genre=${g}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
             className={genre === g ? "chip bg-ink text-paper" : "chip-outline"}
           >
             {ADMIN_GENRE_LABEL[g]}
@@ -92,7 +119,12 @@ export default async function AdminHomePage({ searchParams }: Props) {
       <div className="mt-6">
         {events.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-ink/20 p-12 text-center text-ink/60">
-            該当するイベントはありません。
+            {q ? `「${q}」に一致するイベントはありません。` : "該当するイベントはありません。"}
+            {tab === "published" && !q && (
+              <p className="mt-2 text-xs text-ink/40">
+                ※ 終了したイベントは公開中タブには表示されません
+              </p>
+            )}
           </div>
         ) : tab === "pending" ? (
           <PendingEventsBoard groups={pendingGroups} publishedKeys={publishedKeys} />
