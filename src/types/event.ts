@@ -156,6 +156,8 @@ export interface DanceEvent {
   source?: string;          // どこから取得したか
   /** DB上の最終更新日時(ISO)。詳細ページの「情報最終確認日」表示に使う */
   updatedAt?: string;
+  /** DB上の登録日時(ISO)。カードの NEW/UPDATED バッジ判定に使う */
+  createdAt?: string;
   // ---- 詳細情報(任意・自由記述。Instagram取り込みのAI抽出/管理画面で入力) ----
   /** 開場・開始時刻など(例: OPEN 12:00 / START 13:00) */
   timeInfo?: string;
