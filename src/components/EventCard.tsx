@@ -4,6 +4,26 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { getEventGenres, type DanceEvent } from "@/types/event";
 
+/** NEW / UPDATED バッジ判定。登録(created_at)から7日以内なら NEW、
+ *  それ以外で最終更新(updated_at)が7日以内かつ登録から1日以上あとなら UPDATED。 */
+export function getFreshness(
+  event: Pick<DanceEvent, "createdAt" | "updatedAt">,
+  now: number = Date.now(),
+): "new" | "updated" | null {
+  const WEEK = 7 * 24 * 60 * 60 * 1000;
+  const DAY = 24 * 60 * 60 * 1000;
+  const created = event.createdAt ? Date.parse(event.createdAt) : NaN;
+  const updated = event.updatedAt ? Date.parse(event.updatedAt) : NaN;
+  if (!Number.isNaN(created) && now - created < WEEK) return "new";
+  if (
+    !Number.isNaN(updated) &&
+    now - updated < WEEK &&
+    (Number.isNaN(created) || updated - created > DAY)
+  )
+    return "updated";
+  return null;
+}
+
 const TYPE_ACCENT: Record<DanceEvent["type"], string> = {
   battle: "bg-cypher-red text-paper",
   contest: "bg-cypher-purple text-paper",
@@ -18,6 +38,8 @@ export default function EventCard({ event }: { event: DanceEvent }) {
   const tType = useTranslations("labels.eventType");
   const tGenre = useTranslations("labels.genre");
   const tRegion = useTranslations("labels.region");
+  const tBadge = useTranslations("labels.badge");
+  const freshness = getFreshness(event);
 
   const dateObj = new Date(event.date);
   const month = dateObj
@@ -58,6 +80,16 @@ export default function EventCard({ event }: { event: DanceEvent }) {
           <span className={`chip ${TYPE_ACCENT[event.type]}`}>
             {tType(event.type)}
           </span>
+          {freshness === "new" && (
+            <span className="chip bg-cypher-yellow text-ink">
+              {tBadge("newEvent")}
+            </span>
+          )}
+          {freshness === "updated" && (
+            <span className="chip bg-paper text-ink">
+              {tBadge("updatedEvent")}
+            </span>
+          )}
         </div>
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-ink/90 to-transparent p-4">
           <div className="display text-3xl font-black leading-none text-paper">
