@@ -76,8 +76,61 @@ interface Props {
   submitLabel: string;
 }
 
+// フライヤー画像をブラウザ側で縮小・JPEG圧縮する。
+// Vercelのリクエスト上限(4.5MB)を超える大きな画像(IG保存画像は3〜7MB)を送ると
+// 保存自体が失敗して「差し替えたのに反映されない」状態になるため、送信前に必ず小さくする。
+const FLYER_MAX_EDGE = 1600;
+const FLYER_JPEG_QUALITY = 0.85;
+const FLYER_COMPRESS_THRESHOLD = 900 * 1024; // これ以下ならそのまま送る
+
+async function compressFlyer(file: File): Promise<File> {
+  if (!file.type.startsWith("image/")) return file;
+  if (file.size <= FLYER_COMPRESS_THRESHOLD && !/png|webp|heic/i.test(file.type)) return file;
+  const bitmap = await createImageBitmap(file).catch(() => null);
+  if (!bitmap) return file;
+  const scale = Math.min(1, FLYER_MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+  const w = Math.round(bitmap.width * scale);
+  const h = Math.round(bitmap.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return file;
+  ctx.drawImage(bitmap, 0, 0, w, h);
+  const blob: Blob | null = await new Promise((resolve) =>
+    canvas.toBlob(resolve, "image/jpeg", FLYER_JPEG_QUALITY),
+  );
+  if (!blob) return file;
+  const base = file.name.replace(/\.[^.]+$/, "") || "flyer";
+  return new File([blob], `${base}.jpg`, { type: "image/jpeg" });
+}
+
 export default function EventForm({ action, defaultValues, submitLabel }: Props) {
   const [igPostUrl, setIgPostUrl] = useState(defaultValues?.igPostUrl ?? "");
+  const [flyerNote, setFlyerNote] = useState<string | null>(null);
+
+  async function handleFlyerChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const input = e.target;
+    const file = input.files?.[0];
+    if (!file) {
+      setFlyerNote(null);
+      return;
+    }
+    setFlyerNote("画像を圧縮中…");
+    try {
+      const compressed = await compressFlyer(file);
+      if (compressed !== file) {
+        const dt = new DataTransfer();
+        dt.items.add(compressed);
+        input.files = dt.files;
+      }
+      setFlyerNote(
+        `${Math.round(compressed.size / 1024)}KB で送信します(元: ${Math.round(file.size / 1024)}KB)`,
+      );
+    } catch {
+      setFlyerNote("圧縮に失敗したため元画像のまま送信します");
+    }
+  }
   const [igHandle, setIgHandle] = useState(defaultValues?.igHandle ?? "");
   const [igHandleTouched, setIgHandleTouched] = useState(
     Boolean(defaultValues?.igHandle),
@@ -326,8 +379,10 @@ export default function EventForm({ action, defaultValues, submitLabel }: Props)
           type="file"
           name="flyer"
           accept="image/*"
+          onChange={handleFlyerChange}
           className="input file:mr-4 file:rounded-full file:border-0 file:bg-ink file:px-4 file:py-2 file:text-xs file:font-bold file:uppercase file:tracking-wider file:text-paper"
         />
+        {flyerNote && <p className="mt-1 text-xs text-ink/50">{flyerNote}</p>}
         {defaultValues?.flyerUrl && (
           <div className="mt-2 flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
