@@ -1,0 +1,54 @@
+{
+  "headline": "NEW EVENTS",
+  "subline": "THIS WEEK · AUG 19 – 25",
+  "siteUrl": "https://worldcypher.net",
+  "secondsPerEvent": 2.5,
+  "events": [
+    {
+      "id": "67570924-3c00-4eb7-80f0-5470257e2d47",
+      "title": "DE LA POP vol.10",
+      "date": "2026-11-01",
+      "type": "battle",
+      "genres": ["popping"],
+      "region": "AICHI",
+      "venue": "CLUB MAGO, Nagoya",
+      "flyerUrl": "https://qvzamnypgjyipyneeqgs.supabase.co/storage/v1/object/public/flyers/Da3JzfxzYyP.jpg",
+      "format": "1on1",
+      "entryFee": "事前¥3,500 + 1d"
+    },
+    {
+      "id": "598a7b59-ee42-4b99-935c-a6b3f5754e7d",
+      "title": "MATADOR ROCKING 1v1",
+      "date": "2026-11-13",
+      "type": "battle",
+      "genres": ["locking", "breaking"],
+      "region": "TOKYO",
+      "venue": "CIRCUS TOKYO, Shibuya",
+      "flyerUrl": "https://qvzamnypgjyipyneeqgs.supabase.co/storage/v1/object/public/flyers/DcKM1IKE-3i.jpg",
+      "format": "1on1",
+      "entryFee": "¥4,000"
+    },
+    {
+      "id": "cbe3ae68-8d66-4f15-be54-d6011f495dd6",
+      "title": "SOUL HOOD CAMP 2026",
+      "date": "2026-08-24",
+      "type": "battle",
+      "genres": ["all"],
+      "region": "OSAKA",
+      "venue": "アルカスホール, 大阪府",
+      "flyerUrl": "https://qvzamnypgjyipyneeqgs.supabase.co/storage/v1/object/public/flyers/DcL7_SZGsH2.jpg",
+      "format": "U-12&U-25 ALL STYLE SOLO BATTLE",
+      "entryFee": "¥2,500"
+    },
+    {
+      "id": "bbed6632-34a8-4d27-ab7b-945e2585a89b",
+      "title": "ONE LIFE BATTLE SUMMER 2026",
+      "date": "2026-08-20",
+      "type": "battle",
+      "genres": ["all"],
+      "region": "FRANCE",
+      "venue": "Pasino de la Grande Motte",
+      "flyerUrl": "https://www.choomza.com/profilepicture/event/ONE-LIFE-BATTLE-SUMMER-2026?v=1"
+    }
+  ]
+}
