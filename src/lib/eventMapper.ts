@@ -50,6 +50,9 @@ export function rowToEvent(row: Record<string, unknown>): DanceEvent {
     description: String(row.description ?? ""),
     descriptionI18n: parseDescriptionI18n(row.description_i18n),
     flyerUrl: row.flyer_url ? String(row.flyer_url) : undefined,
+    galleryUrls: Array.isArray(row.gallery_urls)
+      ? (row.gallery_urls as unknown[]).filter((v): v is string => typeof v === "string" && v.length > 0)
+      : undefined,
     igHandle: row.ig_handle ? String(row.ig_handle) : undefined,
     igPostUrl: row.ig_post_url ? String(row.ig_post_url) : undefined,
     entryUrl: row.entry_url ? String(row.entry_url) : undefined,
