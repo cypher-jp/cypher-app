@@ -253,6 +253,8 @@ interface ParsedForm {
   status: EventStatus;
   source: string | null;
   flyerFile: File | null;
+  /** 追加画像(複数)。ギャラリーとしてイベント詳細ページに表示する */
+  galleryFiles: File[];
   timeInfo: string | null;
   format: string | null;
   entryFee: string | null;
@@ -305,6 +307,10 @@ function parseEventForm(formData: FormData): ParsedForm {
   const flyerEntry = formData.get("flyer");
   const flyerFile =
     flyerEntry instanceof File && flyerEntry.size > 0 ? flyerEntry : null;
+
+  const galleryFiles = formData
+    .getAll("gallery")
+    .filter((v): v is File => v instanceof File && v.size > 0);
  
   return {
     title,
@@ -323,6 +329,7 @@ function parseEventForm(formData: FormData): ParsedForm {
     status,
     source: sourceRaw || null,
     flyerFile,
+    galleryFiles,
     timeInfo: optField(formData, "timeInfo"),
     format: optField(formData, "format"),
     entryFee: optField(formData, "entryFee"),
@@ -370,6 +377,17 @@ export async function createEventAction(formData: FormData): Promise<void> {
       flyerUrl = await uploadFlyer(supabase, parsed.flyerFile);
     } catch (e) {
       const message = e instanceof Error ? e.message : "アップロードに失敗しました";
+      redirect(`/admin/new?error=${encodeURIComponent(message)}`);
+    }
+  }
+
+  // 追加画像(ギャラリー)のアップロード
+  const galleryUrls: string[] = [];
+  for (const file of parsed.galleryFiles) {
+    try {
+      galleryUrls.push(await uploadFlyer(supabase, file));
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "追加画像のアップロードに失敗しました";
       redirect(`/admin/new?error=${encodeURIComponent(message)}`);
     }
   }
