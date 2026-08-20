@@ -401,7 +401,7 @@ export async function createEventAction(formData: FormData): Promise<void> {
  
   revalidatePublicPaths(result.id);
   revalidatePath("/admin");
-  redirect(`/admin?tab=${input.status}`);
+  redirect(`/admin?tab=${input.status}&message=${encodeURIComponent("登録しました")}`);
 }
  
 export async function updateEventAction(
@@ -458,5 +458,5 @@ export async function updateEventAction(
   revalidatePublicPaths(id);
   revalidatePath("/admin");
   revalidatePath(`/admin/events/${id}/edit`);
-  redirect(`/admin?tab=${input.status}`);
+  redirect(`/admin?tab=${input.status}&message=${encodeURIComponent("保存しました")}`);
 }
