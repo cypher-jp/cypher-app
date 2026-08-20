@@ -64,14 +64,29 @@ export default async function AdminReelsPage({ searchParams }: Props) {
           </div>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2">
+        <section className="grid gap-4 sm:grid-cols-3">
           <label className="block">
             <span className="text-xs font-bold uppercase tracking-wider text-ink/60">見出し(任意)</span>
-            <input name="headline" className="input mt-1" placeholder="NEW EVENTS" maxLength={40} />
+            <input
+              name="headline"
+              className="input mt-1"
+              placeholder="NEW EVENTS / BREAKING EVENTS など"
+              maxLength={40}
+            />
           </label>
           <label className="block">
             <span className="text-xs font-bold uppercase tracking-wider text-ink/60">サブ見出し(任意)</span>
             <input name="subline" className="input mt-1" placeholder="自動: THIS WEEK · AUG 19 – 25" maxLength={60} />
+          </label>
+          <label className="block">
+            <span className="text-xs font-bold uppercase tracking-wider text-ink/60">1イベントあたりの秒数</span>
+            <select name="seconds" className="input mt-1" defaultValue="2.5">
+              <option value="2">2秒(テンポ速め)</option>
+              <option value="2.5">2.5秒(標準)</option>
+              <option value="3">3秒</option>
+              <option value="3.5">3.5秒</option>
+              <option value="4">4秒(じっくり)</option>
+            </select>
           </label>
         </section>
 
