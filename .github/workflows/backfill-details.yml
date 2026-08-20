@@ -4,6 +4,8 @@
 name: Backfill event details
 
 on:
+  schedule:
+    - cron: "30 21 * * *" # UTC 21:30 = JST 6:30 (朝のスクレイプ直後に新規イベントの詳細を埋める)
   workflow_dispatch:
     inputs:
       limit:
