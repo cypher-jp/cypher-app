@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ReelEventPicker from "@/components/admin/ReelEventPicker";
+import ShareReelButton from "@/components/admin/ShareReelButton";
 import SubmitButton from "@/components/admin/SubmitButton";
 import { REEL_MAX_EVENTS, fetchReelCandidates, fetchReelJobs, type ReelJob } from "@/lib/admin/reels";
 import { createReelJobAction, deleteReelJobAction, requeueReelJobAction } from "./actions";
@@ -135,9 +136,10 @@ export default async function AdminReelsPage({ searchParams }: Props) {
                         <a href={job.videoUrl} target="_blank" rel="noopener" className="btn-ghost text-xs">
                           再生
                         </a>
-                        <a href={job.videoUrl} download className="btn-primary text-xs">
-                          ダウンロード
+                        <a href={job.videoUrl} download className="btn-ghost text-xs" title="PCはこちら">
+                          DL
                         </a>
+                        <ShareReelButton videoUrl={job.videoUrl} />
                       </>
                     )}
                     {(job.status === "failed" || job.status === "done") && (
