@@ -19,7 +19,7 @@ function toIlikePattern(q: string): string {
 export async function fetchAdminEvents(
   status: EventStatus,
   genre?: Genre,
-  options?: { q?: string; includePast?: boolean },
+  options?: { q?: string; includePast?: boolean; noFlyer?: boolean },
 ): Promise<DanceEvent[]> {
   const supabase = createSupabaseServerClient();
   let query = supabase
@@ -33,6 +33,10 @@ export async function fetchAdminEvents(
   if (status === "published" && !options?.includePast) {
     const today = todayJst();
     query = query.or(`date.gte.${today},end_date.gte.${today}`);
+  }
+  // 画像(フライヤー)未設定のみに絞る。まとめて画像を設定したい時に使う。
+  if (options?.noFlyer) {
+    query = query.is("flyer_url", null);
   }
   // フリーワード検索(タイトル・会場・主催・説明)。
   const q = options?.q?.trim();
