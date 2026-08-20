@@ -103,6 +103,7 @@
     "backHome": "Back to Home",
     "metaFallbackTitle": "Event not found",
     "metaFallbackDescription": "Date, venue and entry information for {title}.",
+    "galleryTitle": "GALLERY",
     "detailsTitle": "Event details",
     "time": "Time",
     "format": "Format",

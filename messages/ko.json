@@ -103,6 +103,7 @@
     "backHome": "홈으로 돌아가기",
     "metaFallbackTitle": "이벤트를 찾을 수 없습니다",
     "metaFallbackDescription": "{title}의 개최일·장소·신청 정보.",
+    "galleryTitle": "GALLERY",
     "detailsTitle": "이벤트 상세",
     "time": "시간",
     "format": "형식",
