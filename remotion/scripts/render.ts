@@ -14,7 +14,7 @@ import fs from "node:fs/promises";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { bundle } from "@remotion/bundler";
 import { renderMedia, renderStill, selectComposition } from "@remotion/renderer";
-import type { ReelEvent, ReelProps } from "../src/types";
+import type { ReelEvent, ReelProps, ReelTemplate } from "../src/types";
 import en from "../../messages/en.json";
 
 const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -138,8 +138,10 @@ async function renderJob(job: JobRow, serveUrl: string) {
   if (rows.length === 0) throw new Error("対象イベントがありません");
 
   const params = job.params ?? {};
+  const template: ReelTemplate = params.template === "light" ? "light" : "classic";
   const props: ReelProps = {
     events: rows.map(toReelEvent),
+    template,
     headline: typeof params.headline === "string" && params.headline ? params.headline : "NEW EVENTS",
     subline: typeof params.subline === "string" && params.subline ? params.subline : weekLabel(new Date()),
     siteUrl: SITE_URL,
