@@ -56,6 +56,8 @@ export interface EventFormValues {
   status: EventStatus;
   source: string;
   flyerUrl: string;
+  /** 追加画像(ギャラリー)URL一覧 */
+  galleryUrls?: string[];
   // 詳細情報(任意)
   timeInfo?: string;
   format?: string;
@@ -133,6 +135,37 @@ export default function EventForm({ action, defaultValues, submitLabel }: Props)
       setFlyerNote("圧縮に失敗したため元画像のまま送信します");
     }
   }
+  const [galleryNote, setGalleryNote] = useState<string | null>(null);
+
+  // 追加画像(複数)も送信前に1枚ずつ圧縮する(合計でVercelの4.5MB上限を超えやすいため)
+  async function handleGalleryChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const input = e.target;
+    const files = Array.from(input.files ?? []);
+    if (files.length === 0) {
+      setGalleryNote(null);
+      return;
+    }
+    setGalleryNote(`${files.length}枚を圧縮中…`);
+    try {
+      const dt = new DataTransfer();
+      let total = 0;
+      for (const f of files) {
+        const c = await compressFlyer(f);
+        dt.items.add(c);
+        total += c.size;
+      }
+      input.files = dt.files;
+      setGalleryNote(`${files.length}枚・合計${Math.round(total / 1024)}KB で送信します`);
+      if (total > 3_500_000) {
+        setGalleryNote(
+          `合計${Math.round(total / 1024)}KBは大きすぎる可能性があります。一度に選ぶ枚数を減らして、保存→再編集で追加してください`,
+        );
+      }
+    } catch {
+      setGalleryNote("圧縮に失敗したため元画像のまま送信します");
+    }
+  }
+
   const [igHandle, setIgHandle] = useState(defaultValues?.igHandle ?? "");
   const [igHandleTouched, setIgHandleTouched] = useState(
     Boolean(defaultValues?.igHandle),
@@ -396,6 +429,37 @@ export default function EventForm({ action, defaultValues, submitLabel }: Props)
             <span className="text-xs text-ink/50">
               現在の画像。新しいファイルを選ぶと置き換わります。
             </span>
+          </div>
+        )}
+      </Field>
+
+      <Field label="追加画像(複数選択可・イベントページにギャラリー表示)">
+        <input
+          type="file"
+          name="gallery"
+          accept="image/*"
+          multiple
+          onChange={handleGalleryChange}
+          className="input file:mr-4 file:rounded-full file:border-0 file:bg-ink file:px-4 file:py-2 file:text-xs file:font-bold file:uppercase file:tracking-wider file:text-paper"
+        />
+        {galleryNote && <p className="mt-1 text-xs text-ink/50">{galleryNote}</p>}
+        {(defaultValues?.galleryUrls?.length ?? 0) > 0 && (
+          <div className="mt-2">
+            <p className="text-xs text-ink/50">
+              現在の追加画像。チェックを外して保存すると削除されます。
+            </p>
+            <div className="mt-1 flex flex-wrap gap-3">
+              {defaultValues!.galleryUrls!.map((url) => (
+                <label key={url} className="flex cursor-pointer flex-col items-center gap-1">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt="" className="h-16 w-24 rounded-lg object-cover" />
+                  <span className="flex items-center gap-1 text-[11px] text-ink/60">
+                    <input type="checkbox" name="keepGallery" value={url} defaultChecked />
+                    残す
+                  </span>
+                </label>
+              ))}
+            </div>
           </div>
         )}
       </Field>
