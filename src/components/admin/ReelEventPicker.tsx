@@ -1,11 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ADMIN_REGION_LABEL } from "@/lib/admin/labels";
-import type { DanceEvent } from "@/types/event";
+import { ADMIN_GENRE_LABEL, ADMIN_REGION_LABEL } from "@/lib/admin/labels";
+import { GENRES, getEventGenres, type DanceEvent, type Genre } from "@/types/event";
 
-type Candidate = Pick<DanceEvent, "id" | "title" | "date" | "endDate" | "type" | "region" | "venue" | "flyerUrl"> & {
+type Candidate = Pick<
+  DanceEvent,
+  "id" | "title" | "date" | "endDate" | "type" | "genre" | "genres" | "region" | "venue" | "flyerUrl"
+> & {
   isNew: boolean;
+  isPast: boolean;
 };
 
 interface Props {
@@ -13,20 +17,43 @@ interface Props {
   maxSelect: number;
 }
 
+type Scope = "new" | "upcoming" | "past" | "all";
+
+const SCOPE_LABEL: Record<Scope, string> = {
+  new: "新着(7日以内)",
+  upcoming: "今後のイベント",
+  past: "過去のイベント",
+  all: "すべて",
+};
+
 /**
- * Reels に載せるイベントを選ぶチェックリスト。初期値は「直近7日以内に登録された新着」(上限まで)。
+ * Reels に載せるイベントを選ぶチェックリスト。
+ * 範囲(新着/今後/過去/すべて) × ジャンル で絞り込める。初期値は新着(上限まで)。
  * フォーム送信は親の <form> が行う(name="event_ids")。
  */
 export default function ReelEventPicker({ events, maxSelect }: Props) {
   const initial = useMemo(
-    () => new Set(events.filter((e) => e.isNew).slice(0, maxSelect).map((e) => e.id)),
+    () => new Set(events.filter((e) => e.isNew && e.flyerUrl).slice(0, maxSelect).map((e) => e.id)),
     [events, maxSelect],
   );
   const [selected, setSelected] = useState<Set<string>>(initial);
-  const [showAll, setShowAll] = useState(false);
+  const [scope, setScope] = useState<Scope>("new");
+  const [genre, setGenre] = useState<Genre | "all">("all");
+  const [withFlyerOnly, setWithFlyerOnly] = useState(true);
 
-  const visible = showAll ? events : events.filter((e) => e.isNew || selected.has(e.id));
-  const newCount = events.filter((e) => e.isNew).length;
+  function matches(e: Candidate): boolean {
+    if (scope === "new" && !e.isNew) return false;
+    if (scope === "upcoming" && e.isPast) return false;
+    if (scope === "past" && !e.isPast) return false;
+    if (genre !== "all" && !getEventGenres(e).includes(genre)) return false;
+    if (withFlyerOnly && !e.flyerUrl) return false;
+    return true;
+  }
+
+  const filtered = events.filter(matches);
+  // 選択済みは絞り込みから外れても常に見えるようにする(誤爆防止)
+  const visible = [...filtered, ...events.filter((e) => selected.has(e.id) && !filtered.includes(e))];
+
   const full = selected.size >= maxSelect;
 
   function toggle(id: string) {
@@ -38,34 +65,73 @@ export default function ReelEventPicker({ events, maxSelect }: Props) {
     });
   }
 
+  function selectFiltered() {
+    setSelected(new Set(filtered.slice(0, maxSelect).map((e) => e.id)));
+  }
+
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        <span className="text-xs font-bold uppercase tracking-wider text-ink/60">範囲</span>
+        {(Object.keys(SCOPE_LABEL) as Scope[]).map((s) => (
+          <button
+            key={s}
+            type="button"
+            onClick={() => setScope(s)}
+            className={`chip ${scope === s ? "bg-ink text-paper" : "chip-outline"}`}
+          >
+            {SCOPE_LABEL[s]}
+          </button>
+        ))}
+      </div>
+      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+        <span className="text-xs font-bold uppercase tracking-wider text-ink/60">ジャンル</span>
+        <button
+          type="button"
+          onClick={() => setGenre("all")}
+          className={`chip ${genre === "all" ? "bg-ink text-paper" : "chip-outline"}`}
+        >
+          すべて
+        </button>
+        {GENRES.map((g) => (
+          <button
+            key={g}
+            type="button"
+            onClick={() => setGenre(g)}
+            className={`chip ${genre === g ? "bg-ink text-paper" : "chip-outline"}`}
+          >
+            {ADMIN_GENRE_LABEL[g]}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm">
         <div>
           選択中 <span className="font-bold">{selected.size}</span> / {maxSelect} 件
-          <span className="ml-3 text-ink/60">(新着 {newCount} 件 / 今後のイベント {events.length} 件)</span>
+          <span className="ml-3 text-ink/60">(絞り込み結果 {filtered.length} 件)</span>
         </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            className="btn-ghost text-xs"
-            onClick={() => setSelected(new Set(events.filter((e) => e.isNew).slice(0, maxSelect).map((e) => e.id)))}
-          >
-            新着を選択
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="flex items-center gap-1 text-xs text-ink/70">
+            <input
+              type="checkbox"
+              checked={withFlyerOnly}
+              onChange={(e) => setWithFlyerOnly(e.target.checked)}
+            />
+            画像ありのみ
+          </label>
+          <button type="button" className="btn-ghost text-xs" onClick={selectFiltered}>
+            絞り込み結果を選択
           </button>
           <button type="button" className="btn-ghost text-xs" onClick={() => setSelected(new Set())}>
             全解除
           </button>
-          <button type="button" className="btn-ghost text-xs" onClick={() => setShowAll((v) => !v)}>
-            {showAll ? "新着のみ表示" : "すべて表示"}
-          </button>
         </div>
       </div>
 
-      <ul className="mt-3 divide-y divide-ink/10 rounded-2xl border border-ink/10 bg-white">
+      <ul className="mt-3 max-h-[32rem] divide-y divide-ink/10 overflow-y-auto rounded-2xl border border-ink/10 bg-white">
         {visible.length === 0 && (
           <li className="px-4 py-6 text-sm text-ink/60">
-            直近7日以内に登録された新着イベントはありません。「すべて表示」から選んでください。
+            この条件に合うイベントがありません。範囲やジャンルを変えてみてください。
           </li>
         )}
         {visible.map((e) => {
@@ -89,7 +155,9 @@ export default function ReelEventPicker({ events, maxSelect }: Props) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={e.flyerUrl} alt="" className="h-12 w-9 rounded object-cover" />
                 ) : (
-                  <div className="h-12 w-9 rounded bg-ink/10" />
+                  <div className="flex h-12 w-9 items-center justify-center rounded bg-ink/10 text-[9px] text-ink/50">
+                    画像なし
+                  </div>
                 )}
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-bold">
@@ -97,6 +165,11 @@ export default function ReelEventPicker({ events, maxSelect }: Props) {
                     {e.isNew && (
                       <span className="ml-2 rounded-full bg-cypher-yellow px-2 py-0.5 text-[10px] font-black">
                         NEW
+                      </span>
+                    )}
+                    {e.isPast && (
+                      <span className="ml-2 rounded-full bg-ink/10 px-2 py-0.5 text-[10px] font-bold text-ink/60">
+                        終了
                       </span>
                     )}
                   </div>
