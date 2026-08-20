@@ -320,6 +320,28 @@ export default async function EventDetailPage({ params }: PageProps) {
             </div>
           )}
 
+          {/* 追加画像ギャラリー(管理画面で複数登録した画像)。タップで原寸表示 */}
+          {(event.galleryUrls?.length ?? 0) > 0 && (
+            <div className="mt-10 border-t border-ink/10 pt-8">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-ink/60">
+                {t("galleryTitle")}
+              </h2>
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {event.galleryUrls!.map((url) => (
+                  <a key={url} href={url} target="_blank" rel="noopener">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={url}
+                      alt=""
+                      loading="lazy"
+                      className="aspect-[4/3] w-full rounded-xl object-cover shadow-card transition hover:opacity-90"
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="mt-10 border-t border-ink/10 pt-8">
             <h2 className="text-xs font-bold uppercase tracking-widest text-ink/60">
               {t("about")}
