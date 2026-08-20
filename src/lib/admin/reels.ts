@@ -101,6 +101,7 @@ export async function insertReelJob(input: {
   headline?: string;
   subline?: string;
   secondsPerEvent?: number;
+  template?: string;
   createdBy?: string | null;
 }): Promise<{ id: string } | { error: string }> {
   const supabase = createSupabaseServerClient();
@@ -108,6 +109,7 @@ export async function insertReelJob(input: {
   if (input.headline) params.headline = input.headline;
   if (input.subline) params.subline = input.subline;
   if (input.secondsPerEvent) params.secondsPerEvent = input.secondsPerEvent;
+  if (input.template) params.template = input.template;
   const { data, error } = await supabase
     .from("reel_jobs")
     .insert({

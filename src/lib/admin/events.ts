@@ -103,6 +103,8 @@ export interface EventInput {
   venue: string;
   description: string;
   flyerUrl: string | null;
+  /** 追加画像URL一覧(メイン以外)。undefinedなら変更しない */
+  galleryUrls?: string[];
   igHandle: string | null;
   igPostUrl: string | null;
   entryUrl: string | null;
@@ -140,6 +142,7 @@ export async function insertEvent(
       venue: input.venue,
       description: input.description,
       flyer_url: input.flyerUrl,
+      ...(input.galleryUrls !== undefined ? { gallery_urls: input.galleryUrls } : {}),
       ig_handle: input.igHandle,
       ig_post_url: input.igPostUrl,
       entry_url: input.entryUrl,
@@ -186,6 +189,7 @@ export async function updateEvent(
       venue: input.venue,
       description: input.description,
       flyer_url: input.flyerUrl,
+      ...(input.galleryUrls !== undefined ? { gallery_urls: input.galleryUrls } : {}),
       ig_handle: input.igHandle,
       ig_post_url: input.igPostUrl,
       entry_url: input.entryUrl,
