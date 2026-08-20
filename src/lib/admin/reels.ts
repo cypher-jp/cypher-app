@@ -19,7 +19,7 @@ export type ReelJob = {
   finishedAt: string | null;
 };
 
-export const REEL_MAX_EVENTS = 6;
+export const REEL_MAX_EVENTS = 10;
 export const REEL_NEW_DAYS = 7;
 
 function todayJst(): string {
@@ -44,27 +44,42 @@ function rowToJob(row: Record<string, unknown>): ReelJob {
   };
 }
 
-/** Reels 候補: 公開中 & これから開催のイベント(開催日順)。isNew = 直近7日以内に登録。 */
-export async function fetchReelCandidates(): Promise<(DanceEvent & { isNew: boolean })[]> {
+/**
+ * Reels 候補: 公開中イベント全て。
+ * これから開催(開催日の近い順) → 過去(新しい順) の順に並べる。
+ * isNew = 直近7日以内に登録 / isPast = 開催終了済み。
+ */
+export async function fetchReelCandidates(): Promise<
+  (DanceEvent & { isNew: boolean; isPast: boolean })[]
+> {
   const supabase = createSupabaseServerClient();
   const today = todayJst();
-  const { data, error } = await supabase
-    .from("events")
-    .select("*")
-    .eq("status", "published")
-    .or(`date.gte.${today},end_date.gte.${today}`)
-    .order("date", { ascending: true })
-    .limit(200);
-  if (error || !data) {
-    console.warn("[admin] fetchReelCandidates failed:", error?.message);
+  const base = () => supabase.from("events").select("*").eq("status", "published");
+  const [upcoming, past] = await Promise.all([
+    base().or(`date.gte.${today},end_date.gte.${today}`).order("date", { ascending: true }).limit(200),
+    base().lt("date", today).order("date", { ascending: false }).limit(300),
+  ]);
+  if (upcoming.error && past.error) {
+    console.warn("[admin] fetchReelCandidates failed:", upcoming.error?.message);
     return [];
   }
   const threshold = Date.now() - REEL_NEW_DAYS * 86400 * 1000;
-  return data.map((row) => {
+  const seen = new Set<string>();
+  const decorate = (row: Record<string, unknown>, isPast: boolean) => {
     const ev = rowToEvent(row);
     const created = ev.createdAt ? Date.parse(ev.createdAt) : NaN;
-    return { ...ev, isNew: !Number.isNaN(created) && created >= threshold };
-  });
+    return { ...ev, isNew: !Number.isNaN(created) && created >= threshold, isPast };
+  };
+  const result: (DanceEvent & { isNew: boolean; isPast: boolean })[] = [];
+  for (const row of upcoming.data ?? []) {
+    const ev = decorate(row as Record<string, unknown>, false);
+    if (!seen.has(ev.id)) { seen.add(ev.id); result.push(ev); }
+  }
+  for (const row of past.data ?? []) {
+    const ev = decorate(row as Record<string, unknown>, true);
+    if (!seen.has(ev.id)) { seen.add(ev.id); result.push(ev); }
+  }
+  return result;
 }
 
 export async function fetchReelJobs(limit = 30): Promise<ReelJob[]> {
@@ -85,12 +100,14 @@ export async function insertReelJob(input: {
   eventIds: string[];
   headline?: string;
   subline?: string;
+  secondsPerEvent?: number;
   createdBy?: string | null;
 }): Promise<{ id: string } | { error: string }> {
   const supabase = createSupabaseServerClient();
   const params: Record<string, unknown> = {};
   if (input.headline) params.headline = input.headline;
   if (input.subline) params.subline = input.subline;
+  if (input.secondsPerEvent) params.secondsPerEvent = input.secondsPerEvent;
   const { data, error } = await supabase
     .from("reel_jobs")
     .insert({
