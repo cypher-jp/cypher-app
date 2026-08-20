@@ -17,14 +17,30 @@ interface Props {
   maxSelect: number;
 }
 
-type Scope = "new" | "upcoming" | "past" | "all";
+type Scope = "new" | "thisWeek" | "thisMonth" | "upcoming" | "past" | "all";
 
 const SCOPE_LABEL: Record<Scope, string> = {
   new: "新着(7日以内)",
+  thisWeek: "今週開催",
+  thisMonth: "今月開催",
   upcoming: "今後のイベント",
   past: "過去のイベント",
   all: "すべて",
 };
+
+/** YYYY-MM-DD 同士の比較で「開催期間が[from,to]と重なるか」を判定 */
+function overlaps(e: { date: string; endDate?: string }, from: string, to: string): boolean {
+  const start = e.date;
+  const end = e.endDate && e.endDate > e.date ? e.endDate : e.date;
+  return start <= to && end >= from;
+}
+
+function ymd(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
 
 /**
  * Reels に載せるイベントを選ぶチェックリスト。
@@ -42,7 +58,18 @@ export default function ReelEventPicker({ events, maxSelect }: Props) {
   const [withFlyerOnly, setWithFlyerOnly] = useState(true);
 
   function matches(e: Candidate): boolean {
+    const now = new Date();
+    const today = ymd(now);
     if (scope === "new" && !e.isNew) return false;
+    if (scope === "thisWeek") {
+      const weekEnd = ymd(new Date(now.getTime() + 6 * 86400 * 1000));
+      if (!overlaps(e, today, weekEnd)) return false;
+    }
+    if (scope === "thisMonth") {
+      const monthStart = `${today.slice(0, 7)}-01`;
+      const monthEnd = ymd(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+      if (!overlaps(e, monthStart, monthEnd)) return false;
+    }
     if (scope === "upcoming" && e.isPast) return false;
     if (scope === "past" && !e.isPast) return false;
     if (genre !== "all" && !getEventGenres(e).includes(genre)) return false;
