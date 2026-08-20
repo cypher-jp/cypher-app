@@ -17,8 +17,13 @@ export type ReelEvent = {
   entryFee?: string | null;
 };
 
+/** 動画デザイン。classic=現行(黒ベース) / light=白ベース */
+export type ReelTemplate = "classic" | "light";
+
 export type ReelProps = {
   events: ReelEvent[];
+  /** デザインテンプレート(省略時 classic) */
+  template?: ReelTemplate;
   /** 見出し (例: "NEW EVENTS") */
   headline: string;
   /** サブ見出し (例: "THIS WEEK · AUG 19 – 25") */
