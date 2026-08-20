@@ -147,6 +147,8 @@ export interface DanceEvent {
   // Claude API による自動翻訳結果。キーが無い/空文字の言語は原文(description)にフォールバック表示する。
   descriptionI18n?: Partial<Record<I18nLocale, string>>;
   flyerUrl?: string;
+  /** 追加画像(メインのflyerUrl以外)。イベント詳細ページにギャラリー表示する */
+  galleryUrls?: string[];
   igHandle?: string;        // @なし
   igPostUrl?: string;
   entryUrl?: string;
