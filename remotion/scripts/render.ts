@@ -23,7 +23,7 @@ const SITE_URL = process.env.SITE_URL ?? "https://worldcypher.net";
 const COMPOSITION_ID = "NewEventsReel";
 const BUCKET = "reels";
 const MAX_JOBS = Number(process.env.MAX_JOBS ?? 3);
-const MAX_EVENTS = 6;
+const MAX_EVENTS = 10;
 
 if (!SUPABASE_URL || !SERVICE_KEY) {
   console.error("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY が未設定です");
@@ -143,7 +143,10 @@ async function renderJob(job: JobRow, serveUrl: string) {
     headline: typeof params.headline === "string" && params.headline ? params.headline : "NEW EVENTS",
     subline: typeof params.subline === "string" && params.subline ? params.subline : weekLabel(new Date()),
     siteUrl: SITE_URL,
-    secondsPerEvent: typeof params.secondsPerEvent === "number" ? params.secondsPerEvent : 2.5,
+    secondsPerEvent:
+      typeof params.secondsPerEvent === "number" && Number.isFinite(params.secondsPerEvent)
+        ? Math.min(6, Math.max(1.5, params.secondsPerEvent))
+        : 2.5,
   };
 
   const composition = await selectComposition({ serveUrl, id: COMPOSITION_ID, inputProps: props });
