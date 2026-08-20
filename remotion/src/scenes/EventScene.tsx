@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import type { ReelEvent } from "../types";
+import type { ReelEvent, ReelTemplate } from "../types";
 import { COLORS, typeAccent } from "../theme";
 import { BODY_FONT, DISPLAY_FONT } from "../fonts";
 
@@ -45,11 +45,16 @@ const Chip: React.FC<{ bg: string; fg: string; children: React.ReactNode; outlin
   </span>
 );
 
-export const EventScene: React.FC<{ event: ReelEvent; index: number; total: number }> = ({
-  event,
-  index,
-  total,
-}) => {
+export const EventScene: React.FC<{
+  event: ReelEvent;
+  index: number;
+  total: number;
+  template?: ReelTemplate;
+}> = ({ event, index, total, template = "classic" }) => {
+  const light = template === "light";
+  // テンプレ別パレット(classic=黒ベース / light=白ベース)
+  const baseBg = light ? COLORS.paper : COLORS.ink;
+  const textMain = light ? COLORS.ink : COLORS.paper;
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
 
@@ -68,7 +73,7 @@ export const EventScene: React.FC<{ event: ReelEvent; index: number; total: numb
   const genres = event.genres.slice(0, 3);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.ink, opacity: fadeOut }}>
+    <AbsoluteFill style={{ backgroundColor: baseBg, opacity: fadeOut }}>
       {/* 背景: フライヤーをぼかして全面に */}
       {event.flyerUrl ? (
         <>
@@ -80,10 +85,19 @@ export const EventScene: React.FC<{ event: ReelEvent; index: number; total: numb
               width: "calc(100% + 80px)",
               height: "calc(100% + 80px)",
               objectFit: "cover",
-              filter: "blur(40px) brightness(0.45)",
+              filter: light ? "blur(40px) brightness(1.05)" : "blur(40px) brightness(0.45)",
               transform: `scale(${zoom})`,
             }}
           />
+          {light && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                backgroundColor: "rgba(245,242,236,0.72)",
+              }}
+            />
+          )}
           {/* メインのフライヤー(はみ出さず全体表示) */}
           <div
             style={{
@@ -127,7 +141,7 @@ export const EventScene: React.FC<{ event: ReelEvent; index: number; total: numb
           left: 60,
           fontFamily: DISPLAY_FONT,
           fontSize: 34,
-          color: COLORS.paper,
+          color: textMain,
           letterSpacing: 4,
           opacity: 0.9,
         }}
@@ -149,7 +163,9 @@ export const EventScene: React.FC<{ event: ReelEvent; index: number; total: numb
           right: 0,
           bottom: 0,
           height: 720,
-          background: `linear-gradient(to top, ${COLORS.ink} 0%, ${COLORS.ink} 55%, rgba(10,10,11,0) 100%)`,
+          background: light
+            ? `linear-gradient(to top, ${COLORS.paper} 0%, ${COLORS.paper} 55%, rgba(245,242,236,0) 100%)`
+            : `linear-gradient(to top, ${COLORS.ink} 0%, ${COLORS.ink} 55%, rgba(10,10,11,0) 100%)`,
           transform: `translateY(${(1 - panelIn) * 200}px)`,
           padding: "200px 70px 90px",
           display: "flex",
@@ -171,7 +187,7 @@ export const EventScene: React.FC<{ event: ReelEvent; index: number; total: numb
               fontFamily: DISPLAY_FONT,
               fontSize: 120,
               lineHeight: 0.85,
-              color: COLORS.paper,
+              color: textMain,
               letterSpacing: -2,
             }}
           >
@@ -182,7 +198,7 @@ export const EventScene: React.FC<{ event: ReelEvent; index: number; total: numb
               fontFamily: BODY_FONT,
               fontWeight: 700,
               fontSize: 36,
-              color: COLORS.paper,
+              color: textMain,
               opacity: 0.7,
               letterSpacing: 4,
               paddingBottom: 6,
@@ -197,7 +213,7 @@ export const EventScene: React.FC<{ event: ReelEvent; index: number; total: numb
             fontFamily: DISPLAY_FONT,
             fontSize: event.title.length > 28 ? 58 : 72,
             lineHeight: 1.02,
-            color: COLORS.paper,
+            color: textMain,
             letterSpacing: -1,
             opacity: textIn,
             transform: `translateY(${(1 - textIn) * 30}px)`,
@@ -211,12 +227,12 @@ export const EventScene: React.FC<{ event: ReelEvent; index: number; total: numb
         </div>
         <div style={{ marginTop: 30, opacity: textIn }}>
           {genres.map((g) => (
-            <Chip key={g} bg={COLORS.paper} fg={COLORS.paper} outline>
+            <Chip key={g} bg={textMain} fg={textMain} outline>
               {g}
             </Chip>
           ))}
           {event.region && (
-            <Chip bg={COLORS.paper} fg={COLORS.ink}>
+            <Chip bg={textMain} fg={baseBg}>
               {event.region}
             </Chip>
           )}
@@ -228,7 +244,7 @@ export const EventScene: React.FC<{ event: ReelEvent; index: number; total: numb
               fontFamily: BODY_FONT,
               fontWeight: 400,
               fontSize: 32,
-              color: COLORS.paper,
+              color: textMain,
               opacity: 0.75 * textIn,
               whiteSpace: "nowrap",
               overflow: "hidden",

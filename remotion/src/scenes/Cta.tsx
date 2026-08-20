@@ -1,9 +1,16 @@
 import React from "react";
 import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import type { ReelTemplate } from "../types";
 import { COLORS } from "../theme";
 import { BODY_FONT, DISPLAY_FONT } from "../fonts";
 
-export const Cta: React.FC<{ siteUrl: string }> = ({ siteUrl }) => {
+export const Cta: React.FC<{ siteUrl: string; template?: ReelTemplate }> = ({
+  siteUrl,
+  template = "classic",
+}) => {
+  const light = template === "light";
+  const bg = light ? COLORS.paper : COLORS.ink;
+  const fg = light ? COLORS.ink : COLORS.paper;
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   const inA = spring({ frame, fps, config: { damping: 16, stiffness: 110 } });
@@ -14,7 +21,7 @@ export const Cta: React.FC<{ siteUrl: string }> = ({ siteUrl }) => {
   const host = siteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
   return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.ink, opacity: fadeIn }}>
+    <AbsoluteFill style={{ backgroundColor: bg, opacity: fadeIn }}>
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: 80 }}>
         <div
           style={{
@@ -22,7 +29,7 @@ export const Cta: React.FC<{ siteUrl: string }> = ({ siteUrl }) => {
             fontWeight: 700,
             fontSize: 40,
             letterSpacing: 8,
-            color: COLORS.paper,
+            color: fg,
             opacity: 0.8 * inA,
             textTransform: "uppercase",
           }}
@@ -34,7 +41,7 @@ export const Cta: React.FC<{ siteUrl: string }> = ({ siteUrl }) => {
             marginTop: 40,
             fontFamily: DISPLAY_FONT,
             fontSize: 112,
-            color: COLORS.paper,
+            color: fg,
             letterSpacing: -3,
             transform: `translateY(${(1 - inB) * 50}px)`,
             opacity: inB,
@@ -50,8 +57,8 @@ export const Cta: React.FC<{ siteUrl: string }> = ({ siteUrl }) => {
             marginTop: 80,
             fontFamily: DISPLAY_FONT,
             fontSize: 48,
-            color: COLORS.ink,
-            backgroundColor: COLORS.paper,
+            color: bg,
+            backgroundColor: fg,
             padding: "18px 54px",
             borderRadius: 999,
             letterSpacing: 2,
@@ -68,14 +75,14 @@ export const Cta: React.FC<{ siteUrl: string }> = ({ siteUrl }) => {
             fontWeight: 700,
             fontSize: 34,
             letterSpacing: 5,
-            color: COLORS.paper,
+            color: fg,
             opacity: 0.6 * inC,
           }}
         >
           STREET DANCE BATTLE INFO, ONE PLACE
         </div>
         <Img
-          src={staticFile("logo-white.png")}
+          src={staticFile(light ? "logo.png" : "logo-white.png")}
           style={{ width: 360, marginTop: 60, opacity: inC }}
         />
       </AbsoluteFill>
