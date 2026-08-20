@@ -1,5 +1,7 @@
 "use client";
 
+import { useFormStatus } from "react-dom";
+
 import { useState } from "react";
 import {
   ENTRY_METHODS,
@@ -422,12 +424,23 @@ export default function EventForm({ action, defaultValues, submitLabel }: Props)
         </Field>
       </div>
 
-      <div className="flex justify-end">
-        <button type="submit" className="btn-primary">
-          {submitLabel}
-        </button>
+      <div className="flex items-center justify-end gap-3">
+        <SaveButton label={submitLabel} />
       </div>
     </form>
+  );
+}
+
+/** 送信中は「保存中...」表示＋二重押し防止。画像圧縮やアップロードで数秒かかるため必須。 */
+function SaveButton({ label }: { label: string }) {
+  const { pending } = useFormStatus();
+  return (
+    <>
+      {pending && <span className="text-sm text-ink/60">保存中... 画面が切り替わるまでお待ちください</span>}
+      <button type="submit" disabled={pending} aria-busy={pending} className="btn-primary disabled:cursor-wait disabled:opacity-50">
+        {pending ? "保存中..." : label}
+      </button>
+    </>
   );
 }
 
