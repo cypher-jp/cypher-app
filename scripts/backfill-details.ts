@@ -48,8 +48,8 @@ async function main() {
   const limit = Math.min(200, Math.max(1, Number(process.argv[2]) || 60));
   const supabase = getServiceClient();
 
-  // 詳細が全て空のイベントを対象にする(手入力済みのものは対象外)
-  const emptyFilter = DETAIL_COLUMNS.map((c) => `${c}.is.null`).join(",");
+  // 未処理(details_backfilled_atが空)のイベントのみを対象にする。
+  // 「抽出できるものが無かった」イベントにもマーカーを付けるので、同じ行を毎回再処理しない。
   const { data, error } = await supabase
     .from("events")
     .select(
@@ -57,12 +57,11 @@ async function main() {
     )
     .in("status", ["published", "pending"])
     .not("description", "is", null)
-    .or(emptyFilter)
-    .order("date", { ascending: false })
+    .is("details_backfilled_at", null)
+    .order("created_at", { ascending: false })
     .limit(limit * 2);
   if (error) throw new Error(`events fetch failed: ${error.message}`);
 
-  // .or() は「どれか1つがnull」なので、全てnullのものだけに絞り直すため再取得はせず
   // description が短すぎるものを除外してから limit 件処理する。
   const targets = (data ?? [])
     .filter((r) => typeof r.description === "string" && r.description.trim().length >= 40)
@@ -89,15 +88,19 @@ async function main() {
           patch[col] = v.trim().slice(0, 500);
         }
       }
+      // 処理済みマーカー(抽出なしでも付けて再処理を防ぐ)。
+      // このマーカーを含む更新では updated_at は変わらない(トリガー側で除外済み)。
+      const payload = { ...patch, details_backfilled_at: new Date().toISOString() };
       if (Object.keys(patch).length === 0) {
         skipped++;
         console.log(`[backfill] skip (抽出なし): ${row.title}`);
-        continue;
       }
-      const { error: upError } = await supabase.from("events").update(patch).eq("id", row.id);
+      const { error: upError } = await supabase.from("events").update(payload).eq("id", row.id);
       if (upError) throw new Error(upError.message);
-      updated++;
-      console.log(`[backfill] ok: ${row.title} → ${Object.keys(patch).join(", ")}`);
+      if (Object.keys(patch).length > 0) {
+        updated++;
+        console.log(`[backfill] ok: ${row.title} → ${Object.keys(patch).join(", ")}`);
+      }
     } catch (e) {
       failed++;
       console.warn(`[backfill] FAILED: ${row.title}: ${e instanceof Error ? e.message : e}`);
