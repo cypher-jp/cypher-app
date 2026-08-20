@@ -8,7 +8,7 @@ import { ADMIN_GENRE_LABEL } from "@/lib/admin/labels";
 import { GENRES, type EventStatus, type Genre } from "@/types/event";
 
 interface Props {
-  searchParams: { tab?: string; genre?: string; q?: string };
+  searchParams: { tab?: string; genre?: string; q?: string; noimg?: string; message?: string };
 }
 
 export default async function AdminHomePage({ searchParams }: Props) {
@@ -24,9 +24,11 @@ export default async function AdminHomePage({ searchParams }: Props) {
 
   // フリーワード検索(タイトル/会場/主催/説明)。空なら絞り込みなし。
   const q = (searchParams.q ?? "").trim().slice(0, 100);
+  // 画像(フライヤー)未設定のイベントだけに絞る(まとめて画像を入れたい時用)
+  const noimg = searchParams.noimg === "1";
 
   const [events, counts] = await Promise.all([
-    fetchAdminEvents(tab, genre, { q }),
+    fetchAdminEvents(tab, genre, { q, noFlyer: noimg }),
     fetchAdminEventCounts(),
   ]);
 
@@ -47,6 +49,11 @@ export default async function AdminHomePage({ searchParams }: Props) {
 
   return (
     <div>
+      {searchParams.message && (
+        <div className="mb-4 rounded-xl border border-cypher-green/40 bg-cypher-green/10 px-4 py-3 text-sm font-bold">
+          ✓ {searchParams.message}
+        </div>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="display text-3xl font-black">EVENTS</h1>
         <div className="flex gap-2">
@@ -96,7 +103,7 @@ export default async function AdminHomePage({ searchParams }: Props) {
       {/* ジャンル絞り込みチップ(公開中タブ含む全タブで有効) */}
       <div className="mt-4 flex flex-wrap gap-1.5">
         <Link
-          href={`/admin?tab=${tab}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+          href={`/admin?tab=${tab}${q ? `&q=${encodeURIComponent(q)}` : ""}${noimg ? "&noimg=1" : ""}`}
           className={genre === undefined ? "chip bg-ink text-paper" : "chip-outline"}
         >
           全ジャンル
@@ -104,12 +111,18 @@ export default async function AdminHomePage({ searchParams }: Props) {
         {GENRES.map((g) => (
           <Link
             key={g}
-            href={`/admin?tab=${tab}&genre=${g}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+            href={`/admin?tab=${tab}&genre=${g}${q ? `&q=${encodeURIComponent(q)}` : ""}${noimg ? "&noimg=1" : ""}`}
             className={genre === g ? "chip bg-ink text-paper" : "chip-outline"}
           >
             {ADMIN_GENRE_LABEL[g]}
           </Link>
         ))}
+        <Link
+          href={`/admin?tab=${tab}${genre ? `&genre=${genre}` : ""}${q ? `&q=${encodeURIComponent(q)}` : ""}${noimg ? "" : "&noimg=1"}`}
+          className={noimg ? "chip bg-cypher-red text-paper" : "chip-outline"}
+        >
+          画像なしのみ
+        </Link>
       </div>
 
       {tab === "pending" && duplicateGroupCount > 0 && (
