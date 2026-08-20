@@ -36,12 +36,16 @@ export async function createReelJobAction(formData: FormData) {
   // 1イベントあたりの表示秒数(2〜4秒の範囲に丸める)
   const secondsRaw = Number(formData.get("seconds"));
   const seconds = Number.isFinite(secondsRaw) ? Math.min(4, Math.max(2, secondsRaw)) : 2.5;
+  // デザインテンプレート(classic=黒ベース / light=白ベース)
+  const templateRaw = String(formData.get("template") ?? "");
+  const template = templateRaw === "light" ? "light" : "classic";
 
   const created = await insertReelJob({
     eventIds: ids,
     headline: headline || undefined,
     subline: subline || undefined,
     secondsPerEvent: seconds,
+    template,
     createdBy: user.email ?? null,
   });
   if ("error" in created) back(`ジョブ作成に失敗しました: ${created.error}`, true);

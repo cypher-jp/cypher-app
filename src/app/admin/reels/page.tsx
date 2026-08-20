@@ -65,7 +65,14 @@ export default async function AdminReelsPage({ searchParams }: Props) {
           </div>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-3">
+        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <label className="block">
+            <span className="text-xs font-bold uppercase tracking-wider text-ink/60">デザイン</span>
+            <select name="template" className="input mt-1" defaultValue="classic">
+              <option value="classic">黒ベース(標準)</option>
+              <option value="light">白ベース</option>
+            </select>
+          </label>
           <label className="block">
             <span className="text-xs font-bold uppercase tracking-wider text-ink/60">見出し(任意)</span>
             <input
