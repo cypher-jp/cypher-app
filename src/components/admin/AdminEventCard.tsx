@@ -4,6 +4,7 @@ import {
   rejectEventAction,
   toggleEntryClosedAction,
 } from "@/app/admin/actions";
+import AdminEventDetails from "@/components/admin/AdminEventDetails";
 import ShareStoryButton from "@/components/admin/ShareStoryButton";
 import SubmitButton from "@/components/admin/SubmitButton";
 import { SITE_URL } from "@/lib/site";
@@ -53,6 +54,7 @@ export default function AdminEventCard({ event }: { event: DanceEvent }) {
         {event.source && (
           <div className="mt-1 text-xs text-ink/50">出典: {event.source}</div>
         )}
+        <AdminEventDetails event={event} />
 
         <div className="mt-4 flex flex-wrap gap-2">
           {event.status !== "published" && (

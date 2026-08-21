@@ -9,6 +9,7 @@ import {
   ADMIN_REGION_LABEL,
 } from "@/lib/admin/labels";
 import type { PendingEventGroup } from "@/lib/admin/dedupe";
+import AdminEventDetails from "@/components/admin/AdminEventDetails";
 
 interface Props {
   group: PendingEventGroup;
@@ -78,6 +79,7 @@ export default function AdminEventGroupCard({
           {primary.title}
         </h3>
         <div className="mt-1 text-sm text-ink/70">{primary.date}</div>
+        <AdminEventDetails event={primary} />
         {publishedDuplicate && (
           <div className="mt-2 rounded-lg border border-cypher-red/30 bg-cypher-red/10 px-3 py-2 text-xs text-cypher-red">
             同じ開催日・タイトルのイベントが既に公開されています。このまま承認すると
