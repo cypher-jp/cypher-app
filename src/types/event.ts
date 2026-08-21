@@ -160,6 +160,8 @@ export interface DanceEvent {
   updatedAt?: string;
   /** DB上の登録日時(ISO)。カードの NEW/UPDATED バッジ判定に使う */
   createdAt?: string;
+  /** 公開(承認)日時(ISO)。NEWバッジは「公開から7日間」で判定する */
+  publishedAt?: string;
   // ---- 詳細情報(任意・自由記述。Instagram取り込みのAI抽出/管理画面で入力) ----
   /** 開場・開始時刻など(例: OPEN 12:00 / START 13:00) */
   timeInfo?: string;
