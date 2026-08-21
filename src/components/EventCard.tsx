@@ -4,21 +4,23 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { getEventGenres, type DanceEvent } from "@/types/event";
 
-/** NEW / UPDATED バッジ判定。登録(created_at)から7日以内なら NEW、
- *  それ以外で最終更新(updated_at)が7日以内かつ登録から1日以上あとなら UPDATED。 */
+/** NEW / UPDATED バッジ判定。公開(承認)から7日以内なら NEW、
+ *  それ以外で最終更新(updated_at)が7日以内かつ公開から1日以上あとなら UPDATED。
+ *  published_at が無い旧データは登録日時(created_at)で近似する。 */
 export function getFreshness(
-  event: Pick<DanceEvent, "createdAt" | "updatedAt">,
+  event: Pick<DanceEvent, "createdAt" | "updatedAt" | "publishedAt">,
   now: number = Date.now(),
 ): "new" | "updated" | null {
   const WEEK = 7 * 24 * 60 * 60 * 1000;
   const DAY = 24 * 60 * 60 * 1000;
-  const created = event.createdAt ? Date.parse(event.createdAt) : NaN;
+  const base = event.publishedAt ?? event.createdAt;
+  const published = base ? Date.parse(base) : NaN;
   const updated = event.updatedAt ? Date.parse(event.updatedAt) : NaN;
-  if (!Number.isNaN(created) && now - created < WEEK) return "new";
+  if (!Number.isNaN(published) && now - published < WEEK) return "new";
   if (
     !Number.isNaN(updated) &&
     now - updated < WEEK &&
-    (Number.isNaN(created) || updated - created > DAY)
+    (Number.isNaN(published) || updated - published > DAY)
   )
     return "updated";
   return null;
