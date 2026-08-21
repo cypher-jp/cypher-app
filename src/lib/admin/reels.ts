@@ -67,8 +67,9 @@ export async function fetchReelCandidates(): Promise<
   const seen = new Set<string>();
   const decorate = (row: Record<string, unknown>, isPast: boolean) => {
     const ev = rowToEvent(row);
-    const created = ev.createdAt ? Date.parse(ev.createdAt) : NaN;
-    return { ...ev, isNew: !Number.isNaN(created) && created >= threshold, isPast };
+    const base = ev.publishedAt ?? ev.createdAt;
+    const published = base ? Date.parse(base) : NaN;
+    return { ...ev, isNew: !Number.isNaN(published) && published >= threshold, isPast };
   };
   const result: (DanceEvent & { isNew: boolean; isPast: boolean })[] = [];
   for (const row of upcoming.data ?? []) {
