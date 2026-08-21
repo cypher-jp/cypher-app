@@ -61,6 +61,7 @@ export function rowToEvent(row: Record<string, unknown>): DanceEvent {
     source: row.source ? String(row.source) : undefined,
     updatedAt: row.updated_at ? String(row.updated_at) : undefined,
     createdAt: row.created_at ? String(row.created_at) : undefined,
+    publishedAt: row.published_at ? String(row.published_at) : undefined,
     timeInfo: optText(row.time_info),
     format: optText(row.format),
     entryFee: optText(row.entry_fee),
