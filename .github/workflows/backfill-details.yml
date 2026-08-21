@@ -12,6 +12,10 @@ on:
         description: "1回で処理する最大件数 (既定60)"
         required: false
         default: "60"
+      mode:
+        description: "空=未処理を処理 / sparse=処理済みでも詳細が空の行を大元サイトから再抽出"
+        required: false
+        default: ""
 
 jobs:
   backfill:
@@ -31,7 +35,7 @@ jobs:
         run: npm ci
 
       - name: Run backfill
-        run: npx tsx scripts/backfill-details.ts ${{ github.event.inputs.limit }}
+        run: npx tsx scripts/backfill-details.ts ${{ github.event.inputs.limit || 60 }} ${{ github.event.inputs.mode }}
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
