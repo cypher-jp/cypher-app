@@ -6,6 +6,7 @@ name: Backfill event details
 on:
   schedule:
     - cron: "30 22 * * *" # UTC 22:30 = JST 7:30 (朝のスクレイプ完了後に新規イベントの詳細を埋める)
+    - cron: "0 23 * * *" # UTC 23:00 = JST 8:00 (公開中の今後イベントを順繰りに再チェック=refreshモード)
   workflow_dispatch:
     inputs:
       limit:
@@ -13,7 +14,7 @@ on:
         required: false
         default: "60"
       mode:
-        description: "空=未処理を処理 / sparse=処理済みでも詳細が空の行を大元サイトから再抽出"
+        description: "空=未処理を処理 / sparse=詳細が空の行を再抽出 / refresh=公開中イベントを順繰りに再チェック"
         required: false
         default: ""
 
@@ -35,7 +36,8 @@ jobs:
         run: npm ci
 
       - name: Run backfill
-        run: npx tsx scripts/backfill-details.ts ${{ github.event.inputs.limit || 60 }} ${{ github.event.inputs.mode }}
+        # 8:00 JSTのcronはrefreshモード(25件)、7:30 JSTのcronと手動実行は従来どおり
+        run: npx tsx scripts/backfill-details.ts ${{ github.event.schedule == '0 23 * * *' && 25 || (github.event.inputs.limit || 60) }} ${{ github.event.schedule == '0 23 * * *' && 'refresh' || github.event.inputs.mode }}
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
