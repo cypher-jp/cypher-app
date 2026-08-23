@@ -334,7 +334,7 @@ export default async function EventDetailPage({ params }: PageProps) {
                       src={url}
                       alt=""
                       loading="lazy"
-                      className="aspect-[4/3] w-full rounded-xl object-cover shadow-card transition hover:opacity-90"
+                      className="aspect-[3/4] w-full rounded-xl object-cover shadow-card transition hover:opacity-90"
                     />
                   </a>
                 ))}
