@@ -1,9 +1,10 @@
-# Instagram 2タップ取り込み — Make.com シナリオ設計書
+# 【廃止】Instagram 2タップ取り込み — Make.com シナリオ設計書
 
-**対象**: T3(Phase 4)。`docs/STATUS_AND_NEXT.md` 参照。
-**確定方針**: Instagramの自動巡回スクレイピングは規約違反のため実装しない。
-本ドキュメントは「オーナーが投稿を見つけるたびに手動で共有する」2タップ取り込みの設計のみを扱う。
-実際のMake.comシナリオ構築・Anthropic/Supabaseの接続設定は、本書を見ながらオーナー自身が行う。
+> **⚠️ このドキュメントは廃止済み(2026-08-19)。**
+> Make.com シナリオは自前API `/api/ingest/instagram`(Gemini抽出・INGEST_SECRET認証)に置き換え済み。
+> iOSショートカットは現在このAPIへ直接POSTしており、Make.comは使っていない(アカウントは安定確認後に削除予定)。
+> 現行の仕組みは `docs/STATUS_AND_NEXT.md` と `src/app/api/ingest/instagram/route.ts` のコメントを参照。
+> 以下は当時の設計の記録として残す。
 
 ---
 

@@ -1,99 +1,93 @@
 # WORLD Cypher. 進捗サマリと次のタスク
 
-**更新**: 2026-07-13 / **用途**: 今後の実装をClaude Sonnetに依頼する際の引き継ぎ資料。
-まず本書を読み、詳細仕様は `docs/IMPLEMENTATION_PLAN.md`、収益戦略は `docs/MONETIZATION.md` を参照。
+**更新**: 2026-08-23 / **用途**: 今後の実装をClaudeに依頼する際の引き継ぎ資料。
+まず本書を読み、運用ルール・コーディング規約は `docs/IMPLEMENTATION_PLAN.md`、収益戦略は `docs/MONETIZATION.md`、スクレイパー対象は `docs/scraper-sources.md` を参照。
 
 ---
 
-## 1. 完成済み（本番稼働中）
+## 1. 完成済み(本番稼働中)
 
 | 項目 | 状態 |
 |------|------|
-| 公開サイト | https://cypher-app-tawny.vercel.app （リブランド済み「WORLD Cypher.」、バトル特化UI） |
+| 公開サイト | https://worldcypher.net (独自ドメイン接続済み。「WORLD Cypher.」バトル特化UI) |
 | 多言語 | ja(デフォルト)/en/ko/zh/fr。next-intl、`/[locale]/` ルーティング、hreflang対応 |
-| DB | Supabase (project: qvzamnypgjyipyneeqgs)。schema + 003_admin + 004_scraper_i18n 適用済み |
-| 管理画面 | `/admin`（Supabase Auth）。pending承認→公開、手動登録、画像アップロード |
-| スクレイパー | `scripts/scrape.ts`。et-stageバトル一覧3ページ(40件上限)→Claude抽出→5言語翻訳→pending投入。フライヤー画像(og:image/一覧サムネ)とIGアカウント抽出対応 |
-| 自動実行 | GitHub Actions 毎朝JST6:00（`.github/workflows/scrape.yml`、Node 22）。Secrets: SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY / ANTHROPIC_API_KEY 設定済み |
-| 翻訳 | イベント説明文は `description_i18n` (jsonb)。表示は `src/lib/eventI18n.ts` でロケール出し分け |
+| 公開ページ | ホーム(今後開催のみ) / events/[id] 詳細(GALLERYセクション付き) / calendar / **archive(過去イベント)** / **articles(記事)** / listing(掲載案内) / contact / privacy |
+| DB | Supabase (project: qvzamnypgjyipyneeqgs)。migrations 003〜010 適用済み + MCP直接適用分(下記「DB追加変更」参照) |
+| 地域区分 | 地方ブロック+都道府県+海外都市/国の階層型 Region(旧T1完了)。フィルタは国内/海外グループ表示 |
+| 管理画面 | `/admin`(Supabase Auth)。pending承認→公開 / 手動登録 / フライヤー+**複数ギャラリー画像**アップロード(自動圧縮) / 検索・ジャンル・開催終了・**画像なしのみ**フィルタ / カードに**AI抽出済み詳細のダイジェスト表示** / 保存中表示+「✓ 保存しました」バナー / 記事管理(/admin/articles) / お問い合わせ一覧(/admin/contacts) |
+| NEW/UPDATEDバッジ | **承認(公開)ベース**。`published_at`(初回公開時にトリガーで自動記録)から7日以内=NEW、公開後に実質更新があればUPDATED。AIバックフィルによる更新ではUPDATEDは付かない(トリガーで除外) |
+| スクレイパー | 22ソース(et-stage・breaking-calendar・and8・choomza・dance-delight ほか。詳細は `docs/scraper-sources.md`)。毎朝JST6:00に GitHub Actions で自動実行 → Gemini抽出 → 5言語翻訳 → pending投入 |
+| AI詳細バックフィル | `scripts/backfill-details.ts`。**source_url/entry_urlの大元ページを実際にフェッチ**して judges/djs/entry_fee/time_info 等を抽出し、空欄のみ埋める(手入力保護)。毎朝JST7:30(スクレイプ後)に自動実行。`details_backfilled_at` マーカーで再処理防止。sparseモードで再抽出も可 |
+| Instagram取り込み | iOSショートカット → `/api/ingest/instagram`(自前API・Gemini抽出)→ pending投入。**Make.comは2026-08-19に置き換え済みで不要**(docs/make-scenario.md は廃止) |
+| リール自動生成 | `/admin/reels`。イベント選択(新着/今週/今月/今後/過去/すべて × ジャンル × 画像ありのみ、最大10件)→ Remotion + GitHub Actions(無料)でレンダリング → Supabase Storage(reels)。デザイン2種(classic黒/light白)、1件2〜4秒、見出し/サブ見出し編集可。生成履歴から再生/DL/**「スマホに保存」(iPhone写真アプリへ)**/再生成/削除。ジョブは30分毎の定期実行で処理(即時起動は GITHUB_DISPATCH_TOKEN 未設定のため保留) |
+| 記事機能 | `/[locale]/articles`(Supabase articlesテーブル+admin編集)。マネタイズ導線の枠(旧T4完了) |
 
 ### インフラ構成
-GitHub (cypher-jp/cypher-app, Public) → Vercel (team: cypher-jps-projects, project: worldcypher) 自動デプロイ → Supabase。
-オーナーは非エンジニア。**git CLIは使わず、GitHub Webのファイルアップロード（ドラッグ&ドロップ）で反映**する運用。`.github` 等の隠しフォルダはWeb UIの「Create new file」で作る。
 
-### 運用ルーティン（オーナー）
-毎朝 `/admin` を開き、新着pendingの内容確認（特に地域・日付）→必要なら編集→承認。
+GitHub (cypher-jp/cypher-app, main) → Vercel (Hobby) 自動デプロイ → Supabase。独自ドメイン worldcypher.net。
+オーナーは非エンジニア。**コード反映は全てブラウザ(GitHub Web UIの編集/アップロード)**。現在はClaude(Cowork)がChromeを操作してコミットする運用。
 
----
+### GitHub Actions(3本)
 
-## 2. 次のタスク（優先順）
+| workflow | スケジュール | 内容 |
+|---|---|---|
+| scrape.yml | 毎朝JST6:00 | 22ソースのスクレイピング→pending投入 |
+| backfill-details.yml | 毎朝JST7:30 | 新着イベントの詳細をAI抽出(大元ページ参照)。手動実行でlimit/sparse指定可 |
+| render-reel.yml | 30分毎+repository_dispatch | queuedなリールジョブをRemotionでレンダリング |
 
-### T1: 地域を「地方ブロック」区分に再設計【最優先】
+### DB追加変更(migrationsフォルダ外・Supabase MCPで直接適用済み)
 
-**背景**: 現在の `Region` は都市単位（tokyo/osaka/nagoya...）で粗く、神奈川開催が「東京」と誤分類される。et-stage側は都道府県で持っている。
+`supabase/migrations/` は 010 まで。それ以降は以下をMCP経由で直接適用済み(SQLファイル未作成。次にファイルを作るなら 011_ から):
 
-**新しい区分（オーナー指定・当面はこれ）:**
+1. **reel_jobs** テーブル(+RLS、`reels` バケット公開読み取り) — リール生成ジョブ
+2. **events.gallery_urls** text[] — ギャラリー複数画像
+3. **events.details_backfilled_at** + `touch_events_updated_at()` の除外ロジック — バックフィル処理済みマーカー(UPDATEDバッジ誤発火防止)
+4. **events.published_at** + `set_events_published_at()` トリガー — 初回公開日時(NEWバッジの基準。再公開でも初回日時を維持)
 
-| key | ラベル(ja) | 含む都道府県 |
-|-----|-----------|--------------|
-| hokkaido | 北海道 | 北海道 |
-| tohoku | 東北 | 青森 岩手 宮城 秋田 山形 福島 |
-| kanto | 関東 | 東京 神奈川 千葉 埼玉 茨城 栃木 群馬 |
-| hokuriku | 北陸・甲信越 | 新潟 富山 石川 福井 山梨 長野 |
-| tokai | 東海 | 愛知 岐阜 静岡 三重 |
-| kansai | 関西 | 大阪 京都 兵庫 奈良 滋賀 和歌山 |
-| chugoku | 中国 | 鳥取 島根 岡山 広島 山口 |
-| shikoku | 四国 | 徳島 香川 愛媛 高知 |
-| kyushu | 九州・沖縄 | 福岡 佐賀 長崎 熊本 大分 宮崎 鹿児島 沖縄 |
-| online | オンライン | ONLINE開催 |
-| korea / taiwan / asia / us / eu / other | 韓国/台湾/アジア/アメリカ/ヨーロッパ/その他 | 海外 |
+### 運用ルーティン(オーナー)
 
-**実装範囲:**
-1. `src/types/event.ts` の Region 型・REGIONS・REGION_LABEL を上記に変更
-2. `messages/{ja,en,ko,zh,fr}.json` の region ラベルを5言語分更新
-3. FilterBar の地域セレクト（表示順は上表の順）
-4. `scripts/lib/extract.ts` のプロンプト: 「会場の都道府県を読み取り、上記マッピングで地方ブロックに変換する」旨のルールを明記（都道府県→ブロックの対応表をプロンプトに含める）
-5. 既存データ移行SQL `supabase/migrations/005_regions.sql`: tokyo→kanto, osaka→kansai, nagoya→tokai, fukuoka→kyushu, sapporo→hokkaido, okinawa→kyushu に update
-6. **将来**: `prefecture` カラム追加で県単位フィルタに拡張予定（今回はやらない。ただしextractプロンプトで都道府県名を description に残すよう配慮）
+毎朝 `/admin` で新着pendingを確認(カードのAI抽出詳細ダイジェストで中身が見える)→必要なら編集→承認。
+週1程度で `/admin/reels` からリール生成→「スマホに保存」→Instagram投稿。
 
-### T2: 公開サイトの鮮度改善（小・T1と同時でよい）
-- `fetchEvents` で `date >= 今日` のみ表示（過去イベントの自動非表示）
-- 管理画面に「開催終了」の絞り込み
+### 環境変数・Secrets(設定済み)
 
-### T3: Phase 4 — Instagram 2タップ取り込み
-- iOS共有シート → Make.com Webhook → Claude API（フライヤー画像→構造化+翻訳）→ Supabase pending
-- リポジトリに `docs/make-scenario.md`（シナリオ構成・プロンプト・ペイロード仕様）を作成し、Make.com側の設定はオーナーがそれを見て構築
-- ※Instagramの自動スクレイピングは規約違反のため実装しない（確定方針）
-
-### T4: 記事機能＋アフィリ導線（収益化の入口）
-- `/[locale]/articles` セクション（MDX or Supabaseテーブル）
-- イベント詳細⇄記事の相互リンク枠
-- 詳細は `docs/MONETIZATION.md` 参照（スクール送客が本命、遠征系クレカアフィリが補助）
-
-### T5: 小物（隙間時間に）
-- `public/logo.png` 配置＋Header差し替え（コード内にコメント済み）
-- 独自ドメイン取得・接続（worldcypher.com 等）
-- サンプルイベント（source が null で日付が過去のもの）の削除
-- スクレイパー対象サイトの追加（`scripts/sources/` に1ファイル追加して `scrape.ts` の SOURCES に登録するだけの設計になっている）
+- GitHub Actions Secrets: SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY / GEMINI_API_KEY / (GEMINI_MODEL) / ANTHROPIC_API_KEY
+- Vercel: NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY / GEMINI_API_KEY / INGEST_SECRET / NEXT_PUBLIC_SITE_URL
+- **注意**: Gemini無料枠の日次クォータは毎日16〜17時(JST)頃リセット。バックフィルが大量失敗したらクォータ切れを疑う(マーカーで進捗は保持されるので翌日以降自動リカバリ)
 
 ---
 
-## 3. Sonnetへの依頼方法（テンプレ）
+## 2. 残タスク(優先順)
 
-新しいセッションで以下を伝える:
+### T1: リール即時生成(小・任意)
+GITHUB_DISPATCH_TOKEN(GitHub PAT, repo dispatch権限)を作成しVercelの環境変数へ登録すると、「Generate Reel」押下で即レンダリング開始になる(現在は最大30分待ち)。**PATの発行とVercelへの貼り付けはオーナー自身が行う**(Claudeはシークレットを入力しない)。
 
-```
-/Users/MARU/Documents/cypher-app-main が対象リポジトリ。
-まず docs/STATUS_AND_NEXT.md を読んで全体像を把握して。
-今回は T1（地域の地方ブロック再設計）を実装して。
-制約: TypeScript strict・any禁止 / 新規依存の追加は事前確認 /
-既存のデザイントークン(cypher-red等)踏襲 / 完了時に npm run build を通すこと。
-GitHubへの反映はオーナーがWeb UIで行うので、git操作はしないこと。
-変更ファイル一覧と、オーナーがやるべき手作業（SQL実行等）を最後に報告して。
-```
+### T2: 下書き・スカスカ詳細イベントの手入力整理(継続)
+- 詳細が埋まらない一部イベント(2026-08-22時点で約77件)は大元ページ自体に情報が無いもの。adminカードの「詳細情報なし」表示が目印。急ぎのものだけ編集から手入力
+- 未公開の下書きイベントの整理・再公開
 
-**重要な注意（Sonnet向け）:**
-- Supabaseの service role キーはサーバー/CI専用。`NEXT_PUBLIC_` に入れない・コードに書かない
-- スクレイパーは robots.txt 遵守・2秒間隔・UA明記（`scripts/lib/fetch.ts` を必ず経由）
-- published のレコードをスクレイパーが上書きしない設計を維持
-- マイグレーションSQLはファイル作成のみ（実行はオーナーがSQL Editorで）
+### T3: Make.comアカウント削除(2026-08-26以降)
+自前API置き換え(8/19)後1週間安定していれば、Makeアカウントは削除してよい。
+
+### T4: マネタイズ施策(未着手・本丸)
+記事×アフィリ枠は実装済み。中身(スクール送客・遠征系記事)は `docs/MONETIZATION.md` 参照。
+
+### T5: 小物
+- 多言語バックフィル(古いIG取り込みイベントの description_i18n 補完)
+- スクレイパー対象サイトの追加(`docs/scraper-sources.md` の候補から)
+
+---
+
+## 3. Claudeへの依頼方法
+
+新しいセッションで「まず docs/STATUS_AND_NEXT.md を読んで」と伝えれば全体像が入る。
+
+**重要な注意(Claude向け):**
+- オーナーは非エンジニア。git CLI不可。反映はGitHub Web UI(Claudeがブラウザ操作)
+- **APIキー・シークレットをClaudeがフォームに入力しない**(オーナーが貼り付ける。Claudeは項目名の準備とSaveのみ)
+- Supabaseのservice roleキーは `NEXT_PUBLIC_` に入れない・コードに書かない
+- スクレイパーは robots.txt 遵守・2秒間隔・UA明記(`scripts/lib/fetch.ts` 経由必須)
+- published レコードをスクレイパーが上書きしない設計を維持
+- AIバックフィルは**空欄のみ**埋める(手入力保護)。`details_backfilled_at` を必ず付ける
+- UI文言の追加は5言語(messages/*.json)すべて更新
+- DBスキーマ変更はMCPで適用したら**本書の「DB追加変更」に必ず追記**する
