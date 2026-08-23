@@ -7,6 +7,9 @@
  * 実行:
  *   npx tsx scripts/backfill-details.ts [limit]          … 未処理(details_backfilled_atが空)を処理
  *   npx tsx scripts/backfill-details.ts [limit] sparse   … 処理済みでも詳細がスカスカな行を再抽出
+ *   npx tsx scripts/backfill-details.ts [limit] refresh  … 公開中の今後イベントを順繰りに再チェック
+ *                                                          (後から解禁されたJUDGE/DJ/料金等の空欄を追加で埋める。
+ *                                                           処理が古い順に回すので全件が定期的に巡回される)
  *
  * 必要な環境変数: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, GEMINI_API_KEY (or ANTHROPIC_API_KEY)
  */
@@ -85,8 +88,11 @@ type Row = Record<string, unknown> & { id: string; title: string };
 
 async function main() {
   const limit = Math.min(200, Math.max(1, Number(process.argv[2]) || 60));
-  const sparseMode = process.argv[3] === "sparse";
+  const mode = process.argv[3] === "sparse" ? "sparse" : process.argv[3] === "refresh" ? "refresh" : "normal";
+  const sparseMode = mode === "sparse";
+  const refreshMode = mode === "refresh";
   const supabase = getServiceClient();
+  const todayJst = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
   const select =
     "id,title,date,venue,description,status,source_url,entry_url,time_info,format,entry_fee,audience_fee,entry_slots,judges,djs,mc,prize,organizer";
@@ -100,24 +106,54 @@ async function main() {
       .order("created_at", { ascending: false })
       .limit(limit * 2);
 
-  // sparse = 処理済みだが主要項目がほぼ空 & 参照できるページがある行を再抽出。
-  // normal = 未処理(details_backfilled_atが空)の行のみ。
-  const { data, error } = sparseMode
-    ? await base()
-        .not("details_backfilled_at", "is", null)
-        .is("judges", null)
-        .is("djs", null)
-        .is("entry_fee", null)
-        .is("time_info", null)
+  // sparse  = 処理済みだが主要項目がほぼ空 & 参照できるページがある行を再抽出。
+  // refresh = 公開中の今後イベントを「処理が古い順」に再チェック(後から解禁された情報で空欄を埋める)。
+  // normal  = 未処理(details_backfilled_atが空)の行のみ。
+  const { data, error } = refreshMode
+    ? await supabase
+        .from("events")
+        .select(select)
+        .eq("status", "published")
+        .gte("date", todayJst)
         .not("source_url", "is", null)
-    : await base().is("details_backfilled_at", null);
+        .not("description", "is", null)
+        .order("details_backfilled_at", { ascending: true, nullsFirst: true })
+        .limit(limit * 2)
+    : sparseMode
+      ? await base()
+          .not("details_backfilled_at", "is", null)
+          .is("judges", null)
+          .is("djs", null)
+          .is("entry_fee", null)
+          .is("time_info", null)
+          .not("source_url", "is", null)
+      : await base().is("details_backfilled_at", null);
   if (error) throw new Error(`events fetch failed: ${error.message}`);
 
-  const targets = (data ?? [])
-    .filter((r) => typeof r.description === "string" && String(r.description).trim().length >= 20)
-    .slice(0, limit) as Row[];
+  const candidates = (data ?? []).filter(
+    (r) => typeof r.description === "string" && String(r.description).trim().length >= 20,
+  ) as Row[];
 
-  console.log(`[backfill] 対象 ${targets.length} 件 (limit=${limit}, mode=${sparseMode ? "sparse" : "normal"})`);
+  // refresh: 全項目が既に埋まっている行はGeminiを呼ぶ意味がないのでスキップ。
+  // ただし巡回が止まらないよう、マーカーだけ更新して次回は別の行が対象になるようにする。
+  if (refreshMode) {
+    const fullIds = candidates
+      .filter((r) => !DETAIL_COLUMNS.some((c) => r[c] == null))
+      .map((r) => r.id);
+    if (fullIds.length > 0) {
+      await supabase
+        .from("events")
+        .update({ details_backfilled_at: new Date().toISOString() })
+        .in("id", fullIds);
+      console.log(`[backfill] 全項目入力済みのためスキップ(マーカーのみ更新): ${fullIds.length} 件`);
+    }
+  }
+
+  const targets = candidates
+    .filter((r) => !refreshMode || DETAIL_COLUMNS.some((c) => r[c] == null))
+    .slice(0, limit);
+
+  console.log(`[backfill] 対象 ${targets.length} 件 (limit=${limit}, mode=${mode})`);
   let updated = 0;
   let skipped = 0;
   let failed = 0;
