@@ -97,7 +97,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const flyerUrl = uploadedUrls[0];
   const galleryUrls = uploadedUrls.slice(1);
 
-  // --- DB登録(pending) ---
+  // --- DB登録(pending)。同じIG投稿の既存行があれば下でマージに切り替える ---
   const row = {
     title: text(extracted.title) ?? "(無題)",
     type: pick(extracted.type, ["battle", "contest", "showcase", "workshop", "audition", "festival"], "battle"),
@@ -137,6 +137,57 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     status: "pending",
     source: "instagram",
   };
+
+  // --- 同じIG投稿の再送信はマージ(重複イベントを作らない) ---
+  // 送り直し(サイズ超過で一部失敗した後など)や画像の追加送信でイベントが二重にならないよう、
+  // 投稿ショートコードが一致する既存行があれば「画像の追加 + 空欄の補完」だけを行う。
+  const shortcode = igPostUrl.match(/\/(?:p|reel|reels|tv)\/([A-Za-z0-9_-]+)/)?.[1] ?? null;
+  if (shortcode) {
+    const { data: existing } = await supabase
+      .from("events")
+      .select("*")
+      .like("ig_post_url", `%/${shortcode}%`)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (existing) {
+      const ex = existing as Record<string, unknown>;
+      const patch: Record<string, unknown> = {};
+      // 画像: フライヤーが無ければ1枚目を充て、残りをギャラリーへ(URL重複は除外)
+      const exFlyer = ex.flyer_url ? String(ex.flyer_url) : null;
+      const exGallery = Array.isArray(ex.gallery_urls) ? (ex.gallery_urls as string[]) : [];
+      const incoming = [...uploadedUrls];
+      const newFlyer = exFlyer ?? incoming.shift() ?? null;
+      if (!exFlyer && newFlyer) patch.flyer_url = newFlyer;
+      const mergedGallery = [...exGallery];
+      for (const u of incoming) {
+        if (u !== newFlyer && !mergedGallery.includes(u)) mergedGallery.push(u);
+      }
+      if (mergedGallery.length !== exGallery.length) patch.gallery_urls = mergedGallery;
+      // 空欄の項目だけ今回の抽出結果で補完(管理画面で手直しした値は守る)
+      for (const [k, v] of Object.entries(row)) {
+        if (["status", "source", "flyer_url", "gallery_urls", "ig_post_url"].includes(k)) continue;
+        if (v == null || v === "") continue;
+        if (ex[k] == null || ex[k] === "") patch[k] = v;
+      }
+      // 一度draft(非表示)にした投稿をもう一度共有した場合は、承認待ちに戻す
+      if (ex.status === "draft") patch.status = "pending";
+      if (Object.keys(patch).length > 0) {
+        const { error: upError } = await supabase.from("events").update(patch).eq("id", String(ex.id));
+        if (upError) {
+          return NextResponse.json({ ok: false, stage: "db", error: upError.message }, { status: 502 });
+        }
+      }
+      return NextResponse.json({
+        ok: true,
+        id: ex.id,
+        title: String(ex.title ?? ""),
+        merged: true,
+        images: uploadedUrls.length,
+      });
+    }
+  }
+
   const { data, error: insErr } = await supabase.from("events").insert(row).select("id,title").single();
   if (insErr || !data) {
     return NextResponse.json(
