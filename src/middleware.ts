@@ -17,13 +17,26 @@ export default async function middleware(request: NextRequest) {
   // /admin はi18nルーティングの対象外(日本語のみ・ロケールプレフィックスなし)。
   // Supabase Authのセッションを確認し、未ログインなら /admin/login へ。
   if (pathname.startsWith("/admin")) {
-    return handleAdminAuth(request);
+    return handleAuthArea(request, "/admin/login", ["/admin/login"]);
+  }
+
+  // /organizer(主催者ポータル)も/adminと同じくロケール外・要ログイン。
+  // ログイン画面と登録申請画面だけは未ログインでも開ける。
+  if (pathname.startsWith("/organizer")) {
+    return handleAuthArea(request, "/organizer/login", [
+      "/organizer/login",
+      "/organizer/apply",
+    ]);
   }
 
   return intlMiddleware(request);
 }
 
-async function handleAdminAuth(request: NextRequest) {
+async function handleAuthArea(
+  request: NextRequest,
+  loginPath: string,
+  publicPaths: string[],
+) {
   const { pathname } = request.nextUrl;
   let response = NextResponse.next({ request });
 
@@ -32,8 +45,8 @@ async function handleAdminAuth(request: NextRequest) {
 
   // Supabase未設定の環境ではログインチェックをスキップしない(安全側に倒し、常にログイン画面へ)。
   if (!url || !anonKey) {
-    if (pathname !== "/admin/login") {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
+    if (!publicPaths.includes(pathname)) {
+      return NextResponse.redirect(new URL(loginPath, request.url));
     }
     return response;
   }
@@ -59,14 +72,14 @@ async function handleAdminAuth(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isLoginPage = pathname === "/admin/login";
+  const isPublicPage = publicPaths.includes(pathname);
 
-  if (!user && !isLoginPage) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
+  if (!user && !isPublicPage) {
+    return NextResponse.redirect(new URL(loginPath, request.url));
   }
 
-  if (user && isLoginPage) {
-    return NextResponse.redirect(new URL("/admin", request.url));
+  if (user && pathname === loginPath) {
+    return NextResponse.redirect(new URL(loginPath.replace(/\/login$/, ""), request.url));
   }
 
   return response;
