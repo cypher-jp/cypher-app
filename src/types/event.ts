@@ -162,6 +162,15 @@ export interface DanceEvent {
   createdAt?: string;
   /** 公開(承認)日時(ISO)。NEWバッジは「公開から7日間」で判定する */
   publishedAt?: string;
+  // ---- サイト内エントリー受付(オーガナイザー機能) ----
+  /** このイベントを登録した主催者アカウントのID(オーナー登録・スクレイプ分はundefined) */
+  organizerId?: string;
+  /** サイト内エントリーフォームを表示するか */
+  acceptEntries?: boolean;
+  /** エントリー定員(未設定=無制限)。超過分は自動でキャンセル待ちになる */
+  entryCapacity?: number;
+  /** エントリー部門(例: ["BREAKING 1on1", "HIPHOP 2on2"])。空なら部門なし */
+  entryCategories?: string[];
   // ---- 詳細情報(任意・自由記述。Instagram取り込みのAI抽出/管理画面で入力) ----
   /** 開場・開始時刻など(例: OPEN 12:00 / START 13:00) */
   timeInfo?: string;
