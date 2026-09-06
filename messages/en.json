@@ -301,5 +301,33 @@
     "consentAfter": ".",
     "sent": "Sent! We'll get back to you soon.",
     "error": "Failed to send. Please check your email and message, then try again."
+  },
+  "entry": {
+    "title": "ENTRY",
+    "closed": "Entry is closed.",
+    "remaining": "{count} spots left",
+    "fullWaitlist": "Full — you can still join the waitlist",
+    "deadlineNote": "Entry deadline: {date}",
+    "fieldName": "Name",
+    "fieldDancerName": "Dancer name",
+    "fieldCrew": "Crew / team",
+    "fieldCategory": "Category",
+    "fieldEmail": "Email",
+    "submit": "Enter now",
+    "submitting": "Sending...",
+    "successEntered": "You're in! Entry completed.",
+    "successWaitlisted": "Added to the waitlist. You'll be moved up automatically when a spot opens.",
+    "cancelLinkNote": "To cancel your entry, open this link (save it before leaving this page):",
+    "cancelLinkLabel": "Cancel page",
+    "errorClosed": "Entry is closed.",
+    "errorDuplicate": "This email has already entered.",
+    "errorInvalid": "Please check your input.",
+    "errorGeneric": "Something went wrong. Please try again later.",
+    "cancelTitle": "Cancel entry",
+    "cancelConfirm": "Cancel this entry? This cannot be undone.",
+    "cancelButton": "Cancel my entry",
+    "cancelDone": "Your entry has been cancelled.",
+    "cancelNotFound": "This link is invalid. It may already be cancelled.",
+    "backToTop": "Back to top"
   }
 }

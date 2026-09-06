@@ -301,5 +301,33 @@
     "consentAfter": "에 동의한 것으로 간주됩니다.",
     "sent": "전송되었습니다. 확인 후 연락드리겠습니다!",
     "error": "전송에 실패했습니다. 이메일과 내용을 확인하고 다시 시도해 주세요."
+  },
+  "entry": {
+    "title": "ENTRY",
+    "closed": "엔트리 접수가 마감되었습니다.",
+    "remaining": "남은 자리 {count}",
+    "fullWaitlist": "정원 마감 — 대기자로 신청할 수 있습니다",
+    "deadlineNote": "엔트리 마감: {date}",
+    "fieldName": "이름",
+    "fieldDancerName": "댄서 네임",
+    "fieldCrew": "크루/팀",
+    "fieldCategory": "부문",
+    "fieldEmail": "이메일",
+    "submit": "엔트리하기",
+    "submitting": "전송 중...",
+    "successEntered": "엔트리가 완료되었습니다!",
+    "successWaitlisted": "대기자로 접수되었습니다. 자리가 나면 자동으로 확정됩니다.",
+    "cancelLinkNote": "취소하려면 아래 링크를 열어주세요(페이지를 닫기 전에 저장 권장):",
+    "cancelLinkLabel": "취소 페이지",
+    "errorClosed": "엔트리 접수가 마감되었습니다.",
+    "errorDuplicate": "이 이메일은 이미 엔트리되어 있습니다.",
+    "errorInvalid": "입력 내용을 확인해주세요.",
+    "errorGeneric": "전송에 실패했습니다. 잠시 후 다시 시도해주세요.",
+    "cancelTitle": "엔트리 취소",
+    "cancelConfirm": "이 엔트리를 취소하시겠습니까? 되돌릴 수 없습니다.",
+    "cancelButton": "취소하기",
+    "cancelDone": "엔트리가 취소되었습니다.",
+    "cancelNotFound": "유효하지 않은 링크입니다. 이미 취소되었을 수 있습니다.",
+    "backToTop": "메인으로"
   }
 }

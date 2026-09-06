@@ -301,5 +301,33 @@
     "consentAfter": "に同意したものとみなします。",
     "sent": "送信しました。内容を確認してご連絡します!",
     "error": "送信に失敗しました。メールアドレスと内容を確認して、もう一度お試しください。"
+  },
+  "entry": {
+    "title": "ENTRY",
+    "closed": "エントリー受付は終了しました",
+    "remaining": "残り{count}枠",
+    "fullWaitlist": "定員に達しました(キャンセル待ちでエントリーできます)",
+    "deadlineNote": "エントリー締切: {date}",
+    "fieldName": "お名前",
+    "fieldDancerName": "ダンサーネーム",
+    "fieldCrew": "クルー/チーム",
+    "fieldCategory": "部門",
+    "fieldEmail": "メールアドレス",
+    "submit": "エントリーする",
+    "submitting": "送信中...",
+    "successEntered": "エントリーが完了しました!",
+    "successWaitlisted": "キャンセル待ちで受け付けました。枠が空くと自動で繰り上がります。",
+    "cancelLinkNote": "キャンセルする場合は以下のリンクを開いてください(このページを閉じる前に保存を推奨):",
+    "cancelLinkLabel": "キャンセルページ",
+    "errorClosed": "エントリー受付は終了しています",
+    "errorDuplicate": "このメールアドレスは既にエントリー済みです",
+    "errorInvalid": "入力内容を確認してください",
+    "errorGeneric": "送信に失敗しました。時間をおいて再度お試しください",
+    "cancelTitle": "エントリーのキャンセル",
+    "cancelConfirm": "このエントリーをキャンセルしますか?この操作は取り消せません。",
+    "cancelButton": "キャンセルする",
+    "cancelDone": "エントリーをキャンセルしました。",
+    "cancelNotFound": "このリンクは無効です。すでにキャンセル済みか、URLが誤っている可能性があります。",
+    "backToTop": "トップへ戻る"
   }
 }

@@ -301,5 +301,33 @@
     "consentAfter": "。",
     "sent": "已发送。确认后会与您联系!",
     "error": "发送失败。请检查邮箱和内容后重试。"
+  },
+  "entry": {
+    "title": "ENTRY",
+    "closed": "报名已截止。",
+    "remaining": "剩余 {count} 个名额",
+    "fullWaitlist": "名额已满 — 可加入候补名单",
+    "deadlineNote": "报名截止: {date}",
+    "fieldName": "姓名",
+    "fieldDancerName": "舞者名",
+    "fieldCrew": "团队",
+    "fieldCategory": "组别",
+    "fieldEmail": "邮箱",
+    "submit": "立即报名",
+    "submitting": "提交中...",
+    "successEntered": "报名成功!",
+    "successWaitlisted": "已加入候补名单,名额空出时将自动递补。",
+    "cancelLinkNote": "如需取消报名,请打开以下链接(离开本页前请保存):",
+    "cancelLinkLabel": "取消页面",
+    "errorClosed": "报名已截止。",
+    "errorDuplicate": "该邮箱已报名。",
+    "errorInvalid": "请检查输入内容。",
+    "errorGeneric": "提交失败,请稍后重试。",
+    "cancelTitle": "取消报名",
+    "cancelConfirm": "确定取消此报名吗?此操作无法撤销。",
+    "cancelButton": "取消报名",
+    "cancelDone": "已取消报名。",
+    "cancelNotFound": "链接无效,可能已被取消。",
+    "backToTop": "返回首页"
   }
 }

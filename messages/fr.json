@@ -301,5 +301,33 @@
     "consentAfter": ".",
     "sent": "Envoyé ! Nous vous répondrons bientôt.",
     "error": "Échec de l'envoi. Vérifiez votre e-mail et votre message, puis réessayez."
+  },
+  "entry": {
+    "title": "ENTRY",
+    "closed": "Les inscriptions sont closes.",
+    "remaining": "{count} places restantes",
+    "fullWaitlist": "Complet — vous pouvez rejoindre la liste d'attente",
+    "deadlineNote": "Date limite d'inscription : {date}",
+    "fieldName": "Nom",
+    "fieldDancerName": "Nom de danseur",
+    "fieldCrew": "Crew / équipe",
+    "fieldCategory": "Catégorie",
+    "fieldEmail": "E-mail",
+    "submit": "S'inscrire",
+    "submitting": "Envoi...",
+    "successEntered": "Inscription confirmée !",
+    "successWaitlisted": "Ajouté à la liste d'attente. Vous serez promu automatiquement si une place se libère.",
+    "cancelLinkNote": "Pour annuler votre inscription, ouvrez ce lien (enregistrez-le avant de quitter la page) :",
+    "cancelLinkLabel": "Page d'annulation",
+    "errorClosed": "Les inscriptions sont closes.",
+    "errorDuplicate": "Cet e-mail est déjà inscrit.",
+    "errorInvalid": "Veuillez vérifier votre saisie.",
+    "errorGeneric": "Une erreur est survenue. Réessayez plus tard.",
+    "cancelTitle": "Annuler l'inscription",
+    "cancelConfirm": "Annuler cette inscription ? Cette action est définitive.",
+    "cancelButton": "Annuler mon inscription",
+    "cancelDone": "Votre inscription a été annulée.",
+    "cancelNotFound": "Ce lien est invalide. L'inscription est peut-être déjà annulée.",
+    "backToTop": "Retour à l'accueil"
   }
 }
