@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import "../globals.css";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isAdminEmail } from "@/lib/adminAuth";
 import { signOutAction } from "@/app/admin/actions";
 
 export const metadata: Metadata = {
@@ -19,6 +21,11 @@ export default async function AdminLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
+  // 主催者アカウント開放後の守り: オーナー以外のログインユーザーは主催者ページへ
+  if (user && !isAdminEmail(user.email)) {
+    redirect("/organizer");
+  }
+
   return (
     <html lang="ja">
       <body className="min-h-screen flex flex-col bg-paper text-ink">
@@ -33,6 +40,9 @@ export default async function AdminLayout({
             </Link>
             {user && (
               <div className="flex items-center gap-4 text-sm">
+                <Link href="/admin/organizers" className="text-paper/80 hover:text-paper">
+                  主催者
+                </Link>
                 <span className="text-paper/70">{user.email}</span>
                 <form action={signOutAction}>
                   <button type="submit" className="btn-ghost border-paper/30 text-paper hover:bg-paper hover:text-ink">
