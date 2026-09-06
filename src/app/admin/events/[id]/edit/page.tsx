@@ -56,6 +56,9 @@ export default async function AdminEditEventPage({ params, searchParams }: Props
             mc: event.mc ?? "",
             prize: event.prize ?? "",
             organizer: event.organizer ?? "",
+            acceptEntries: event.acceptEntries,
+            entryCapacity: event.entryCapacity,
+            entryCategories: event.entryCategories ?? [],
           }}
           submitLabel="保存する"
         />
