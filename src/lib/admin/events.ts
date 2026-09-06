@@ -122,6 +122,12 @@ export interface EventInput {
   mc: string | null;
   prize: string | null;
   organizer: string | null;
+  // サイト内エントリー受付(undefinedなら変更しない)
+  acceptEntries?: boolean;
+  entryCapacity?: number | null;
+  entryCategories?: string[];
+  /** 主催者アカウントのID(主催者ポータルからの登録時のみセット) */
+  organizerId?: string;
 }
 
 export async function insertEvent(
@@ -159,6 +165,10 @@ export async function insertEvent(
       mc: input.mc,
       prize: input.prize,
       organizer: input.organizer,
+      ...(input.acceptEntries !== undefined ? { accept_entries: input.acceptEntries } : {}),
+      ...(input.entryCapacity !== undefined ? { entry_capacity: input.entryCapacity } : {}),
+      ...(input.entryCategories !== undefined ? { entry_categories: input.entryCategories } : {}),
+      ...(input.organizerId !== undefined ? { organizer_id: input.organizerId } : {}),
     })
     .select("id")
     .single();
@@ -206,6 +216,10 @@ export async function updateEvent(
       mc: input.mc,
       prize: input.prize,
       organizer: input.organizer,
+      ...(input.acceptEntries !== undefined ? { accept_entries: input.acceptEntries } : {}),
+      ...(input.entryCapacity !== undefined ? { entry_capacity: input.entryCapacity } : {}),
+      ...(input.entryCategories !== undefined ? { entry_categories: input.entryCategories } : {}),
+      ...(input.organizerId !== undefined ? { organizer_id: input.organizerId } : {}),
     })
     .eq("id", id);
 
