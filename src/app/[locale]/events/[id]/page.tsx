@@ -8,6 +8,7 @@ import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { getLocalizedDescription } from "@/lib/eventI18n";
 import { isPastEvent } from "@/lib/eventDate";
 import InstagramEmbed from "@/components/InstagramEmbed";
+import EntrySection from "@/components/EntrySection";
 import TrackedLink from "@/components/TrackedLink";
 import ShareBar from "@/components/ShareBar";
 import ArticleCard from "@/components/ArticleCard";
@@ -321,6 +322,8 @@ export default async function EventDetailPage({ params }: PageProps) {
           )}
 
           {/* 追加画像ギャラリー(管理画面で複数登録した画像)。タップで原寸表示 */}
+          <EntrySection event={event} locale={params.locale} />
+
           {(event.galleryUrls?.length ?? 0) > 0 && (
             <div className="mt-10 border-t border-ink/10 pt-8">
               <h2 className="text-xs font-bold uppercase tracking-widest text-ink/60">
