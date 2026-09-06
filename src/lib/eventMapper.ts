@@ -62,6 +62,17 @@ export function rowToEvent(row: Record<string, unknown>): DanceEvent {
     updatedAt: row.updated_at ? String(row.updated_at) : undefined,
     createdAt: row.created_at ? String(row.created_at) : undefined,
     publishedAt: row.published_at ? String(row.published_at) : undefined,
+    organizerId: row.organizer_id ? String(row.organizer_id) : undefined,
+    acceptEntries: row.accept_entries === true,
+    entryCapacity:
+      typeof row.entry_capacity === "number" && row.entry_capacity > 0
+        ? row.entry_capacity
+        : undefined,
+    entryCategories: Array.isArray(row.entry_categories)
+      ? (row.entry_categories as unknown[]).filter(
+          (v): v is string => typeof v === "string" && v.length > 0,
+        )
+      : undefined,
     timeInfo: optText(row.time_info),
     format: optText(row.format),
     entryFee: optText(row.entry_fee),
