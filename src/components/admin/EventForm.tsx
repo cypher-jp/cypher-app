@@ -72,12 +72,18 @@ export interface EventFormValues {
   organizer?: string;
   // Phase 3: スクレイパー/翻訳バッチが自動生成した訳文。読み取り専用表示のみ(フォームからは編集不可)。
   descriptionI18n?: Partial<Record<I18nLocale, string>>;
+  // サイト内エントリー受付
+  acceptEntries?: boolean;
+  entryCapacity?: number;
+  entryCategories?: string[];
 }
 
 interface Props {
   action: (formData: FormData) => void;
   defaultValues?: Partial<EventFormValues>;
   submitLabel: string;
+  /** 主催者ポータル用。ステータス/出典の編集を隠す(公開はオーナー承認制のため) */
+  organizerMode?: boolean;
 }
 
 // フライヤー画像をブラウザ側で縮小・JPEG圧縮する。
@@ -109,7 +115,7 @@ async function compressFlyer(file: File): Promise<File> {
   return new File([blob], `${base}.jpg`, { type: "image/jpeg" });
 }
 
-export default function EventForm({ action, defaultValues, submitLabel }: Props) {
+export default function EventForm({ action, defaultValues, submitLabel, organizerMode }: Props) {
   const [igPostUrl, setIgPostUrl] = useState(defaultValues?.igPostUrl ?? "");
   const [flyerNote, setFlyerNote] = useState<string | null>(null);
 
@@ -464,6 +470,41 @@ export default function EventForm({ action, defaultValues, submitLabel }: Props)
         )}
       </Field>
 
+      <div className="rounded-xl border border-ink/10 bg-ink/[0.03] p-4">
+        <label className="flex items-center gap-2 text-sm font-bold">
+          <input
+            type="checkbox"
+            name="acceptEntries"
+            defaultChecked={defaultValues?.acceptEntries}
+          />
+          このサイトでエントリーを受け付ける
+        </label>
+        <p className="mt-1 text-xs text-ink/50">
+          ONにすると、公開後のイベントページにエントリーフォームが表示されます。
+          定員を超えた申込みは自動でキャンセル待ちになります。
+        </p>
+        <div className="mt-3 grid gap-4 md:grid-cols-2">
+          <Field label="定員(空欄=無制限)">
+            <input
+              type="number"
+              name="entryCapacity"
+              min={1}
+              defaultValue={defaultValues?.entryCapacity ?? ""}
+              className="input"
+            />
+          </Field>
+          <Field label="部門(カンマ区切り。例: BREAKING 1on1, HIPHOP 2on2)">
+            <input
+              type="text"
+              name="entryCategories"
+              defaultValue={(defaultValues?.entryCategories ?? []).join(", ")}
+              className="input"
+            />
+          </Field>
+        </div>
+      </div>
+
+      {!organizerMode && (
       <div className="grid gap-4 md:grid-cols-2">
         <Field label="ステータス">
           <select
@@ -487,6 +528,7 @@ export default function EventForm({ action, defaultValues, submitLabel }: Props)
           />
         </Field>
       </div>
+      )}
 
       <div className="flex items-center justify-end gap-3">
         <SaveButton label={submitLabel} />
