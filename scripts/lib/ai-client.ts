@@ -128,8 +128,11 @@ async function callGeminiOnce(params: GenerateParams): Promise<string> {
     body: JSON.stringify(body),
   });
 
-  if (res.status === 429) {
-    throw new RateLimitError("Gemini API レート制限(429)に達しました");
+  // 429(レート超過)と503(一時的な混雑)はどちらも時間を置けば直るのでリトライ対象にする
+  if (res.status === 429 || res.status === 503) {
+    throw new RateLimitError(
+      `Gemini API が一時的に利用できません(status=${res.status})。リトライします`,
+    );
   }
   if (!res.ok) {
     let detail = "";
@@ -211,7 +214,7 @@ export async function generateText(params: GenerateParams): Promise<string> {
         attempt++;
         const backoffMs = 1000 * 2 ** attempt; // 2s, 4s, 8s
         console.warn(
-          `[AI] Gemini 429(レート超過)。${backoffMs}ms待って再試行します (${attempt}/${MAX_RETRIES})`,
+          `[AI] Gemini 429/503(一時的に利用不可)。${backoffMs}ms待って再試行します (${attempt}/${MAX_RETRIES})`,
         );
         await sleep(backoffMs);
         continue;
