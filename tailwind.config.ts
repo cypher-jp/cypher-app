@@ -9,7 +9,7 @@ const config: Config = {
     extend: {
       colors: {
         ink: "#0A0A0B",
-        paper: "#F5F2EC",
+        paper: "#FFFFFF",
         cypher: {
           red: "#E63946",
           navy: "#1D3557",
