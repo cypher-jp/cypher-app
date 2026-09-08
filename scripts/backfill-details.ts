@@ -206,7 +206,10 @@ async function main() {
   }
 
   console.log(`[backfill] 完了: 更新 ${updated} / 抽出なし ${skipped} / 失敗 ${failed}`);
-  if (failed > 0 && updated === 0) process.exitCode = 1;
+  // 「全件失敗」した時だけエラー終了にする。
+  // 抽出なしスキップが大半で数件だけAI側の一時エラー、というケースは正常扱い
+  // (以前は failed>0 && updated==0 で落としていたが、refreshモードで誤報メールが飛ぶため変更)。
+  if (failed > 0 && updated === 0 && skipped === 0) process.exitCode = 1;
 }
 
 main().catch((e) => {
