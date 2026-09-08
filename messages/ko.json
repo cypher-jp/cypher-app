@@ -328,6 +328,8 @@
     "cancelButton": "취소하기",
     "cancelDone": "엔트리가 취소되었습니다.",
     "cancelNotFound": "유효하지 않은 링크입니다. 이미 취소되었을 수 있습니다.",
-    "backToTop": "메인으로"
+    "backToTop": "메인으로",
+    "emailNote": "확인 및 취소 링크 표시에 사용됩니다",
+    "noAccountNote": "계정 등록 불필요. 정원 초과 시 자동으로 대기자가 됩니다"
   }
 }

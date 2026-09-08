@@ -328,6 +328,8 @@
     "cancelButton": "Annuler mon inscription",
     "cancelDone": "Votre inscription a été annulée.",
     "cancelNotFound": "Ce lien est invalide. L'inscription est peut-être déjà annulée.",
-    "backToTop": "Retour à l'accueil"
+    "backToTop": "Retour à l'accueil",
+    "emailNote": "Utilisé pour confirmer votre inscription et afficher votre lien d'annulation",
+    "noAccountNote": "Aucun compte requis. Si complet, vous rejoignez automatiquement la liste d'attente"
   }
 }

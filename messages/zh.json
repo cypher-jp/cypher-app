@@ -328,6 +328,8 @@
     "cancelButton": "取消报名",
     "cancelDone": "已取消报名。",
     "cancelNotFound": "链接无效,可能已被取消。",
-    "backToTop": "返回首页"
+    "backToTop": "返回首页",
+    "emailNote": "用于确认报名并显示取消链接",
+    "noAccountNote": "无需注册账号。名额已满时将自动加入候补"
   }
 }

@@ -328,6 +328,8 @@
     "cancelButton": "Cancel my entry",
     "cancelDone": "Your entry has been cancelled.",
     "cancelNotFound": "This link is invalid. It may already be cancelled.",
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "emailNote": "Used to confirm your entry and show your cancel link",
+    "noAccountNote": "No account needed. If full, you'll join the waitlist automatically"
   }
 }
