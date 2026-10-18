@@ -40,6 +40,9 @@ export default async function AdminLayout({
             </Link>
             {user && (
               <div className="flex items-center gap-4 text-sm">
+                <Link href="/admin/ig-import" className="text-paper/80 hover:text-paper">
+                  IG取込
+                </Link>
                 <Link href="/admin/organizers" className="text-paper/80 hover:text-paper">
                   主催者
                 </Link>
