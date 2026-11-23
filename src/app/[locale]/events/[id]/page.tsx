@@ -19,12 +19,11 @@ import { buildEventTypeLabels, buildGenreLabels, buildRegionLabels, getEventGenr
 export const revalidate = 300;
 
 interface PageProps {
-  params: { locale: string; id: string };
+  params: Promise<{ locale: string; id: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const { locale, id } = params;
   const event = await fetchEventById(id);
   const t = await getTranslations({ locale, namespace: "event" });
@@ -60,7 +59,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function EventDetailPage({ params }: PageProps) {
+export default async function EventDetailPage(props: PageProps) {
+  const params = await props.params;
   setRequestLocale(params.locale);
   const event = await fetchEventById(params.id);
   if (!event) notFound();
