@@ -1,10 +1,11 @@
 import { signInAction } from "@/app/admin/actions";
 
 interface Props {
-  searchParams: { error?: string };
+  searchParams: Promise<{ error?: string }>;
 }
 
-export default function AdminLoginPage({ searchParams }: Props) {
+export default async function AdminLoginPage(props: Props) {
+  const searchParams = await props.searchParams;
   return (
     <div className="mx-auto flex max-w-sm flex-col justify-center py-16">
       <div className="display text-3xl font-black">LOGIN</div>
