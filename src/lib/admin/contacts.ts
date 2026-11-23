@@ -19,7 +19,7 @@ function toContactCategory(value: string): ContactCategory {
 
 /** 管理画面用: お問い合わせ一覧(新しい順)。テーブル未作成でも落ちないよう[]でフォールバック */
 export async function fetchContacts(): Promise<ContactRow[]> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("contacts")
     .select("id,category,name,email,message,read,created_at")
