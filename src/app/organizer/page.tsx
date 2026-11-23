@@ -5,7 +5,7 @@ import { fetchOrganizerProfile, fetchOrganizerEvents } from "@/lib/organizer/dat
 import { isAdminEmail } from "@/lib/adminAuth";
 
 interface Props {
-  searchParams: { message?: string; error?: string };
+  searchParams: Promise<{ message?: string; error?: string }>;
 }
 
 const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -21,8 +21,9 @@ function dateParts(dateStr: string): { month: string; day: string; weekday: stri
   };
 }
 
-export default async function OrganizerDashboardPage({ searchParams }: Props) {
-  const supabase = createSupabaseServerClient();
+export default async function OrganizerDashboardPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
