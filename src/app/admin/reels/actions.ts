@@ -18,7 +18,7 @@ function back(message: string, isError = false): never {
 
 /** 管理画面「Generate Reel」: 選択イベントでジョブを作成し、GitHub Actions を起動する */
 export async function createReelJobAction(formData: FormData) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
