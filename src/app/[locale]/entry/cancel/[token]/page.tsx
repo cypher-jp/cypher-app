@@ -10,12 +10,14 @@ export const metadata: Metadata = {
 };
 
 interface Props {
-  params: { locale: string; token: string };
-  searchParams: { done?: string };
+  params: Promise<{ locale: string; token: string }>;
+  searchParams: Promise<{ done?: string }>;
 }
 
 /** エントリーの本人キャンセルページ(エントリー完了時に発行されるリンク先) */
-export default async function EntryCancelPage({ params, searchParams }: Props) {
+export default async function EntryCancelPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   setRequestLocale(params.locale);
   const t = await getTranslations("entry");
 
