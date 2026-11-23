@@ -2,10 +2,11 @@ import EventForm from "@/components/admin/EventForm";
 import { createEventAction } from "@/app/admin/actions";
 
 interface Props {
-  searchParams: { error?: string };
+  searchParams: Promise<{ error?: string }>;
 }
 
-export default function AdminNewEventPage({ searchParams }: Props) {
+export default async function AdminNewEventPage(props: Props) {
+  const searchParams = await props.searchParams;
   return (
     <div className="mx-auto max-w-2xl">
       <h1 className="display text-3xl font-black">新規登録</h1>
