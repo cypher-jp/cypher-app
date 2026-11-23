@@ -10,7 +10,7 @@ export async function fetchAdminEvents(
   status: EventStatus,
   genre?: Genre,
 ): Promise<DanceEvent[]> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   let query = supabase
     .from("events")
     .select("*")
@@ -30,7 +30,7 @@ export async function fetchAdminEvents(
 export async function fetchAdminEventCounts(): Promise<
   Record<EventStatus, number>
 > {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const statuses: EventStatus[] = ["pending", "published", "draft"];
   const counts = await Promise.all(
     statuses.map(async (status) => {
@@ -47,7 +47,7 @@ export async function fetchAdminEventCounts(): Promise<
 export async function fetchAdminEventById(
   id: string,
 ): Promise<DanceEvent | null> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("events")
     .select("*")
