@@ -5,11 +5,12 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { fetchOrganizerProfile } from "@/lib/organizer/data";
 
 interface Props {
-  searchParams: { error?: string };
+  searchParams: Promise<{ error?: string }>;
 }
 
-export default async function OrganizerNewEventPage({ searchParams }: Props) {
-  const supabase = createSupabaseServerClient();
+export default async function OrganizerNewEventPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
