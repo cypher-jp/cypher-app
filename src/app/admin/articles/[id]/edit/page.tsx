@@ -4,14 +4,13 @@ import { updateArticleAction } from "@/app/admin/articles/actions";
 import { fetchAdminArticleById } from "@/lib/admin/articles";
 
 interface Props {
-  params: { id: string };
-  searchParams: { error?: string };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
 }
 
-export default async function AdminEditArticlePage({
-  params,
-  searchParams,
-}: Props) {
+export default async function AdminEditArticlePage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const article = await fetchAdminArticleById(params.id);
   if (!article) notFound();
 
