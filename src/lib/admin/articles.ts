@@ -6,7 +6,7 @@ import type { Article } from "@/types/article";
 // (server client + authenticated RLS。公開/非公開を問わず全件扱える)。
 
 export async function fetchAdminArticles(): Promise<Article[]> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("articles")
     .select("*")
@@ -19,7 +19,7 @@ export async function fetchAdminArticles(): Promise<Article[]> {
 }
 
 export async function fetchAdminArticleById(id: string): Promise<Article | null> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("articles")
     .select("*")
@@ -59,7 +59,7 @@ function toRow(input: ArticleInput): Record<string, unknown> {
 export async function insertArticle(
   input: ArticleInput,
 ): Promise<{ id: string } | null> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("articles")
     .insert(toRow(input))
@@ -76,7 +76,7 @@ export async function updateArticle(
   id: string,
   input: ArticleInput,
 ): Promise<boolean> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("articles")
     .update(toRow(input))
