@@ -3,11 +3,12 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { applyOrganizerAction } from "@/app/organizer/actions";
 
 interface Props {
-  searchParams: { error?: string };
+  searchParams: Promise<{ error?: string }>;
 }
 
-export default async function OrganizerApplyPage({ searchParams }: Props) {
-  const supabase = createSupabaseServerClient();
+export default async function OrganizerApplyPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
