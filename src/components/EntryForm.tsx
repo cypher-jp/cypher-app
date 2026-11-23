@@ -1,6 +1,7 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { submitEntryAction, type EntryFormState } from "@/app/entry-actions";
 
 /** 表示文言は親(サーバー側)で翻訳して渡す */
@@ -40,7 +41,7 @@ const FIELD_INPUT =
   "w-full rounded-xl border border-ink/15 bg-white px-4 py-3 text-[15px] text-ink outline-none focus:border-ink";
 
 export default function EntryForm({ eventId, categories, cancelBasePath, labels }: Props) {
-  const [state, formAction] = useFormState(submitEntryAction, initialState);
+  const [state, formAction] = useActionState(submitEntryAction, initialState);
 
   if (state.status === "entered" || state.status === "waitlisted") {
     const cancelUrl = state.cancelToken ? `${cancelBasePath}/${state.cancelToken}` : null;
