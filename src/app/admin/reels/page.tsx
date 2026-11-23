@@ -8,7 +8,7 @@ import { createReelJobAction, deleteReelJobAction, requeueReelJobAction } from "
 export const dynamic = "force-dynamic";
 
 interface Props {
-  searchParams: { message?: string; error?: string };
+  searchParams: Promise<{ message?: string; error?: string }>;
 }
 
 const STATUS_LABEL: Record<ReelJob["status"], { text: string; cls: string }> = {
@@ -23,7 +23,8 @@ function fmt(iso: string | null): string {
   return new Date(iso).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", hour12: false });
 }
 
-export default async function AdminReelsPage({ searchParams }: Props) {
+export default async function AdminReelsPage(props: Props) {
+  const searchParams = await props.searchParams;
   const [candidates, jobs] = await Promise.all([fetchReelCandidates(), fetchReelJobs()]);
   const dispatchConfigured = Boolean(process.env.GITHUB_DISPATCH_TOKEN);
 
