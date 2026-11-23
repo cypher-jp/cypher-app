@@ -8,10 +8,11 @@ import { ADMIN_GENRE_LABEL } from "@/lib/admin/labels";
 import { GENRES, type EventStatus, type Genre } from "@/types/event";
 
 interface Props {
-  searchParams: { tab?: string; genre?: string; q?: string; noimg?: string; message?: string };
+  searchParams: Promise<{ tab?: string; genre?: string; q?: string; noimg?: string; message?: string }>;
 }
 
-export default async function AdminHomePage({ searchParams }: Props) {
+export default async function AdminHomePage(props: Props) {
+  const searchParams = await props.searchParams;
   const tab: EventStatus =
     searchParams.tab === "published" || searchParams.tab === "draft"
       ? searchParams.tab
