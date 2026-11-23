@@ -18,12 +18,11 @@ export function generateStaticParams() {
 
 interface LayoutProps {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: LayoutProps): Promise<Metadata> {
+export async function generateMetadata(props: LayoutProps): Promise<Metadata> {
+  const params = await props.params;
   const { locale } = params;
 
   const languages: Record<string, string> = {};
@@ -76,10 +75,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function LocaleLayout({
-  children,
-  params,
-}: LayoutProps) {
+export default async function LocaleLayout(props: LayoutProps) {
+  const params = await props.params;
+
+  const {
+    children
+  } = props;
+
   const { locale } = params;
 
   const locales: readonly string[] = routing.locales;
