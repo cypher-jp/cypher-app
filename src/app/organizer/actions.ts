@@ -20,7 +20,7 @@ function revalidatePublicPaths(eventId?: string) {
 
 /** ログイン済み+承認済み主催者であることを確認し、userIdを返す。だめなら適切な画面へ飛ばす */
 async function requireApprovedOrganizer(): Promise<string> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -37,7 +37,7 @@ export async function organizerSignInAction(formData: FormData): Promise<void> {
   if (!email || !password) {
     redirect(`/organizer/login?error=${encodeURIComponent("メールアドレスとパスワードを入力してください")}`);
   }
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     redirect(`/organizer/login?error=${encodeURIComponent("ログインに失敗しました。メールアドレスとパスワードを確認してください")}`);
@@ -46,7 +46,7 @@ export async function organizerSignInAction(formData: FormData): Promise<void> {
 }
 
 export async function organizerSignOutAction(): Promise<void> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
   redirect("/organizer/login");
 }
@@ -67,7 +67,7 @@ export async function applyOrganizerAction(formData: FormData): Promise<void> {
     redirect(`/organizer/apply?error=${encodeURIComponent("主催者名(チーム/団体名)を入力してください")}`);
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   let userId: string | null = null;
   let userEmail = email;
 
