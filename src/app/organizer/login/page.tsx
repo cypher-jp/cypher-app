@@ -2,10 +2,11 @@ import Link from "next/link";
 import { organizerSignInAction } from "@/app/organizer/actions";
 
 interface Props {
-  searchParams: { error?: string; message?: string };
+  searchParams: Promise<{ error?: string; message?: string }>;
 }
 
-export default function OrganizerLoginPage({ searchParams }: Props) {
+export default async function OrganizerLoginPage(props: Props) {
+  const searchParams = await props.searchParams;
   return (
     <div className="mx-auto max-w-sm">
       <h1 className="display text-3xl font-black">主催者ログイン</h1>
