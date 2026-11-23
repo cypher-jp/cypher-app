@@ -16,11 +16,9 @@ function csvCell(v: string): string {
 }
 
 /** エントリーリストのCSVダウンロード(主催者本人のみ)。Excel対応のためBOM付きUTF-8 */
-export async function GET(
-  _req: Request,
-  { params }: { params: { id: string } },
-): Promise<NextResponse> {
-  const supabase = createSupabaseServerClient();
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }): Promise<NextResponse> {
+  const params = await props.params;
+  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
