@@ -6,17 +6,20 @@ import { submitContactAction } from "@/app/[locale]/contact/actions";
 import { CONTACT_CATEGORIES } from "@/lib/contact";
 
 interface Props {
-  params: { locale: string };
-  searchParams: { sent?: string; error?: string };
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ sent?: string; error?: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations({ locale: params.locale, namespace: "contact" });
   return { title: t("title") };
 }
 
 /** お問い合わせフォーム。送信内容はSupabaseのcontactsへ保存され、管理画面で確認できる */
-export default async function ContactPage({ params, searchParams }: Props) {
+export default async function ContactPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   setRequestLocale(params.locale);
   const t = await getTranslations("contact");
 
