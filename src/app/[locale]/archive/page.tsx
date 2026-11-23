@@ -6,11 +6,12 @@ import { fetchPastEvents } from "@/lib/supabase";
 export const revalidate = 300; // 5分キャッシュ
 
 interface Props {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
 // 終了したイベントの一覧ページ。データはDBから消さず、表示だけをこちらに切り出す。
-export default async function ArchivePage({ params }: Props) {
+export default async function ArchivePage(props: Props) {
+  const params = await props.params;
   setRequestLocale(params.locale);
   const t = await getTranslations("archive");
   // 開催日(JST基準)が今日より前のイベントを、新しい順で取得。
