@@ -4,11 +4,13 @@ import { updateEventAction } from "@/app/admin/actions";
 import { fetchAdminEventById } from "@/lib/admin/events";
 
 interface Props {
-  params: { id: string };
-  searchParams: { error?: string };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
 }
 
-export default async function AdminEditEventPage({ params, searchParams }: Props) {
+export default async function AdminEditEventPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const event = await fetchAdminEventById(params.id);
   if (!event) notFound();
 
