@@ -12,11 +12,13 @@ import { EVENT_TYPES, type EventType } from "@/types/event";
 export const revalidate = 300; // 5分キャッシュ
 
 interface HomePageProps {
-  params: { locale: string };
-  searchParams: { type?: string };
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ type?: string }>;
 }
 
-export default async function HomePage({ params, searchParams }: HomePageProps) {
+export default async function HomePage(props: HomePageProps) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   setRequestLocale(params.locale);
   // 開催日(JST基準)が今日以降のイベントのみ。過去のイベントは/archiveへ自動で移る。
   const events = await fetchUpcomingEvents();
