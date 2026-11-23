@@ -7,7 +7,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
  * サーバー経由で取得してブラウザへ返す。ログイン済み管理者のみ利用可(SSRF対策も兼ねる)。
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getUser();
   if (!data.user) {
     return new NextResponse("unauthorized", { status: 401 });
