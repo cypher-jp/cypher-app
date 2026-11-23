@@ -7,7 +7,7 @@ import { routing, type AppLocale } from "@/i18n/routing";
 export const dynamic = "force-static";
 
 interface PageProps {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
 /**
@@ -405,7 +405,8 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const locale = (params.locale as AppLocale) in COPY ? (params.locale as AppLocale) : "ja";
   const c = COPY[locale];
   return {
@@ -417,7 +418,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default function ListingPage({ params }: PageProps) {
+export default async function ListingPage(props: PageProps) {
+  const params = await props.params;
   setRequestLocale(params.locale);
   const locale = (params.locale as AppLocale) in COPY ? (params.locale as AppLocale) : "ja";
   const c = COPY[locale];
