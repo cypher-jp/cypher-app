@@ -87,7 +87,7 @@ export async function createArticleAction(formData: FormData): Promise<void> {
     redirect(`/admin/articles/new?error=${encodeURIComponent(invalid)}`);
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   let heroImageUrl: string | null = parsed.existingHeroUrl;
   if (parsed.heroFile) {
     try {
@@ -131,7 +131,7 @@ export async function updateArticleAction(
   }
 
   const existing = await fetchAdminArticleById(id);
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
 
   let heroImageUrl: string | null = parsed.existingHeroUrl;
   if (parsed.heroFile) {
