@@ -52,7 +52,7 @@ function rowToJob(row: Record<string, unknown>): ReelJob {
 export async function fetchReelCandidates(): Promise<
   (DanceEvent & { isNew: boolean; isPast: boolean })[]
 > {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const today = todayJst();
   const base = () => supabase.from("events").select("*").eq("status", "published");
   const [upcoming, past] = await Promise.all([
@@ -84,7 +84,7 @@ export async function fetchReelCandidates(): Promise<
 }
 
 export async function fetchReelJobs(limit = 30): Promise<ReelJob[]> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("reel_jobs")
     .select("*")
@@ -105,7 +105,7 @@ export async function insertReelJob(input: {
   template?: string;
   createdBy?: string | null;
 }): Promise<{ id: string } | { error: string }> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const params: Record<string, unknown> = {};
   if (input.headline) params.headline = input.headline;
   if (input.subline) params.subline = input.subline;
@@ -127,7 +127,7 @@ export async function insertReelJob(input: {
 }
 
 export async function requeueReelJob(id: string): Promise<string | null> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("reel_jobs")
     .update({ status: "queued", error: null, started_at: null, finished_at: null })
@@ -136,7 +136,7 @@ export async function requeueReelJob(id: string): Promise<string | null> {
 }
 
 export async function deleteReelJob(id: string): Promise<string | null> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase.from("reel_jobs").delete().eq("id", id);
   return error ? error.message : null;
 }
