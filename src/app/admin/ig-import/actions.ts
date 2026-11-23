@@ -25,7 +25,7 @@ const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
  * サーバー側でCDNからダウンロードして通常の取り込み処理に流す。
  */
 export async function importInstagramFromUrlsAction(payload: IgImportPayload): Promise<IgImportResult> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
