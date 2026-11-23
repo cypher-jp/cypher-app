@@ -5,10 +5,11 @@ import CalendarView from "@/components/CalendarView";
 export const revalidate = 300;
 
 interface Props {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
-export default async function CalendarPage({ params }: Props) {
+export default async function CalendarPage(props: Props) {
+  const params = await props.params;
   setRequestLocale(params.locale);
   const t = await getTranslations("calendar");
   // 開催日(JST基準)が今日以降のイベントのみ。過去のイベントは/archiveへ自動で移る。
