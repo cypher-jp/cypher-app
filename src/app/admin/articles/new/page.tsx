@@ -2,10 +2,11 @@ import ArticleForm from "@/components/admin/ArticleForm";
 import { createArticleAction } from "@/app/admin/articles/actions";
 
 interface Props {
-  searchParams: { error?: string };
+  searchParams: Promise<{ error?: string }>;
 }
 
-export default function AdminNewArticlePage({ searchParams }: Props) {
+export default async function AdminNewArticlePage(props: Props) {
+  const searchParams = await props.searchParams;
   return (
     <div>
       <h1 className="display text-3xl font-black">NEW ARTICLE</h1>
