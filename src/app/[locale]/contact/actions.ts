@@ -33,7 +33,7 @@ export async function submitContactAction(
     redirect(`/${locale}/contact?error=1`);
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("contacts")
     .insert({ category, name, email, message });
