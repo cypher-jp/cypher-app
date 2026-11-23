@@ -7,7 +7,7 @@ import CopyEmailsButton from "@/components/organizer/CopyEmailsButton";
 import type { EntryRecord } from "@/lib/entries";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /** アバターの背景色をエントリーごとにローテーション */
@@ -139,8 +139,9 @@ function EntryRow({
   );
 }
 
-export default async function OrganizerEntriesPage({ params }: Props) {
-  const supabase = createSupabaseServerClient();
+export default async function OrganizerEntriesPage(props: Props) {
+  const params = await props.params;
+  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
