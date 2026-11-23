@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 interface PrivacyPageProps {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: PrivacyPageProps): Promise<Metadata> {
+export async function generateMetadata(props: PrivacyPageProps): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations({ locale: params.locale, namespace: "privacy" });
   return {
     title: t("title"),
@@ -16,7 +15,8 @@ export async function generateMetadata({
 }
 
 /** プライバシーポリシー。文言は messages/{locale}.json の "privacy" 名前空間で5言語管理する。 */
-export default async function PrivacyPage({ params }: PrivacyPageProps) {
+export default async function PrivacyPage(props: PrivacyPageProps) {
+  const params = await props.params;
   setRequestLocale(params.locale);
   const t = await getTranslations("privacy");
 
