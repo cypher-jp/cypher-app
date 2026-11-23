@@ -14,10 +14,11 @@ import { SITE_URL, SITE_NAME } from "@/lib/site";
 export const revalidate = 300; // 5分キャッシュ
 
 interface Props {
-  params: { locale: string; slug: string };
+  params: Promise<{ locale: string; slug: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const article = await fetchArticleBySlug(params.slug);
   if (!article) return {};
   const description = article.bodyMd
@@ -38,7 +39,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /** 記事詳細。本文はMarkdown→簡易HTML変換(src/lib/markdown.ts)。関連イベント枠でクロスセル */
-export default async function ArticlePage({ params }: Props) {
+export default async function ArticlePage(props: Props) {
+  const params = await props.params;
   setRequestLocale(params.locale);
   const article = await fetchArticleBySlug(params.slug);
   if (!article) notFound();
