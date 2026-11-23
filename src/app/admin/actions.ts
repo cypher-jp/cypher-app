@@ -35,7 +35,7 @@ export async function markContactReadAction(
   id: string,
   read: boolean,
 ): Promise<void> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("contacts")
     .update({ read })
@@ -53,7 +53,7 @@ export async function setOrganizerStatusAction(
   formData: FormData,
 ): Promise<void> {
   void formData;
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("organizers")
     .update({
@@ -76,7 +76,7 @@ export async function signInAction(formData: FormData): Promise<void> {
     redirect(`/admin/login?error=${encodeURIComponent("メールアドレスとパスワードを入力してください")}`);
   }
  
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
  
   if (error) {
@@ -87,7 +87,7 @@ export async function signInAction(formData: FormData): Promise<void> {
 }
  
 export async function signOutAction(): Promise<void> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
   redirect("/admin/login");
 }
@@ -99,7 +99,7 @@ export async function signOutAction(): Promise<void> {
  * findDuplicatePendingEventIds / lib/admin/dedupe.ts を参照)。
  */
 export async function approveEventAction(id: string): Promise<void> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   // 体感速度のため、本体の取得と公開を並行実行してDB往復を減らす
   const [event] = await Promise.all([
     fetchAdminEventById(id),
@@ -132,7 +132,7 @@ export async function toggleEntryClosedAction(
   id: string,
   closed: boolean,
 ): Promise<void> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("events")
     .update({ entry_closed: closed })
@@ -145,7 +145,7 @@ export async function toggleEntryClosedAction(
 }
  
 export async function rejectEventAction(id: string): Promise<void> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   await updateEventStatus(supabase, id, "draft");
   revalidatePublicPaths(id);
   revalidatePath("/admin");
@@ -165,7 +165,7 @@ export async function bulkUpdateGenresAction(
   );
   if (uniqueIds.length === 0 || validGenres.length === 0) return;
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("events")
     .update({ genres: validGenres, genre: validGenres[0] })
@@ -188,7 +188,7 @@ export async function bulkUpdateTypeAction(
   const uniqueIds = Array.from(new Set(ids)).filter(Boolean);
   if (uniqueIds.length === 0 || !EVENT_TYPES.includes(type)) return;
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("events")
     .update({ type })
@@ -214,7 +214,7 @@ export async function bulkSetFlyerAction(
   const file = entry instanceof File && entry.size > 0 ? entry : null;
   if (uniqueIds.length === 0 || !file) return;
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   let flyerUrl: string;
   try {
     flyerUrl = await uploadFlyer(supabase, file);
@@ -267,7 +267,7 @@ export async function createEventAction(formData: FormData): Promise<void> {
     );
   }
  
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
  
   let flyerUrl: string | null = null;
   if (parsed.flyerFile) {
@@ -333,7 +333,7 @@ export async function updateEventAction(
     );
   }
  
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
  
   const existingFlyerUrl = String(formData.get("existingFlyerUrl") ?? "").trim();
   let flyerUrl: string | null = existingFlyerUrl || null;
