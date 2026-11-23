@@ -6,16 +6,18 @@ import { fetchPublishedArticles } from "@/lib/articles";
 export const revalidate = 300; // 5分キャッシュ
 
 interface Props {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations({ locale: params.locale, namespace: "articles" });
   return { title: t("listTitle") };
 }
 
 /** 記事一覧。公開済みのみ新しい順(0件のときは空メッセージ) */
-export default async function ArticlesPage({ params }: Props) {
+export default async function ArticlesPage(props: Props) {
+  const params = await props.params;
   setRequestLocale(params.locale);
   const t = await getTranslations("articles");
   const articles = await fetchPublishedArticles();
